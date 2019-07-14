@@ -22,7 +22,7 @@ Fedora
 
 
 The easiest way to install is:  
-`curl https://raw.githubusercontent.com/alex1701c/TmuxRunner/master/install.sh | bash`
+`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`
 
 ```
 cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
