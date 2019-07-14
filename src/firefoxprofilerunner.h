@@ -16,14 +16,6 @@ public:
 
     QList<Profile> profiles;
 
-protected Q_SLOTS:
-
-    void init() override;
-
-    void prepareForMatchSession();
-
-    void matchSessionFinished();
-
 public: // Plasma::AbstractRunner API
     void match(Plasma::RunnerContext &context) override;
 

@@ -1,7 +1,3 @@
-//
-// Created by alex on 14.07.19.
-//
-
 #include <KConfigCore/KConfigGroup>
 #include <KConfigCore/KSharedConfig>
 #include <QDir>
@@ -16,7 +12,7 @@ QList<Profile> Profile::getProfiles() {
 
     for (const auto &c:configs) {
         if (c.startsWith("Install")) {
-            defaultPath = config->group("Install4F96D1932A9F858E").readEntry("Default");
+            defaultPath = config->group(c).readEntry("Default");
         }
     }
     for (const auto &profileEntry: configs.filter(QRegExp(R"(Profile.*)"))) {
@@ -41,6 +37,7 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
 
     QStringList deleted;
     QString newInstalls;
+
     // Update/mark to delete installed profiles
     for (auto &installedProfile:installedProfiles) {
         for (const auto &profile:profiles) {

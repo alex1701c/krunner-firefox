@@ -11,18 +11,6 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 }
 
-void FirefoxProfileRunner::init() {
-    reloadConfiguration();
-    connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
-    connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
-}
-
-void FirefoxProfileRunner::prepareForMatchSession() {
-}
-
-void FirefoxProfileRunner::matchSessionFinished() {
-}
-
 FirefoxProfileRunner::~FirefoxProfileRunner() = default;
 
 void FirefoxProfileRunner::reloadConfiguration() {
@@ -34,7 +22,10 @@ void FirefoxProfileRunner::reloadConfiguration() {
     Profile::syncDesktopFile(profiles);
 
     QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("query", "Explain query"));
+    syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
+                                         "Plugin gets triggered by firef... after that you can search the profiles by name")
+    );
+    syntaxes.append(Plasma::RunnerSyntax("firefox :q -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);
 }
 
@@ -42,6 +33,7 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
     if (!context.isValid()) return;
     QString term = context.query();
     if (!term.startsWith("fire")) return;
+
     QList<Plasma::QueryMatch> matches;
     bool privateWindow = false;
     if (term.endsWith(" -p")) {
@@ -52,13 +44,13 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
     regExp.indexIn(term);
     QString filter = regExp.capturedTexts().last();
     for (auto &profile:profiles) {
-        qInfo() << filter << privateWindow;
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
             data.insert("name", profile.name);
             data.insert("private-window", privateWindow ? "true" : "");
-
-            matches.append(createMatch(privateWindow ? "Private Window " + profile.name : profile.name, data, 1));
+            QString defaultNote = profile.isDefault ? " (default)" : "";
+            QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
+            matches.append(createMatch(text, data, 1));
         }
     }
 
@@ -70,15 +62,12 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
-    if (!data.value("private-window").toString().isEmpty()) {
-        args.append("-private-window");
-    }
+    if (!data.value("private-window").toString().isEmpty()) args.append("-private-window");
 
     QProcess::startDetached("firefox", args);
 }
 
-Plasma::QueryMatch
-FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
+Plasma::QueryMatch FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
     match.setIconName("firefox");
     match.setText(text);

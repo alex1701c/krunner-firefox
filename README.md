@@ -1,5 +1,12 @@
-Experimental 😄
+## Firefox Profile Runner
 
+This plugin allows you to launch firefox profiles from Krunner and your normal launcher.
+
+The plugin uses a local copy of the firefox.desktop file. In this file it adds Desktop Action entries for
+the profiles. Because of this you can search for the profiles in your normal launcher.  
+For the changes in your firefox profiles to be applied you have to restart Krunner,
+because the file only get synced when the runner is initialized. 
+ 
 ### Required Dependencies
 
 Debian/Ubuntu  
@@ -12,6 +19,10 @@ Fedora
 `sudo dnf install cmake extra-cmake-modules kf5-ki18n-devel kf5-kservice-devel kf5-krunner-devel kf5-ktextwidgets-devel gettext`  
 
 ### Build instructions
+
+
+The easiest way to install is:  
+`curl https://raw.githubusercontent.com/alex1701c/TmuxRunner/master/install.sh | bash`
 
 ```
 cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
