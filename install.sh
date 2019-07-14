@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# TODO Enable if the project is on Github
+cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
+
 if [[ $(basename "$PWD") != "FirefoxProfileRunner"* ]];then
-    #git clone https://github.com/%{USERNAME}/FirefoxProfileRunner
-    #cd FirefoxProfileRunner/
-    echo "Please go to the project folder"
-    exit
+    git clone https://github.com/alex1701c/FirefoxProfileRunner
+    cd FirefoxProfileRunner/
 fi
 
 mkdir -p build

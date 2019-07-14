@@ -1,4 +1,4 @@
-Explain what this plugin does...
+Experimental 😄
 
 ### Required Dependencies
 
@@ -13,10 +13,10 @@ Fedora
 
 ### Build instructions
 
-If you build the project for the first after generating the template and cmake says "No targets specified and no makefile found." you have to delete the content of the build folder ( rm -rf build/* ) and try again.
-Afterwards you can remove this message.
 ```
-cd /path/to/FirefoxProfileRunner
+cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
+git clone https://github.com/alex1701c/FirefoxProfileRunner
+cd FirefoxProfileRunner
 mkdir build
 cd build
 cmake -DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins` ..
