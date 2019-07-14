@@ -18,6 +18,8 @@ public:
 
     static QList<Profile> getProfiles();
 
+    static void syncDesktopFile(const QList<Profile> &profiles);
+
 };
 
 

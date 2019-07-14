@@ -11,10 +11,6 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
 }
 
 void FirefoxProfileRunner::init() {
-    QList<Profile> profiles = Profile::getProfiles();
-    for (const auto &p:profiles) {
-        qInfo() << p.name << p.path << p.isDefault ;
-    }
     reloadConfiguration();
     connect(this, SIGNAL(prepare()), this, SLOT(prepareForMatchSession()));
     connect(this, SIGNAL(teardown()), this, SLOT(matchSessionFinished()));
@@ -29,6 +25,13 @@ void FirefoxProfileRunner::matchSessionFinished() {
 FirefoxProfileRunner::~FirefoxProfileRunner() = default;
 
 void FirefoxProfileRunner::reloadConfiguration() {
+
+    profiles = Profile::getProfiles();
+    /*for (const auto &p:profiles) {
+        qInfo() << p.name << p.path << p.isDefault ;
+    }*/
+    Profile::syncDesktopFile(profiles);
+
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("query", "Explain query"));
     setSyntaxes(syntaxes);

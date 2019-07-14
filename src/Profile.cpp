@@ -30,3 +30,47 @@ QList<Profile> Profile::getProfiles() {
 
     return profiles;
 }
+
+void Profile::syncDesktopFile(const QList<Profile> &profiles) {
+    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(
+            QDir::homePath() + "/" + ".local/share/applications/firefox.desktop"
+    );
+    KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
+    QStringList installedProfiles = firefoxConfig->groupList().filter(
+            QRegExp("Desktop Action new-window-with-profile-.*"));
+
+    QStringList deleted;
+    QString newInstalls;
+    // Update/mark to delete installed profiles
+    for (auto &installedProfile:installedProfiles) {
+        for (const auto &profile:profiles) {
+            if (installedProfile == "Desktop Action new-window-with-profile-" + profile.name) {
+                KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
+                profileConfig.writeEntry("Name", "Launch Firefox with " + profile.name);
+                profileConfig.writeEntry("Exec", "firefox -P " + profile.name + " %u");
+                continue;
+            }
+        }
+        firefoxConfig->deleteGroup(installedProfile);
+        deleted.append(installedProfile.remove("Desktop Action "));
+    }
+    // Delete group and remove entry from Actions
+    if (!deleted.isEmpty()) {
+        for (const auto &del:deleted) {
+            generalConfig.writeEntry("Actions", generalConfig.readEntry("Actions").remove(del + ";"));
+        }
+        generalConfig.sync();
+    }
+    // Add group and register action
+    for (const auto &profile:profiles) {
+        if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.name)) {
+            KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + profile.name);
+            profileConfig.writeEntry("Name", profile.name);
+            profileConfig.writeEntry("Exec", "firefox -P " + profile.name);
+            newInstalls.append("new-window-with-profile-" + profile.name + ";");
+        }
+    }
+    generalConfig.writeEntry("Actions", generalConfig.readEntry("Actions") + newInstalls);
+
+
+}
