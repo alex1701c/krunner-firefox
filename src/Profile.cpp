@@ -46,7 +46,11 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
         for (const auto &profile:profiles) {
             if (installedProfile == "Desktop Action new-window-with-profile-" + profile.name) {
                 KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
-                profileConfig.writeEntry("Name", "Launch Firefox with " + profile.name);
+                if (profile.isDefault) {
+                    profileConfig.writeEntry("Name", profile.name + " (default)");
+                } else {
+                    profileConfig.writeEntry("Name", profile.name);
+                }
                 profileConfig.writeEntry("Exec", "firefox -P " + profile.name + " %u");
                 continue;
             }
@@ -65,7 +69,11 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
     for (const auto &profile:profiles) {
         if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.name)) {
             KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + profile.name);
-            profileConfig.writeEntry("Name", profile.name);
+            if (profile.isDefault) {
+                profileConfig.writeEntry("Name", profile.name + " (default)");
+            } else {
+                profileConfig.writeEntry("Name", profile.name);
+            }
             profileConfig.writeEntry("Exec", "firefox -P " + profile.name);
             newInstalls.append("new-window-with-profile-" + profile.name + ";");
         }
