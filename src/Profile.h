@@ -8,6 +8,7 @@
 
 #include <QtCore/QString>
 #include <QList>
+#include <KSharedConfig>
 
 class Profile {
 
@@ -15,6 +16,8 @@ public:
     QString name;
     QString path;
     bool isDefault;
+
+    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const ;
 
     static QList<Profile> getProfiles();
 

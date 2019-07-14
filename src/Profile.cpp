@@ -45,13 +45,7 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
     for (auto &installedProfile:installedProfiles) {
         for (const auto &profile:profiles) {
             if (installedProfile == "Desktop Action new-window-with-profile-" + profile.name) {
-                KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
-                if (profile.isDefault) {
-                    profileConfig.writeEntry("Name", profile.name + " (default)");
-                } else {
-                    profileConfig.writeEntry("Name", profile.name);
-                }
-                profileConfig.writeEntry("Exec", "firefox -P " + profile.name + " %u");
+                profile.writeSettings(firefoxConfig, installedProfile);
                 continue;
             }
         }
@@ -68,17 +62,21 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
     // Add group and register action
     for (const auto &profile:profiles) {
         if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.name)) {
-            KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + profile.name);
-            if (profile.isDefault) {
-                profileConfig.writeEntry("Name", profile.name + " (default)");
-            } else {
-                profileConfig.writeEntry("Name", profile.name);
-            }
-            profileConfig.writeEntry("Exec", "firefox -P " + profile.name);
+            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.name);
             newInstalls.append("new-window-with-profile-" + profile.name + ";");
         }
     }
     generalConfig.writeEntry("Actions", generalConfig.readEntry("Actions") + newInstalls);
 
 
+}
+
+void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const {
+    KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
+    if (this->isDefault) {
+        profileConfig.writeEntry("Name", this->name + " (default)");
+    } else {
+        profileConfig.writeEntry("Name", this->name);
+    }
+    profileConfig.writeEntry("Exec", "firefox -P " + this->name);
 }

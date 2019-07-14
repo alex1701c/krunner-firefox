@@ -12,6 +12,8 @@ public:
 
     ~FirefoxProfileRunner() override;
 
+    Plasma::QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
+
     QList<Profile> profiles;
 
 protected Q_SLOTS:
