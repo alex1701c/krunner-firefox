@@ -36,10 +36,29 @@ sudo make install
 ```
 
 
-Restart krunner to load the runner (in a terminal type: kquitapp5 krunner;kstart5 krunner )
+Restart krunner to load the runner (in a terminal type: `kquitapp5 krunner;kstart5 krunner` )
 
 After this you should see your runner in the system settings:
 
 systemsettings5 (Head to "Search")
 
 You can also launch KRunner via Alt-F2 and you will find your runner.
+
+
+### Screenshots
+
+#### Overview
+The plugin gets triggered by firef. 
+![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/overview.png)
+
+#### Search
+After the trigger word you can search the profiles
+![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/filter_profiles.png)
+
+#### Private Window
+You can add a -p flag to your query if you want firefox to open in a private window.  
+![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/private_window_flag.png)
+
+#### Search from normal launcher
+You can also search for the profiles in your launcher or with the applications Krunner plugin    
+![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
