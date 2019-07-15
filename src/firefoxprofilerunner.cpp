@@ -19,7 +19,7 @@ void FirefoxProfileRunner::reloadConfiguration() {
     Profile::syncDesktopFile(firefoxProfiles);
     profiles = Profile::getCustomProfiles();
 
-#ifndef prod
+#ifdef status_dev
     for (const auto &p:profiles) {
         qInfo() << "Name: " << p.name << "Launch Name: " << p.launchName << "Path: " << p.path
                 << "Is Default: " << p.isDefault << "Priority: " << p.priority << "Edited: " << p.isEdited;
@@ -51,7 +51,7 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
     for (auto &profile:profiles) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
-            data.insert("name", profile.name);
+            data.insert("name", profile.launchName);
             data.insert("private-window", privateWindow ? "true" : "");
             QString defaultNote = profile.isDefault ? " (default)" : "";
             QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;

@@ -18,13 +18,16 @@ public:
     QString path;
     bool isDefault;
     bool isEdited;
+
+    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const;
+
+    void writeConfigChanges(KSharedConfigPtr firefoxConfig);
+
     int priority;
 
     static QString getDefaultPath();
 
     static bool profileSmallerPriority(const Profile &profile1, const Profile &profile2);
-
-    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const;
 
     static QList<Profile> getFirefoxProfiles();
 

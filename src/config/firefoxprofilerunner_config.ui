@@ -131,7 +131,7 @@
       <item>
        <widget class="QPushButton" name="refreshProfiles">
         <property name="text">
-         <string>Refresh Firefox Profiles</string>
+         <string>Sync Firefox Profile Config</string>
         </property>
        </widget>
       </item>

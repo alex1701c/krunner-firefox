@@ -13,9 +13,8 @@ QList<Profile> Profile::getFirefoxProfiles() {
     for (const auto &profileEntry: configs.filter(QRegExp(R"(Profile.*)"))) {
         Profile profile;
         KConfigGroup profileConfig = config->group(profileEntry);
-        profile.name = profileConfig.readEntry("Name");
+        profile.launchName = profileConfig.readEntry("Name");
         profile.path = profileConfig.readEntry("Path");
-        profile.isDefault = profileConfig.readEntry("Path") == defaultPath;
         profiles.append(profile);
     }
     return profiles;
@@ -37,16 +36,16 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
         for (const auto &profile:profiles) {
             if (installedProfile == "Desktop Action new-window-with-profile-" + profile.path) {
                 found = true;
-                if (profile.name != firefoxConfig->group(installedProfile).readEntry("LaunchName")) {
-#ifndef prod
-                    qInfo() << "Update " << profile.name;
+                if (profile.launchName != firefoxConfig->group(installedProfile).readEntry("LaunchName")) {
+#ifdef status_dev
+                    qInfo() << "Update " << profile.launchName;
 #endif
                     profile.writeSettings(firefoxConfig, installedProfile);
                 }
             }
         }
         if (!found) {
-#ifndef prod
+#ifdef status_dev
             qInfo() << "Delete " << installedProfile;
 #endif
             firefoxConfig->deleteGroup(installedProfile);
@@ -63,8 +62,8 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
     // Add group and register action
     for (const auto &profile:profiles) {
         if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.path)) {
-#ifndef prod
-            qInfo() << "Install  " << profile.name;
+#ifdef status_dev
+            qInfo() << "Install  " << profile.launchName;
 #endif
             profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path);
             newInstalls.append("new-window-with-profile-" + profile.path + ";");
@@ -77,11 +76,13 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
 
 void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const {
     KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
-    profileConfig.writeEntry("Name", this->name);
-    profileConfig.writeEntry("LaunchName", this->name);
+    if (profileConfig.readEntry("Edited", "false") != "true") {
+        profileConfig.writeEntry("Name", this->name.isEmpty() ? this->launchName : this->name);
+    }
+    profileConfig.writeEntry("LaunchName", this->launchName);
     profileConfig.writeEntry("Edited", false);
     profileConfig.writeEntry("Priority", 0);
-    profileConfig.writeEntry("Exec", "firefox -P \"" + this->name + "\"");
+    profileConfig.writeEntry("Exec", "firefox -P \"" + this->launchName + "\"");
 }
 
 QList<Profile> Profile::getCustomProfiles() {
@@ -118,5 +119,12 @@ QString Profile::getDefaultPath() {
 
 bool Profile::profileSmallerPriority(const Profile &profile1, const Profile &profile2) {
     return profile1.priority > profile2.priority;
+}
+
+void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
+    KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);
+    profileConfig.writeEntry("Name", this->name);
+    profileConfig.writeEntry("Edited", true);
+    profileConfig.writeEntry("Priority", this->priority);
 }
 

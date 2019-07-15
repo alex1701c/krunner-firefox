@@ -11,6 +11,7 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Service Runner Text
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
+#add_compile_definitions(status_dev)
 include(FeatureSummary)
 
 add_subdirectory(src)
