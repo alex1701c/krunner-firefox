@@ -5,8 +5,11 @@ This plugin allows you to launch firefox profiles from Krunner and your normal l
 The plugin uses a local copy of the firefox.desktop file. In this file it adds Desktop Action entries for
 the profiles. Because of this you can search for the profiles in your normal launcher.  
 For the changes in your firefox profiles to be applied you have to restart Krunner,
-because the file only get synced when the runner is initialized. 
- 
+because the file only gets synced when the runner is initialized. 
+
+*Within a few days a config dialog will be added.*  
+If you have any issues please let me know🙂.
+
 ### Required Dependencies
 
 Debian/Ubuntu  
@@ -48,17 +51,17 @@ You can also launch KRunner via Alt-F2 and you will find your runner.
 ### Screenshots
 
 #### Overview
-The plugin gets triggered by firef. 
-![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/overview.png)
+The plugin gets triggered by firef.  
+![Overview](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/overview.png)
 
 #### Search
-After the trigger word you can search the profiles
-![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/filter_profiles.png)
+After the trigger word you can search the profiles.  
+![Search](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/filter_profiles.png)
 
 #### Private Window
 You can add a -p flag to your query if you want firefox to open in a private window.  
-![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/private_window_flag.png)
+![Private Window](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/private_window_flag.png)
 
 #### Search from normal launcher
-You can also search for the profiles in your launcher or with the applications Krunner plugin    
-![Simple command](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
+You can also search for the profiles in your launcher or with the applications Krunner plugin.    
+![Search from normal launcher](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
