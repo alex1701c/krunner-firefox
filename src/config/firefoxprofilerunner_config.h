@@ -21,6 +21,8 @@ public:
 
     QList<Profile> profiles;
 
+    bool edited = false;
+
 public Q_SLOTS:
 
 
@@ -29,8 +31,19 @@ public Q_SLOTS:
     void load() override;
 
     void itemSelected();
+
     void moveUp();
+
     void moveDown();
+
+    void applyProfileName();
+
+    void cancelProfileName();
+
+    void editProfileName();
+
+    void refreshProfiles();
+
 private:
     FirefoxProfileRunnerConfigForm *m_ui;
 

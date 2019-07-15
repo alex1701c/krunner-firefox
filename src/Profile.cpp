@@ -18,7 +18,6 @@ QList<Profile> Profile::getFirefoxProfiles() {
         profile.isDefault = profileConfig.readEntry("Path") == defaultPath;
         profiles.append(profile);
     }
-    std::sort(profiles.begin(),profiles.end(), profileSmallerPriority);
     return profiles;
 }
 
@@ -106,6 +105,7 @@ QList<Profile> Profile::getCustomProfiles() {
 
         profiles.append(profile);
     }
+    std::sort(profiles.begin(), profiles.end(), profileSmallerPriority);
     return profiles;
 }
 
@@ -117,6 +117,6 @@ QString Profile::getDefaultPath() {
 }
 
 bool Profile::profileSmallerPriority(const Profile &profile1, const Profile &profile2) {
-    return profile1.priority < profile2.priority;
+    return profile1.priority > profile2.priority;
 }
 

@@ -60,6 +60,9 @@
             </item>
             <item alignment="Qt::AlignBottom">
              <widget class="QPushButton" name="moveUp">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Move Up</string>
               </property>
@@ -67,6 +70,9 @@
             </item>
             <item alignment="Qt::AlignTop">
              <widget class="QPushButton" name="moveDown">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Move Down</string>
               </property>
@@ -94,10 +100,17 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QLineEdit" name="editProfileName"/>
+         <widget class="QLineEdit" name="editProfileName">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="editProfileNameApply">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Apply</string>
           </property>
@@ -105,8 +118,11 @@
         </item>
         <item>
          <widget class="QPushButton" name="editProfileNameCancel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
-           <string>Cancel</string>
+           <string>Reset</string>
           </property>
          </widget>
         </item>
