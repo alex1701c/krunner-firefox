@@ -15,11 +15,13 @@ FirefoxProfileRunner::~FirefoxProfileRunner() = default;
 
 void FirefoxProfileRunner::reloadConfiguration() {
 
-    profiles = Profile::getProfiles();
-    /*for (const auto &p:profiles) {
-        qInfo() << p.name << p.path << p.isDefault ;
-    }*/
-    Profile::syncDesktopFile(profiles);
+    QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
+    Profile::syncDesktopFile(firefoxProfiles);
+    profiles = Profile::getCustomProfiles();
+
+    for (const auto &p:profiles) {
+        qInfo() << "Name: " << p.name << "Path: " << p.path << "Is Default: " << p.isDefault << "Priority: " << p.priority<< "Edited: " << p.isEdited;
+    }
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("firefox :q?",

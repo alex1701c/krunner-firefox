@@ -13,15 +13,21 @@
 class Profile {
 
 public:
+    static QString defaultPath;
     QString name;
+    QString launchName;
     QString path;
     bool isDefault;
+    bool isEdited;
+    int priority;
 
-    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const ;
+    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const;
 
-    static QList<Profile> getProfiles();
+    static QList<Profile> getFirefoxProfiles();
 
     static void syncDesktopFile(const QList<Profile> &profiles);
+
+    static QList<Profile> getCustomProfiles();
 
 };
 

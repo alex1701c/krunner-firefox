@@ -36,10 +36,17 @@
       <string>FirefoxProfileRunner Config</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-       <widget class="QLabel" name="label">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="KEditListWidget" name="profileList"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="refreshProfiles">
         <property name="text">
-         <string>Hello World !</string>
+         <string>Refresh Firefox Profiles</string>
         </property>
        </widget>
       </item>
@@ -48,6 +55,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KEditListWidget</class>
+   <extends>QWidget</extends>
+   <header>keditlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

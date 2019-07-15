@@ -2,8 +2,13 @@
 #include <KSharedConfig>
 #include <KPluginFactory>
 #include <krunner/abstractrunner.h>
+#include <QtWidgets/QTableWidgetItem>
+#include <QtGui/QStandardItem>
+#include <QtWidgets/QCheckBox>
+#include <QDebug>
 
-K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory, registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
+K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
+                 registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent) : QWidget(parent) {
     setupUi(this);
@@ -14,24 +19,33 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
 
-    // TODO connect signals
+    m_ui->profileList->removeButton()->hide();
+    m_ui->profileList->addButton()->hide();
 
-    load();
+    profiles = Profile::getFirefoxProfiles();
+
+    connect(m_ui->profileList, SIGNAL(changed()), this, SLOT(changed()));
+    connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
+
 }
 
 void FirefoxProfileRunnerConfig::load() {
 
     KCModule::load();
-    
-    // TODO load settings into GUI
+
+    m_ui->profileList->clear();
+    for (const auto &profile:profiles) {
+        QString defaultNote = profile.isDefault ? " (default)" : "";
+        m_ui->profileList->insertItem(profile.name + defaultNote);
+    }
+
     emit changed(false);
 }
 
 
 void FirefoxProfileRunnerConfig::save() {
 
-    KCModule::save();
-
+    qInfo() << "SAVE!!!";
     // TODO save settings
     emit changed(false);
 }
