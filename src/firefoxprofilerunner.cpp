@@ -19,9 +19,12 @@ void FirefoxProfileRunner::reloadConfiguration() {
     Profile::syncDesktopFile(firefoxProfiles);
     profiles = Profile::getCustomProfiles();
 
+#ifndef prod
     for (const auto &p:profiles) {
-        qInfo() << "Name: " << p.name << "Path: " << p.path << "Is Default: " << p.isDefault << "Priority: " << p.priority<< "Edited: " << p.isEdited;
+        qInfo() << "Name: " << p.name << "Launch Name: " << p.launchName << "Path: " << p.path
+                << "Is Default: " << p.isDefault << "Priority: " << p.priority << "Edited: " << p.isEdited;
     }
+#endif
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("firefox :q?",

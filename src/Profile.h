@@ -13,13 +13,14 @@
 class Profile {
 
 public:
-    static QString defaultPath;
     QString name;
     QString launchName;
     QString path;
     bool isDefault;
     bool isEdited;
     int priority;
+
+    static QString getDefaultPath();
 
     void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const;
 
