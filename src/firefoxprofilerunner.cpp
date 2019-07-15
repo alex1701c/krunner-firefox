@@ -41,9 +41,9 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
 
     QList<Plasma::QueryMatch> matches;
     bool privateWindow = false;
-    if (term.endsWith(" -p")) {
+    if (term.contains(QRegExp(" -p *$"))) {
         privateWindow = true;
-        term.remove(QRegExp(" -p$"));
+        term.remove(QRegExp(" -p *$"));
     }
     QRegExp regExp(R"(^fire\w*(?: (.+))$)");
     regExp.indexIn(term);
@@ -55,7 +55,7 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
             data.insert("private-window", privateWindow ? "true" : "");
             QString defaultNote = profile.isDefault ? " (default)" : "";
             QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
-            matches.append(createMatch(text, data, 1));
+            matches.append(createMatch(text, data, (float) profile.priority / 100));
         }
     }
 

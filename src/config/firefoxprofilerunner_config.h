@@ -28,8 +28,9 @@ public Q_SLOTS:
 
     void load() override;
 
-    void defaults() override;
-
+    void itemSelected();
+    void moveUp();
+    void moveDown();
 private:
     FirefoxProfileRunnerConfigForm *m_ui;
 

@@ -19,12 +19,18 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
 
-    m_ui->profileList->removeButton()->hide();
-    m_ui->profileList->addButton()->hide();
 
     profiles = Profile::getFirefoxProfiles();
 
-    connect(m_ui->profileList, SIGNAL(changed()), this, SLOT(changed()));
+    m_ui->editProfileName->setDisabled(true);
+    m_ui->editProfileNameApply->setDisabled(true);
+    m_ui->editProfileNameCancel->setDisabled(true);
+    m_ui->moveUp->setDisabled(true);
+    m_ui->moveDown->setDisabled(true);
+
+    connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
+    connect(m_ui->moveUp, SIGNAL(clicked(bool)), this, SLOT(moveUp()));
+    connect(m_ui->moveDown, SIGNAL(clicked(bool)), this, SLOT(moveDown()));
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
 
 }
@@ -33,10 +39,13 @@ void FirefoxProfileRunnerConfig::load() {
 
     KCModule::load();
 
-    m_ui->profileList->clear();
+    m_ui->profiles->clear();
+
     for (const auto &profile:profiles) {
-        QString defaultNote = profile.isDefault ? " (default)" : "";
-        m_ui->profileList->insertItem(profile.name + defaultNote);
+        auto *item = new QListWidgetItem();
+        item->setText(profile.name);
+        item->setData(1, profile.path);
+        m_ui->profiles->addItem(item);
     }
 
     emit changed(false);
@@ -45,17 +54,32 @@ void FirefoxProfileRunnerConfig::load() {
 
 void FirefoxProfileRunnerConfig::save() {
 
-    qInfo() << "SAVE!!!";
-    // TODO save settings
     emit changed(false);
 }
 
-void FirefoxProfileRunnerConfig::defaults() {
+void FirefoxProfileRunnerConfig::itemSelected() {
+    const int idx = m_ui->profiles->currentRow();
+    const int count = m_ui->profiles->count();
+    m_ui->moveUp->setDisabled(idx == 0);
+    m_ui->moveDown->setDisabled(idx == count - 1);
+    m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text());
+    m_ui->editProfileName->setDisabled(false);
+    m_ui->editProfileNameApply->setDisabled(false);
+    m_ui->editProfileNameCancel->setDisabled(false);
+}
 
-    KCModule::defaults();
+void FirefoxProfileRunnerConfig::moveUp() {
+    const int current = m_ui->profiles->currentRow();
+    const auto item = m_ui->profiles->takeItem(current);
+    m_ui->profiles->insertItem(current - 1, item);
+    m_ui->profiles->setCurrentRow(current - 1);
+}
 
-    // TODO set default values in GUI 
-    emit changed(true);
+void FirefoxProfileRunnerConfig::moveDown() {
+    const int current = m_ui->profiles->currentRow();
+    const auto item = m_ui->profiles->takeItem(current);
+    m_ui->profiles->insertItem(current + 1, item);
+    m_ui->profiles->setCurrentRow(current + 1);
 }
 
 

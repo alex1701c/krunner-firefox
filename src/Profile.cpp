@@ -18,7 +18,7 @@ QList<Profile> Profile::getFirefoxProfiles() {
         profile.isDefault = profileConfig.readEntry("Path") == defaultPath;
         profiles.append(profile);
     }
-
+    std::sort(profiles.begin(),profiles.end(), profileSmallerPriority);
     return profiles;
 }
 
@@ -99,16 +99,6 @@ QList<Profile> Profile::getCustomProfiles() {
         Profile profile;
         profile.name = profileGroup.readEntry("Name");
         profile.launchName = profileGroup.readEntry("LaunchName");
-/*
-
-        if (profile.name == "SecureProfile") {
-            profileGroup.writeEntry("Priority", 42);
-            profileGroup.writeEntry("Name", "SecureProfile Edited");
-            profileGroup.writeEntry("Edited", true);
-            profile.name = "SecureProfile Edited";
-        }
- */
-
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", "false") == "true";
@@ -124,5 +114,9 @@ QString Profile::getDefaultPath() {
     QStringList configs = config->groupList().filter(QRegExp(R"(Install.*)"));
 
     return config->group(configs.first()).readEntry("Default", "");
+}
+
+bool Profile::profileSmallerPriority(const Profile &profile1, const Profile &profile2) {
+    return profile1.priority < profile2.priority;
 }
 
