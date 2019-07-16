@@ -42,7 +42,6 @@ void FirefoxProfileRunnerConfig::load() {
 
     KCModule::load();
 
-    profiles.clear();
     profiles = Profile::getCustomProfiles();
     m_ui->profiles->clear();
 
@@ -76,6 +75,7 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
+    // New runner instance has latest configuration
     system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
     emit changed(true);
 }
@@ -100,6 +100,7 @@ void FirefoxProfileRunnerConfig::refreshProfiles() {
                                       "Do you want to refresh the current config and discard all unsaved changes",
                                       QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) load();
+        else return;
     }
     // Disable Buttons like on initial state
     m_ui->profiles->setFocus();

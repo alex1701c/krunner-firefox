@@ -106,7 +106,9 @@ QList<Profile> Profile::getCustomProfiles() {
 
         profiles.append(profile);
     }
-    std::sort(profiles.begin(), profiles.end(), profileSmallerPriority);
+    std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
+        return profile1.priority > profile2.priority;
+    });
     return profiles;
 }
 
@@ -117,9 +119,6 @@ QString Profile::getDefaultPath() {
     return config->group(configs.first()).readEntry("Default", "");
 }
 
-bool Profile::profileSmallerPriority(const Profile &profile1, const Profile &profile2) {
-    return profile1.priority > profile2.priority;
-}
 
 void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
     KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);

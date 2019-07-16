@@ -27,8 +27,6 @@ public:
 
     static QString getDefaultPath();
 
-    static bool profileSmallerPriority(const Profile &profile1, const Profile &profile2);
-
     static QList<Profile> getFirefoxProfiles();
 
     static void syncDesktopFile(const QList<Profile> &profiles);

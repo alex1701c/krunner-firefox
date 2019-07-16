@@ -27,8 +27,8 @@ void FirefoxProfileRunner::reloadConfiguration() {
 #endif
 
     QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
-                                         "Plugin gets triggered by firef... after that you can search the profiles by name")
+    syntaxes.append(
+            Plasma::RunnerSyntax("firefox :q?", "Plugin gets triggered by firef... after that you can search the profiles by name")
     );
     syntaxes.append(Plasma::RunnerSyntax("firefox :q -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);

@@ -62,6 +62,11 @@ After the trigger word you can search the profiles.
 You can add a -p flag to your query if you want firefox to open in a private window.  
 ![Private Window](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/private_window_flag.png)
 
+#### Config Dialog  
+In the config dialog you can change the name and order of your profiles.
+Additionally you can sync the profiles from firefox (in case you created/renamed them). 
+![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_dialog.png)
+
 #### Search from normal launcher
 You can also search for the profiles in your launcher or with the applications Krunner plugin.    
 ![Search from normal launcher](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
