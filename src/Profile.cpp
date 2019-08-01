@@ -118,7 +118,7 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
 
 void Profile::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
     if (enable) {
-        QString registeredActions = "new-window;new-private-window";
+        QString registeredActions = "new-window;new-private-window;";
         for (const auto &groupName:firefoxConfig->groupList()) {
             if (groupName.startsWith("Desktop Action new-window-with-profile")) {
                 registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
