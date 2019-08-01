@@ -25,6 +25,8 @@ public:
 
     int priority;
 
+    static void changeProfileRegistering(bool enable,  KSharedConfigPtr firefoxConfig);
+
     static QString getDefaultPath();
 
     static QList<Profile> getFirefoxProfiles();

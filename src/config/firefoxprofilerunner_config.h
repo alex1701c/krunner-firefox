@@ -21,6 +21,9 @@ public:
 
     QList<Profile> profiles;
 
+    KSharedConfigPtr firefoxConfig;
+
+
     bool edited = false;
 
 public Q_SLOTS:

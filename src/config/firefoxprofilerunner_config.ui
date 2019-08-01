@@ -37,6 +37,17 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="registerProfiles">
+          <property name="text">
+           <string>Register Profiles Globally</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QListWidget" name="profiles"/>

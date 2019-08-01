@@ -49,15 +49,7 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
             qInfo() << "Delete " << installedProfile;
 #endif
             firefoxConfig->deleteGroup(installedProfile);
-            deleted.append(installedProfile.remove("Desktop Action "));
         }
-    }
-    // Delete group and remove entry from Actions
-    if (!deleted.isEmpty()) {
-        for (const auto &del:deleted) {
-            generalConfig.writeEntry("Actions", generalConfig.readEntry("Actions").remove(del + ";"));
-        }
-        generalConfig.sync();
     }
     // Add group and register action
     for (const auto &profile:profiles) {
@@ -66,12 +58,9 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
             qInfo() << "Install  " << profile.launchName;
 #endif
             profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path);
-            newInstalls.append("new-window-with-profile-" + profile.path + ";");
         }
     }
-    generalConfig.writeEntry("Actions", generalConfig.readEntry("Actions") + newInstalls);
-
-
+    changeProfileRegistering(firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true", firefoxConfig);
 }
 
 void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const {
@@ -81,7 +70,7 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &insta
     }
     profileConfig.writeEntry("LaunchName", this->launchName);
     profileConfig.writeEntry("Edited", false);
-    profileConfig.writeEntry("Priority", 0);
+    profileConfig.writeEntry("Priority", profileConfig.readEntry("Priority", "0"));
     profileConfig.writeEntry("Exec", "firefox -P \"" + this->launchName + "\"");
 }
 
@@ -125,5 +114,19 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
     profileConfig.writeEntry("Name", this->name);
     profileConfig.writeEntry("Edited", true);
     profileConfig.writeEntry("Priority", this->priority);
+}
+
+void Profile::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
+    if (enable) {
+        QString registeredActions = "new-window;new-private-window";
+        for (const auto &groupName:firefoxConfig->groupList()) {
+            if (groupName.startsWith("Desktop Action new-window-with-profile")) {
+                registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
+            }
+        }
+        firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
+    } else {
+        firefoxConfig->group("Desktop Entry").writeEntry("Actions", "new-window;new-private-window;");
+    }
 }
 

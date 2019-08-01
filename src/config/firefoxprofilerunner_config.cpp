@@ -20,6 +20,8 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
 
+    // General settings
+    connect(m_ui->registerProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
     // Different item gets selected
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(editProfileName()));
@@ -36,11 +38,15 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     // Refresh profiles button
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(refreshProfiles()));
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
+
+    firefoxConfig = KSharedConfig::openConfig(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
 }
 
 void FirefoxProfileRunnerConfig::load() {
 
     KCModule::load();
+
+    m_ui->registerProfiles->setChecked(firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true");
 
     profiles = Profile::getCustomProfiles();
     m_ui->profiles->clear();
@@ -57,8 +63,11 @@ void FirefoxProfileRunnerConfig::load() {
 
 
 void FirefoxProfileRunnerConfig::save() {
+
+    firefoxConfig->group("Settings").writeEntry("registerProfiles", m_ui->registerProfiles->isChecked() ? "true" : "false");
+    Profile::changeProfileRegistering(m_ui->registerProfiles->isChecked(), firefoxConfig);
+
     QList<QListWidgetItem *> items;
-    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
     for (int i = 0; i < m_ui->profiles->count(); i++) {
         items.append(m_ui->profiles->item(i));
     }
