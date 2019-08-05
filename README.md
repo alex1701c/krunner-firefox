@@ -1,4 +1,4 @@
-## Firefox Profile Runner
+# Firefox Profile Runner
 
 This plugin allows you to launch Firefox profiles from Krunner and your normal launcher.
 
@@ -37,12 +37,15 @@ sudo make install
 kquitapp5 krunner 2> /dev/null; kstart5 --windowclass krunner krunner > /dev/null 2>&1 &
 ```
 
-After this you should see your runner in the system settings:
+To get the icon for the private window you have to extract it:   
+```
+mkdir -p /tmp/firefoxprofile_installer
+unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
+sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/icons/private_browsing_firefox.svg
+rm -rf /tmp/firefoxprofile_installer
+```
 
-systemsettings5 (Head to "Search")
-
-
-### Screenshots
+## Screenshots
 
 #### Overview
 The plugin gets triggered by firef.  
@@ -59,12 +62,22 @@ You can add a -p flag to your query if you want firefox to open in a private win
 #### Config Dialog  
 In the config dialog you can change the name and order of your profiles.
 Additionally you can sync the profiles from Firefox (in case you created/renamed them).  
+
+If you uncheck the option to register the profiles globally you can not launch the profiles like in the last screenshot.  
+If the following option is checked the option to launch a normal window with the default profile is not shown.
+This is useful, because the default profile can be launched with the "Applications" plugin.  
+The option to always show private windows is demonstrated in the next screenshot.
+This is useful if you have only one/a few profiles.   
+With the last checkbox selected the private window options will have the icon of the private windows in Firefox (as in the next screenshot).  
+
 ![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_dialog.png)
 
+#### Overview With Private Windows  
+Here the options to always show private windows and to hide the default profile are enabled.  
+(For demonstration purposes are here only 2 profiles).  
+![Overview With Private Window](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/hide_default_show_private_windows.png)
+
 #### Search from normal launcher
-You can also search for the profiles in your launcher or with the applications Krunner plugin.    
+You can also search by name for the profiles in your launcher or with the "Applications" Krunner plugin.    
 ![Search from normal launcher](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
 
-Copyright notice:  
-The icon for the private browsing is downloaded from the Firefox browser, 
-the original one is located in a zip archive in /usr/lib/firefox/browser/omni.ja.
