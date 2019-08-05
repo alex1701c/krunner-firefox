@@ -67,7 +67,7 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
-    if (!data.value("private-window").toString().isEmpty()) args.append("-private-window");
+    if (data.count("private-window")) args.append("-private-window");
 
     QProcess::startDetached("firefox", args);
 }
@@ -91,7 +91,7 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
             data.insert("name", profile.launchName);
-            data.insert("private-window", privateWindow ? "true" : "");
+            if (privateWindow) data.insert("private-window", "true");
             if (profile.isDefault && hideDefaultProfile && !privateWindow) continue;
             QString defaultNote = profile.isDefault ? " (default)" : "";
             QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
