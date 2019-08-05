@@ -19,6 +19,12 @@ void FirefoxProfileRunner::reloadConfiguration() {
     Profile::syncDesktopFile(firefoxProfiles);
     profiles = Profile::getCustomProfiles();
 
+
+    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunnner");
+    hideDefaultProfile = config.readEntry("hideDefaultProfile", "false") == "true";
+    showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", "false") == "true";
+    showIconForPrivateWindow = config.readEntry("showIconForPrivateWindow", "true") == "true";
+
 #ifdef status_dev
     for (const auto &p:profiles) {
         qInfo() << "Name: " << p.name << "Launch Name: " << p.launchName << "Path: " << p.path
@@ -45,19 +51,13 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
         privateWindow = true;
         term.remove(QRegExp(" -p *$"));
     }
+
     QRegExp regExp(R"(^fire\w*(?: (.+))$)");
     regExp.indexIn(term);
     QString filter = regExp.capturedTexts().last();
-    for (auto &profile:profiles) {
-        if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
-            QMap<QString, QVariant> data;
-            data.insert("name", profile.launchName);
-            data.insert("private-window", privateWindow ? "true" : "");
-            QString defaultNote = profile.isDefault ? " (default)" : "";
-            QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
-            matches.append(createMatch(text, data, (float) profile.priority / 100));
-        }
-    }
+
+    matches.append(createProfileMatches(filter, privateWindow));
+    if (!privateWindow && showAlwaysPrivateWindows) matches.append(createProfileMatches(filter, true));
 
     context.addMatches(matches);
 }
@@ -74,11 +74,33 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 
 Plasma::QueryMatch FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
-    match.setIconName("firefox");
+    if (showIconForPrivateWindow && !data.value("private-window").toString().isEmpty()) {
+        match.setIconName("/usr/share/icons/private_browsing_firefox.svg");
+    } else {
+        match.setIconName("firefox");
+    }
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
     return match;
+}
+
+QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
+    QList<Plasma::QueryMatch> matches;
+    for (auto &profile:profiles) {
+        if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
+            QMap<QString, QVariant> data;
+            data.insert("name", profile.launchName);
+            data.insert("private-window", privateWindow ? "true" : "");
+            if (profile.isDefault && hideDefaultProfile && !privateWindow) continue;
+            QString defaultNote = profile.isDefault ? " (default)" : "";
+            QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
+            float priority = (float) profile.priority / 100;
+            if (privateWindow && showAlwaysPrivateWindows) priority -= 0.009;
+            matches.append(createMatch(text, data, priority));
+        }
+    }
+    return matches;
 }
 
 

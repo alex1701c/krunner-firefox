@@ -64,3 +64,7 @@ Additionally you can sync the profiles from Firefox (in case you created/renamed
 #### Search from normal launcher
 You can also search for the profiles in your launcher or with the applications Krunner plugin.    
 ![Search from normal launcher](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
+
+Copyright notice:  
+The icon for the private browsing is downloaded from the Firefox browser, 
+the original one is located in a zip archive in /usr/lib/firefox/browser/omni.ja.

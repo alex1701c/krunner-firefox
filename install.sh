@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if something goes wrong
+set -e
+
 cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
 
 if [[ $(basename "$PWD") != "FirefoxProfileRunner"* ]];then

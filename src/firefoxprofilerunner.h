@@ -16,6 +16,11 @@ public:
 
     QList<Profile> profiles;
 
+    KConfigGroup config;
+
+    QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, const bool privateWindow);
+
+    bool hideDefaultProfile, showAlwaysPrivateWindows, showIconForPrivateWindow;
 public: // Plasma::AbstractRunner API
     void match(Plasma::RunnerContext &context) override;
 

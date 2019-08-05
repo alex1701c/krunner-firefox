@@ -26,3 +26,4 @@ add_dependencies(krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner)
 
 install(TARGETS krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES plasma-runner-firefoxprofilerunner.desktop config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+install(FILES icons/private_browsing_firefox.svg DESTINATION /usr/share/icons/)
