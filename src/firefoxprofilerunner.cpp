@@ -97,7 +97,6 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
             QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
             float priority = (float) profile.priority / 101;
             if (!privateWindow && showAlwaysPrivateWindows) priority += 0.009;
-            qInfo() << profile.name << priority;
             matches.append(createMatch(text, data, priority));
         }
     }

@@ -41,7 +41,28 @@
         <item>
          <widget class="QCheckBox" name="registerProfiles">
           <property name="text">
-           <string>Register Profiles Globally</string>
+           <string>Register profiles globally</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="hideDefaultProfile">
+          <property name="text">
+           <string>Hide option to open a normal window with default profile</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="showAlwaysPrivateWindows">
+          <property name="text">
+           <string>Always show option to open private windows  (with plugin)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="showIconForPrivateWindow">
+          <property name="text">
+           <string>Use specific icon for private windows</string>
           </property>
          </widget>
         </item>

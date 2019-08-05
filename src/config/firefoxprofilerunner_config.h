@@ -22,7 +22,7 @@ public:
     QList<Profile> profiles;
 
     KSharedConfigPtr firefoxConfig;
-
+    KConfigGroup config;
 
     bool edited = false;
 
@@ -32,6 +32,8 @@ public Q_SLOTS:
     void save() override;
 
     void load() override;
+
+    void defaults() override;
 
     void itemSelected();
 
