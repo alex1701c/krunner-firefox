@@ -16,16 +16,16 @@ public:
     QString name;
     QString launchName;
     QString path;
+    int priority;
+    int privateWindowPriority;
     bool isDefault;
     bool isEdited;
 
-    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const;
+    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile, int initialPriority = 0) const;
 
     void writeConfigChanges(KSharedConfigPtr firefoxConfig);
 
-    int priority;
-
-    static void changeProfileRegistering(bool enable,  KSharedConfigPtr firefoxConfig);
+    static void changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig);
 
     static QString getDefaultPath();
 

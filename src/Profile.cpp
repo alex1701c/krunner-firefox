@@ -52,25 +52,27 @@ void Profile::syncDesktopFile(const QList<Profile> &profiles) {
         }
     }
     // Add group and register action
+    int idx = 1;
     for (const auto &profile:profiles) {
         if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.path)) {
 #ifdef status_dev
             qInfo() << "Install  " << profile.launchName;
 #endif
-            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path);
+            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path, idx);
+            ++idx;
         }
     }
     changeProfileRegistering(firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true", firefoxConfig);
 }
 
-void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile) const {
+void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &installedProfile, int initialPriority) const {
     KConfigGroup profileConfig = firefoxConfig->group(installedProfile);
     if (profileConfig.readEntry("Edited", "false") != "true") {
         profileConfig.writeEntry("Name", this->name.isEmpty() ? this->launchName : this->name);
     }
     profileConfig.writeEntry("LaunchName", this->launchName);
     profileConfig.writeEntry("Edited", false);
-    profileConfig.writeEntry("Priority", profileConfig.readEntry("Priority", "0"));
+    profileConfig.writeEntry("Priority", profileConfig.readEntry("Priority", QString::number(initialPriority)));
     profileConfig.writeEntry("Exec", "firefox -P \"" + this->launchName + "\"");
 }
 
@@ -92,6 +94,7 @@ QList<Profile> Profile::getCustomProfiles() {
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", "false") == "true";
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
+        profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
 
         profiles.append(profile);
     }
@@ -114,6 +117,7 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
     profileConfig.writeEntry("Name", this->name);
     profileConfig.writeEntry("Edited", true);
     profileConfig.writeEntry("Priority", this->priority);
+    profileConfig.writeEntry("PrivateWindowPriority", this->privateWindowPriority);
 }
 
 void Profile::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
