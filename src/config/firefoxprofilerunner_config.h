@@ -49,6 +49,10 @@ public Q_SLOTS:
 
     void refreshProfiles();
 
+    void hideDefaultProfile();
+
+    void showAlwaysPrivateWindows();
+
 private:
     FirefoxProfileRunnerConfigForm *m_ui;
 

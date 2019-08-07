@@ -23,8 +23,10 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     // General settings
     connect(m_ui->registerProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(hideDefaultProfile()));
     connect(m_ui->showIconForPrivateWindow, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(showAlwaysPrivateWindows()));
     // Different item gets selected
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(editProfileName()));
@@ -58,13 +60,28 @@ void FirefoxProfileRunnerConfig::load() {
     profiles = Profile::getCustomProfiles();
     m_ui->profiles->clear();
 
+    QList<QListWidgetItem *> items;
     for (const auto &profile:profiles) {
         auto *item = new QListWidgetItem();
         item->setText(profile.name);
-        item->setData(1, profile.path);
-        m_ui->profiles->addItem(item);
-    }
+        QList<QVariant> data = {profile.path, profile.isDefault, false, profile.priority};
+        item->setData(32, data);
+        item->setIcon(QIcon::fromTheme("firefox"));
+        items.append(item);
 
+        auto *item2 = new QListWidgetItem();
+        item2->setText(profile.name);
+        QList<QVariant> data2 = {profile.path, profile.isDefault, true, profile.privateWindowPriority};
+        item2->setData(32, data2);
+        item2->setIcon(QIcon("/usr/share/icons/private_browsing_firefox.svg"));
+        items.append(item2);
+    }
+    std::sort(items.begin(), items.end(), [](QListWidgetItem *item1, QListWidgetItem *item2) -> bool {
+        return item1->data(32).toList().last() > item2->data(32).toList().last();
+    });
+    for (const auto &item:items) m_ui->profiles->addItem(item);
+    showAlwaysPrivateWindows();
+    hideDefaultProfile();
     emit changed(false);
 }
 
@@ -81,14 +98,26 @@ void FirefoxProfileRunnerConfig::save() {
     for (int i = 0; i < m_ui->profiles->count(); i++) {
         items.append(m_ui->profiles->item(i));
     }
+    const int itemSize = items.size();
     for (auto &profile:profiles) {
         bool matched = false;
-        for (int i = 0; i < items.size() && !matched; i++) {
+        for (int i = 0; i < itemSize && !matched; i++) {
             const auto &item = items.at(i);
-            if (item->data(1).toString() == profile.path) {
+            const auto itemData = item->data(32).toList();
+            if (itemData.first() == profile.path && !itemData.at(2).toBool()) {
                 if (profile.launchName != item->text()) profile.isEdited = true;
                 profile.name = item->text();
                 profile.priority = 100 - i;
+
+                // Get private window option of window
+                bool privateMatch = false;
+                for (int i2 = 0; i2 < itemSize && !privateMatch; i2++) {
+                    const auto &data = items.at(i2)->data(32).toList();
+                    if (data.first() == profile.path && data.at(2).toBool()) {
+                        privateMatch = true;
+                        profile.privateWindowPriority = 100 - i2;
+                    }
+                }
                 profile.writeConfigChanges(firefoxConfig);
                 matched = true;
             }
@@ -175,6 +204,28 @@ void FirefoxProfileRunnerConfig::defaults() {
     m_ui->hideDefaultProfile->setChecked(false);
     m_ui->showIconForPrivateWindow->setChecked(true);
     m_ui->showAlwaysPrivateWindows->setChecked(false);
+}
+
+void FirefoxProfileRunnerConfig::showAlwaysPrivateWindows() {
+    // Hide hide/unhide all private window options
+    const int count = m_ui->profiles->count();
+    for (int i = 0; i < count; i++) {
+        QListWidgetItem *item = m_ui->profiles->item(i);
+        if (item->data(32).toList().at(2).toBool()) item->setHidden(!m_ui->showAlwaysPrivateWindows->isChecked());
+    }
+}
+
+void FirefoxProfileRunnerConfig::hideDefaultProfile() {
+    // Hide default profile, private window option of default is handles seperately
+    const int count = m_ui->profiles->count();
+    for (int i = 0; i < count; i++) {
+        QListWidgetItem *item = m_ui->profiles->item(i);
+        const auto &data = item->data(32).toList();
+        if (data.at(1).toBool() && !data.at(2).toBool()) {
+            item->setHidden(m_ui->hideDefaultProfile->isChecked());
+            break;
+        }
+    }
 }
 
 
