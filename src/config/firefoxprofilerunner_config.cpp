@@ -214,7 +214,17 @@ void FirefoxProfileRunnerConfig::moveDown() {
 void FirefoxProfileRunnerConfig::applyProfileName() {
     edited = true;
     if (m_ui->profiles->currentRow() == -1)return;
-    m_ui->profiles->currentItem()->setText(m_ui->editProfileName->text());
+    const QString editedText = m_ui->editProfileName->text();
+    const QString textBeforeEditing = m_ui->profiles->currentItem()->text();
+    const int count = m_ui->profiles->count();
+    m_ui->profiles->currentItem()->setText(editedText);
+    for (int i = 0; i < count; ++i) {
+        auto *item = m_ui->profiles->item(i);
+        if (item->text() == textBeforeEditing) {
+            item->setText(editedText);
+            break;
+        }
+    }
     m_ui->editProfileNameApply->setDisabled(true);
     m_ui->editProfileNameCancel->setDisabled(true);
     m_ui->profiles->setFocus();
