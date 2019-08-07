@@ -24,9 +24,11 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->registerProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(hideDefaultProfile()));
+    connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(itemSelected()));
     connect(m_ui->showIconForPrivateWindow, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(showAlwaysPrivateWindows()));
+    connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(itemSelected()));
     // Different item gets selected
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelected()));
     connect(m_ui->profiles, SIGNAL(itemSelectionChanged()), this, SLOT(editProfileName()));
@@ -131,8 +133,24 @@ void FirefoxProfileRunnerConfig::save() {
 void FirefoxProfileRunnerConfig::itemSelected() {
     const int idx = m_ui->profiles->currentRow();
     const int count = m_ui->profiles->count();
-    m_ui->moveUp->setDisabled(idx == 0);
-    m_ui->moveDown->setDisabled(idx == count - 1);
+
+    // Check if there is any hidden option below/above current item
+    bool upDisabled = true;
+    bool downDisabled = true;
+    for (int i = 0; i < count; i++) {
+        if (!m_ui->profiles->item(i)->isHidden() && i < idx) {
+            upDisabled = false;
+            break;
+        }
+    }
+    for (int i = count - 1; i >= 0; i--) {
+        if (!m_ui->profiles->item(i)->isHidden() && i > idx) {
+            downDisabled = false;
+            break;
+        }
+    }
+    m_ui->moveUp->setDisabled(upDisabled);
+    m_ui->moveDown->setDisabled(downDisabled);
     m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text());
     m_ui->editProfileName->setDisabled(false);
 }
@@ -159,19 +177,38 @@ void FirefoxProfileRunnerConfig::refreshProfiles() {
 void FirefoxProfileRunnerConfig::moveUp() {
     edited = true;
     const int current = m_ui->profiles->currentRow();
-    if (current == -1)return;
+    if (current < 1) return;
+
+    // Insert element at index of first visible element above
+    int newIdx = current;
+    for (int i = current - 1; i >= 0; --i) {
+        if (!m_ui->profiles->item(i)->isHidden()) {
+            newIdx = i;
+            break;
+        }
+    }
     const auto item = m_ui->profiles->takeItem(current);
-    m_ui->profiles->insertItem(current - 1, item);
-    m_ui->profiles->setCurrentRow(current - 1);
+    m_ui->profiles->insertItem(newIdx, item);
+    m_ui->profiles->setCurrentRow(newIdx);
 }
 
 void FirefoxProfileRunnerConfig::moveDown() {
     edited = true;
     const int current = m_ui->profiles->currentRow();
-    if (current == -1)return;
+    const int count = m_ui->profiles->count();
+    if (current == -1) return;
+
+    // Insert element at index of first visible element above
+    int newIdx = current;
+    for (int i = current + 1; i < count; ++i) {
+        if (!m_ui->profiles->item(i)->isHidden()) {
+            newIdx = i;
+            break;
+        }
+    }
     const auto item = m_ui->profiles->takeItem(current);
-    m_ui->profiles->insertItem(current + 1, item);
-    m_ui->profiles->setCurrentRow(current + 1);
+    m_ui->profiles->insertItem(newIdx, item);
+    m_ui->profiles->setCurrentRow(newIdx);
 }
 
 void FirefoxProfileRunnerConfig::applyProfileName() {
