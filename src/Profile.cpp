@@ -8,7 +8,6 @@ QList<Profile> Profile::getFirefoxProfiles() {
     QList<Profile> profiles;
     KSharedConfigPtr config = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
     QStringList configs = config->groupList().filter(QRegExp(R"(Install.*|Profile.*)"));
-    QString defaultPath = getDefaultPath();
 
     for (const auto &profileEntry: configs.filter(QRegExp(R"(Profile.*)"))) {
         Profile profile;
@@ -106,9 +105,17 @@ QList<Profile> Profile::getCustomProfiles() {
 
 QString Profile::getDefaultPath() {
     KSharedConfigPtr config = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
-    QStringList configs = config->groupList().filter(QRegExp(R"(Install.*)"));
-
-    return config->group(configs.first()).readEntry("Default", "");
+    QStringList configs = config->groupList().filter(QRegExp(R"(Install.*|General)"));
+    if (configs.size() != 1) return "<not_readable>";
+    const QString group = configs.first();
+    if (group.startsWith("Install")) {
+        return config->group(configs.first()).readEntry("Default", "");
+    }
+    for (const auto &profileName:config->groupList().filter(QRegExp(R"(Profile.*)"))) {
+        const auto profile = config->group(profileName);
+        if (profile.readEntry("Default", "0") == "1") return profile.readEntry("Path");
+    }
+    return "<invalid>";
 }
 
 
