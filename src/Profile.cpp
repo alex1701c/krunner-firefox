@@ -90,6 +90,7 @@ QList<Profile> Profile::getCustomProfiles() {
         profile.name = profileGroup.readEntry("Name");
         profile.launchName = profileGroup.readEntry("LaunchName");
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
+        if (defaultPath == "<invalid>") defaultPath = profile.path;
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", "false") == "true";
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
@@ -105,11 +106,14 @@ QList<Profile> Profile::getCustomProfiles() {
 
 QString Profile::getDefaultPath() {
     KSharedConfigPtr config = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
-    QStringList configs = config->groupList().filter(QRegExp(R"(Install.*|General)"));
-    if (configs.size() != 1) return "<not_readable>";
-    const QString group = configs.first();
-    if (group.startsWith("Install")) {
-        return config->group(configs.first()).readEntry("Default", "");
+    QStringList configs = config->groupList();
+    QStringList installConfig = configs.filter(QRegExp(R"(Install.*)"));
+    QString defaultPath;
+    if (installConfig.size() != 0) {
+        defaultPath = config->group(installConfig.first()).readEntry("Default", "");
+    }
+    if (!defaultPath.isEmpty()) {
+        return defaultPath;
     }
     for (const auto &profileName:config->groupList().filter(QRegExp(R"(Profile.*)"))) {
         const auto profile = config->group(profileName);

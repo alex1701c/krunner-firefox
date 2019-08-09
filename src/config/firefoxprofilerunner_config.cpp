@@ -132,6 +132,7 @@ void FirefoxProfileRunnerConfig::save() {
 
 void FirefoxProfileRunnerConfig::itemSelected() {
     const int idx = m_ui->profiles->currentRow();
+    if (idx == -1) return; // When the checkboxes are clicked but no item has been selected
     const int count = m_ui->profiles->count();
 
     // Check if there is any hidden option below/above current item
