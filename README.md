@@ -7,6 +7,7 @@ the profiles. Because of this you can search for the profiles in your normal lau
 If you make changes in your Firefox profile you can sync them manually in the config dialog or they will
 be applied on startup. 
 
+Note: This plugin is not (yet) compatible with Firefox ESR.  
 ### Required Dependencies
 
 Debian/Ubuntu  

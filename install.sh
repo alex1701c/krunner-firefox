@@ -10,6 +10,7 @@ rm -rf /tmp/firefoxprofile_installer
 set -e
 
 # This plugin uses a local copy of the firefox desktop file to avoid permission issues
+mkdir -p ~/.local/share/applications
 cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
 
 # Clone project if it is downloaded using curl
