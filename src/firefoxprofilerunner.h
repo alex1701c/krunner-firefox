@@ -12,15 +12,16 @@ public:
 
     ~FirefoxProfileRunner() override;
 
+    QString launchCommand;
+    QList<Profile> profiles;
+    KConfigGroup config;
+    Profile firefoxProfile;
+    bool hideDefaultProfile, showAlwaysPrivateWindows, showIconForPrivateWindow;
+
+    QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
+
     Plasma::QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
 
-    QList<Profile> profiles;
-
-    KConfigGroup config;
-
-    QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, const bool privateWindow);
-
-    bool hideDefaultProfile, showAlwaysPrivateWindows, showIconForPrivateWindow;
 public: // Plasma::AbstractRunner API
     void match(Plasma::RunnerContext &context) override;
 

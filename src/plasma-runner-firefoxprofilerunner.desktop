@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=FirefoxProfileRunner
 Comment=Krunner plugin to launch Firefox profiles
-Icon=firefox
+Icon=firefox-esr
 
 X-KDE-ServiceTypes=Plasma/Runner
 Type=Service

@@ -15,7 +15,8 @@ FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent) 
     setupUi(this);
 }
 
-FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QVariantList &args) : KCModule(parent, args) {
+FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QVariantList &args) : KCModule(parent,
+                                                                                                             args) {
     m_ui = new FirefoxProfileRunnerConfigForm(this);
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
@@ -46,20 +47,21 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(refreshProfiles()));
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
 
-    firefoxConfig = KSharedConfig::openConfig(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
-    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunnner");
+    firefoxConfig = KSharedConfig::openConfig(Profile::getDesktopFilePath());
+    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunner");
 }
 
 void FirefoxProfileRunnerConfig::load() {
-
-    KCModule::load();
-
-    m_ui->registerProfiles->setChecked(firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true");
+    m_ui->registerProfiles->setChecked(
+            firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true");
     m_ui->showIconForPrivateWindow->setChecked(config.readEntry("showIconForPrivateWindow", "true") == "true");
     m_ui->hideDefaultProfile->setChecked(config.readEntry("hideDefaultProfile", "false") == "true");
     m_ui->showAlwaysPrivateWindows->setChecked(config.readEntry("showAlwaysPrivateWindows", "false") == "true");
 
-    profiles = Profile::getCustomProfiles();
+    profiles = firefoxProfile.getCustomProfiles();
+    const auto icon = QIcon::fromTheme(
+            firefoxProfile.getLaunchCommand().endsWith("firefox") ? "firefox" : "firefox-esr"
+    );
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
@@ -68,7 +70,8 @@ void FirefoxProfileRunnerConfig::load() {
         item->setText(profile.name);
         QList<QVariant> data = {profile.path, profile.isDefault, false, profile.priority};
         item->setData(32, data);
-        item->setIcon(QIcon::fromTheme("firefox"));
+
+        item->setIcon(icon);
         items.append(item);
 
         auto *item2 = new QListWidgetItem();
@@ -90,11 +93,12 @@ void FirefoxProfileRunnerConfig::load() {
 
 void FirefoxProfileRunnerConfig::save() {
 
-    firefoxConfig->group("Settings").writeEntry("registerProfiles", m_ui->registerProfiles->isChecked() ? "true" : "false");
+    firefoxConfig->group("Settings").writeEntry("registerProfiles",
+                                                m_ui->registerProfiles->isChecked() ? "true" : "false");
     config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked() ? "true" : "false");
     config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked() ? "true" : "false");
     config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked() ? "true" : "false");
-    Profile::changeProfileRegistering(m_ui->registerProfiles->isChecked(), firefoxConfig);
+    firefoxProfile.changeProfileRegistering(m_ui->registerProfiles->isChecked(), firefoxConfig);
 
     QList<QListWidgetItem *> items;
     for (int i = 0; i < m_ui->profiles->count(); i++) {
@@ -125,8 +129,6 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
-    // New runner instance has latest configuration
-    system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
     emit changed(true);
 }
 
@@ -157,8 +159,8 @@ void FirefoxProfileRunnerConfig::itemSelected() {
 }
 
 void FirefoxProfileRunnerConfig::refreshProfiles() {
-    QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
-    Profile::syncDesktopFile(firefoxProfiles);
+    QList<Profile> firefoxProfiles = firefoxProfile.getFirefoxProfiles();
+    firefoxProfile.syncDesktopFile(firefoxProfiles);
     if (!edited) {
         load();
     } else {
@@ -171,7 +173,7 @@ void FirefoxProfileRunnerConfig::refreshProfiles() {
     }
     // Disable Buttons like on initial state
     m_ui->profiles->setFocus();
-    m_ui->profiles->setCurrentRow(0);
+    if (m_ui->profiles->count() > 0) m_ui->profiles->setCurrentRow(0);
     edited = false;
 }
 
@@ -239,9 +241,10 @@ void FirefoxProfileRunnerConfig::cancelProfileName() {
 }
 
 void FirefoxProfileRunnerConfig::editProfileName() {
-    if (m_ui->profiles->currentRow() == -1)return;
+    if (m_ui->profiles->currentRow() == -1) return;
     m_ui->editProfileNameApply->setDisabled(
-            m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text() || m_ui->editProfileName->text().isEmpty()
+            m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text() ||
+            m_ui->editProfileName->text().isEmpty()
     );
     m_ui->editProfileNameCancel->setDisabled(m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text());
 

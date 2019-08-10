@@ -14,13 +14,13 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
 FirefoxProfileRunner::~FirefoxProfileRunner() = default;
 
 void FirefoxProfileRunner::reloadConfiguration() {
-
     QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
-    Profile::syncDesktopFile(firefoxProfiles);
-    profiles = Profile::getCustomProfiles();
+    launchCommand = firefoxProfile.getLaunchCommand();
+    firefoxProfile.syncDesktopFile(firefoxProfiles);
+    profiles = firefoxProfile.getCustomProfiles();
 
 
-    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunnner");
+    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunner");
     hideDefaultProfile = config.readEntry("hideDefaultProfile", "false") == "true";
     showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", "false") == "true";
     showIconForPrivateWindow = config.readEntry("showIconForPrivateWindow", "true") == "true";
@@ -34,7 +34,8 @@ void FirefoxProfileRunner::reloadConfiguration() {
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(
-            Plasma::RunnerSyntax("firefox :q?", "Plugin gets triggered by firef... after that you can search the profiles by name")
+            Plasma::RunnerSyntax("firefox :q?",
+                                 "Plugin gets triggered by firef... after that you can search the profiles by name")
     );
     syntaxes.append(Plasma::RunnerSyntax("firefox :q -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);
@@ -69,15 +70,17 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
     QStringList args = {"-P", data.value("name").toString()};
     if (data.count("private-window")) args.append("-private-window");
 
-    QProcess::startDetached("firefox", args);
+    QProcess::startDetached(launchCommand, args);
 }
 
-Plasma::QueryMatch FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
+Plasma::QueryMatch
+FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
     if (showIconForPrivateWindow && !data.value("private-window").toString().isEmpty()) {
         match.setIconName("/usr/share/icons/private_browsing_firefox.svg");
     } else {
-        match.setIconName("firefox");
+        if (launchCommand.endsWith("firefox-esr")) match.setIconName("firefox-esr");
+        else match.setIconName("firefox");
     }
     match.setText(text);
     match.setData(data);

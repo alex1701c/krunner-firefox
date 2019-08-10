@@ -19,8 +19,8 @@ Q_OBJECT
 public:
     explicit FirefoxProfileRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
+    Profile firefoxProfile;
     QList<Profile> profiles;
-
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;
 

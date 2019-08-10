@@ -16,6 +16,7 @@ public:
     QString name;
     QString launchName;
     QString path;
+    QString firefoxDesktopFile;
     int priority;
     int privateWindowPriority;
     bool isDefault;
@@ -25,16 +26,19 @@ public:
 
     void writeConfigChanges(KSharedConfigPtr firefoxConfig);
 
-    static void changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig);
+    void changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig);
+
+    QString getLaunchCommand() const;
 
     static QString getDefaultPath();
 
     static QList<Profile> getFirefoxProfiles();
 
-    static void syncDesktopFile(const QList<Profile> &profiles);
+    void syncDesktopFile(const QList<Profile> &profiles);
 
-    static QList<Profile> getCustomProfiles();
+    QList<Profile> getCustomProfiles();
 
+    static QString getDesktopFilePath();
 };
 
 

@@ -20,9 +20,9 @@ QList<Profile> Profile::getFirefoxProfiles() {
 }
 
 void Profile::syncDesktopFile(const QList<Profile> &profiles) {
-    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(
-            QDir::homePath() + "/" + ".local/share/applications/firefox.desktop"
-    );
+    firefoxDesktopFile = getDesktopFilePath();
+    if (firefoxDesktopFile == "<error>") return;
+    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
     QStringList installedProfiles = firefoxConfig->groupList().filter(QRegExp("Desktop Action new-window-with-profile-.*"));
 
@@ -72,14 +72,15 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, const QString &insta
     profileConfig.writeEntry("LaunchName", this->launchName);
     profileConfig.writeEntry("Edited", false);
     profileConfig.writeEntry("Priority", profileConfig.readEntry("Priority", QString::number(initialPriority)));
-    profileConfig.writeEntry("Exec", "firefox -P \"" + this->launchName + "\"");
+    getDesktopFilePath();
+    profileConfig.writeEntry("Exec", getLaunchCommand() + " -P \"" + this->launchName + "\"");
 }
 
 QList<Profile> Profile::getCustomProfiles() {
     QList<Profile> profiles;
-    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(
-            QDir::homePath() + "/" + ".local/share/applications/firefox.desktop"
-    );
+    firefoxDesktopFile = getDesktopFilePath();
+    if (firefoxDesktopFile == "<error>") return profiles;
+    KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     QStringList installedProfiles = firefoxConfig->groupList().filter(QRegExp("Desktop Action new-window-with-profile-.*"));
     QString defaultPath = getDefaultPath();
 
@@ -132,16 +133,30 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) {
 }
 
 void Profile::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
+    QString registeredActions = "new-window;new-private-window;";
+    if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
     if (enable) {
-        QString registeredActions = "new-window;new-private-window;";
         for (const auto &groupName:firefoxConfig->groupList()) {
             if (groupName.startsWith("Desktop Action new-window-with-profile")) {
                 registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
             }
         }
-        firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
-    } else {
-        firefoxConfig->group("Desktop Entry").writeEntry("Actions", "new-window;new-private-window;");
     }
+    firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
 }
 
+QString Profile::getDesktopFilePath() {
+    QString firefoxDesktopFile(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
+    if (!QFile::exists(firefoxDesktopFile)) {
+        firefoxDesktopFile = QDir::homePath() + "/" + ".local/share/applications/firefox-esr.desktop";
+        if (!QFile::exists(firefoxDesktopFile)) {
+            qWarning() << "Can not find a firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
+            return "<error>";
+        }
+    }
+    return firefoxDesktopFile;
+}
+
+QString Profile::getLaunchCommand() const {
+    return KSharedConfig::openConfig(getDesktopFilePath())->group("Desktop Entry").readEntry("Exec").remove(" %u");
+}

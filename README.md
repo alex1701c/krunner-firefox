@@ -7,7 +7,8 @@ the profiles. Because of this you can search for the profiles in your normal lau
 If you make changes in your Firefox profile you can sync them manually in the config dialog or they will
 be applied on startup. 
 
-Note: This plugin is not (yet) compatible with Firefox ESR.  
+This plugin is also compatible with firefox-esr.
+ 
 ### Required Dependencies
 
 Debian/Ubuntu  
@@ -25,9 +26,10 @@ Fedora
 The easiest way to install is:  
 `curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`
 
-Or you can do it manually:
+Or you can do it manually:  
 ```
-cp /usr/share/applications/firefox.desktop ~/.local/share/applications/firefox.desktop
+mkdir -p ~/.local/share/applications
+cp /usr/share/applications/firefox*.desktop ~/.local/share/applications/
 git clone https://github.com/alex1701c/FirefoxProfileRunner
 cd FirefoxProfileRunner
 mkdir build
@@ -45,7 +47,8 @@ unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/p
 sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/icons/private_browsing_firefox.svg
 rm -rf /tmp/firefoxprofile_installer
 ```
-
+If you install it manually for firefox-esr you should adjust the icon in src/plasma-runner-firefoxprofilerunner.desktop
+and change the path for the unzip command  
 ## Screenshots
 
 #### Overview
