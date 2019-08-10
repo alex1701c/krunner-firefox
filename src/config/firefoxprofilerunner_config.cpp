@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QtCore/QDir>
 #include <QtWidgets/QMessageBox>
+#include <QtCore/QRandomGenerator>
 
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
@@ -129,6 +130,9 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
+    // New runner instance has latest configuration
+    system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
+
     emit changed(true);
 }
 
