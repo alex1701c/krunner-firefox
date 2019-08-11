@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QtCore/QDir>
 #include <QtWidgets/QMessageBox>
-#include <QtCore/QRandomGenerator>
 
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
@@ -163,7 +162,7 @@ void FirefoxProfileRunnerConfig::itemSelected() {
 }
 
 void FirefoxProfileRunnerConfig::refreshProfiles() {
-    QList<Profile> firefoxProfiles = firefoxProfile.getFirefoxProfiles();
+    QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
     firefoxProfile.syncDesktopFile(firefoxProfiles);
     if (!edited) {
         load();
