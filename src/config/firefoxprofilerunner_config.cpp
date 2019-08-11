@@ -47,7 +47,7 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(refreshProfiles()));
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
 
-    firefoxConfig = KSharedConfig::openConfig(Profile::getDesktopFilePath());
+    firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
     config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunner");
 }
 
@@ -58,9 +58,9 @@ void FirefoxProfileRunnerConfig::load() {
     m_ui->hideDefaultProfile->setChecked(config.readEntry("hideDefaultProfile", "false") == "true");
     m_ui->showAlwaysPrivateWindows->setChecked(config.readEntry("showAlwaysPrivateWindows", "false") == "true");
 
-    profiles = firefoxProfile.getCustomProfiles();
+    profiles = profileManager.getCustomProfiles();
     const auto icon = QIcon::fromTheme(
-            firefoxProfile.getLaunchCommand().endsWith("firefox") ? "firefox" : "firefox-esr"
+            profileManager.getLaunchCommand().endsWith("firefox") ? "firefox" : "firefox-esr"
     );
     m_ui->profiles->clear();
 
@@ -98,7 +98,7 @@ void FirefoxProfileRunnerConfig::save() {
     config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked() ? "true" : "false");
     config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked() ? "true" : "false");
     config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked() ? "true" : "false");
-    firefoxProfile.changeProfileRegistering(m_ui->registerProfiles->isChecked(), firefoxConfig);
+    profileManager.changeProfileRegistering(m_ui->registerProfiles->isChecked());
 
     QList<QListWidgetItem *> items;
     for (int i = 0; i < m_ui->profiles->count(); i++) {
@@ -162,8 +162,9 @@ void FirefoxProfileRunnerConfig::itemSelected() {
 }
 
 void FirefoxProfileRunnerConfig::refreshProfiles() {
-    QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
-    firefoxProfile.syncDesktopFile(firefoxProfiles);
+    QList<Profile> firefoxProfiles = profileManager.getFirefoxProfiles();
+    qInfo() << firefoxProfiles.size();
+    profileManager.syncDesktopFile(firefoxProfiles);
     if (!edited) {
         load();
     } else {

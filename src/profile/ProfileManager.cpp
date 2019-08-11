@@ -7,10 +7,13 @@ ProfileManager::ProfileManager() {
     firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
     firefoxDesktopFile = getDesktopFilePath();
     firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
+    launchCommand = getLaunchCommand();
+    defaultPath = getDefaultProfilePath();
 }
 
 QList<Profile> ProfileManager::getFirefoxProfiles() {
     QList<Profile> profiles;
+    firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
     QStringList configs = firefoxProfilesIni->groupList().filter(QRegExp(R"(Install.*|Profile.*)"));
 
     for (const auto &profileEntry: configs.filter(QRegExp(R"(Profile.*)"))) {
@@ -26,9 +29,8 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
 QList<Profile> ProfileManager::getCustomProfiles() {
     QList<Profile> profiles;
     if (firefoxDesktopFile == "<error>") return profiles;
+    firefoxConfig->sync();
     QStringList installedProfiles = firefoxConfig->groupList().filter(QRegExp("Desktop Action new-window-with-profile-.*"));
-    QString defaultPath = getDefaultPath();
-
     for (const auto &profileGroupName:installedProfiles) {
         auto profileGroup = firefoxConfig->group(profileGroupName);
 
@@ -68,7 +70,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles) {
 #ifdef status_dev
                     qInfo() << "Update " << profile.launchName;
 #endif
-                    profile.writeSettings(firefoxConfig, installedProfile);
+                    profile.writeSettings(firefoxConfig, installedProfile, launchCommand);
                 }
             }
         }
@@ -86,7 +88,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles) {
 #ifdef status_dev
             qInfo() << "Install  " << profile.launchName;
 #endif
-            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path, idx);
+            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path, launchCommand, idx);
             ++idx;
         }
     }
@@ -97,6 +99,7 @@ void ProfileManager::changeProfileRegistering(bool enable) {
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
     if (enable) {
+        firefoxConfig->sync();
         for (const auto &groupName:firefoxConfig->groupList()) {
             if (groupName.startsWith("Desktop Action new-window-with-profile")) {
                 registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
@@ -107,18 +110,18 @@ void ProfileManager::changeProfileRegistering(bool enable) {
 }
 
 QString ProfileManager::getLaunchCommand() const {
-    return KSharedConfig::openConfig(getDesktopFilePath())->group("Desktop Entry").readEntry("Exec").remove(" %u");
+    return firefoxConfig->group("Desktop Entry").readEntry("Exec").remove(" %u");
 }
 
-QString ProfileManager::getDefaultPath() const {
+QString ProfileManager::getDefaultProfilePath() const {
     QStringList configs = firefoxProfilesIni->groupList();
     QStringList installConfig = configs.filter(QRegExp(R"(Install.*)"));
-    QString defaultPath;
+    QString path;
     if (!installConfig.empty()) {
-        defaultPath = firefoxProfilesIni->group(installConfig.first()).readEntry("Default", "");
+        path = firefoxProfilesIni->group(installConfig.first()).readEntry("Default", "");
     }
-    if (!defaultPath.isEmpty()) {
-        return defaultPath;
+    if (!path.isEmpty()) {
+        return path;
     }
     for (const auto &profileName:firefoxProfilesIni->groupList().filter(QRegExp(R"(Profile.*)"))) {
         const auto profile = firefoxProfilesIni->group(profileName);

@@ -4,7 +4,7 @@
 #include "ui_firefoxprofilerunner_config.h"
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
-#include <Profile.h>
+#include "profile/ProfileManager.h"
 
 class FirefoxProfileRunnerConfigForm : public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
 Q_OBJECT
@@ -19,7 +19,7 @@ Q_OBJECT
 public:
     explicit FirefoxProfileRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
-    Profile firefoxProfile;
+    ProfileManager profileManager;
     QList<Profile> profiles;
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;

@@ -1,11 +1,13 @@
 #include "firefoxprofilerunner.h"
-#include "Profile.h"
+#include "profile/Profile.h"
 
 // KF
 #include <KLocalizedString>
 #include <QDebug>
 #include <QtCore/QProcess>
-
+/**
+ * TODO Updating of profiles.ini
+ */
 FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
@@ -14,10 +16,11 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
 FirefoxProfileRunner::~FirefoxProfileRunner() = default;
 
 void FirefoxProfileRunner::reloadConfiguration() {
-    QList<Profile> firefoxProfiles = Profile::getFirefoxProfiles();
-    launchCommand = firefoxProfile.getLaunchCommand();
-    firefoxProfile.syncDesktopFile(firefoxProfiles);
-    profiles = firefoxProfile.getCustomProfiles();
+
+    QList<Profile> firefoxProfiles = profileManager.getFirefoxProfiles();
+    launchCommand = profileManager.getLaunchCommand();
+    profileManager.syncDesktopFile(firefoxProfiles);
+    profiles = profileManager.getCustomProfiles();
 
 
     config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunner");

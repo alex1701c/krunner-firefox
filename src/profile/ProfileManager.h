@@ -4,12 +4,12 @@
 #include <QtCore/QString>
 #include <QList>
 #include <KSharedConfig>
-#include <Profile.h>
+#include "Profile.h"
 
 class ProfileManager {
 public:
 
-    QString firefoxDesktopFile;
+    QString firefoxDesktopFile, launchCommand, defaultPath;
     KSharedConfigPtr firefoxProfilesIni, firefoxConfig;
 
     ProfileManager();
@@ -24,7 +24,7 @@ public:
 
     QString getLaunchCommand() const;
 
-    QString getDefaultPath() const;
+    QString getDefaultProfilePath() const;
 
     QString getDesktopFilePath() const;
 };

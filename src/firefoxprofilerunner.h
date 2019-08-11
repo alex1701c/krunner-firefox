@@ -2,7 +2,8 @@
 #define FIREFOXPROFILERUNNER_H
 
 #include <KRunner/AbstractRunner>
-#include "Profile.h"
+#include <profile/ProfileManager.h>
+#include "profile/Profile.h"
 
 class FirefoxProfileRunner : public Plasma::AbstractRunner {
 Q_OBJECT
@@ -15,7 +16,7 @@ public:
     QString launchCommand;
     QList<Profile> profiles;
     KConfigGroup config;
-    Profile firefoxProfile;
+    ProfileManager profileManager;
     bool hideDefaultProfile, showAlwaysPrivateWindows, showIconForPrivateWindow;
 
     QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
