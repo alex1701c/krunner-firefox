@@ -46,6 +46,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="automaticallyRegisterProfiles">
+          <property name="text">
+           <string>Automatically check for new profiles when plugin is initialized</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="hideDefaultProfile">
           <property name="text">
            <string>Hide option to open a normal window with default profile</string>
@@ -56,6 +63,13 @@
          <widget class="QCheckBox" name="showAlwaysPrivateWindows">
           <property name="text">
            <string>Always show option to open private windows  (with plugin)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="registerPrivateWindows">
+          <property name="text">
+           <string>Register private windows (globally)</string>
           </property>
          </widget>
         </item>

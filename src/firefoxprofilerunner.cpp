@@ -17,7 +17,7 @@ void FirefoxProfileRunner::reloadConfiguration() {
     launchCommand = profileManager.getLaunchCommand();
 
 
-    config = KSharedConfig::openConfig("krunnerrc")->group("FirefoxProfileRunner");
+    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
     hideDefaultProfile = config.readEntry("hideDefaultProfile", "false") == "true";
     showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", "false") == "true";
     showIconForPrivateWindow = config.readEntry("showIconForPrivateWindow", "true") == "true";

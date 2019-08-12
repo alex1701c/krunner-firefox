@@ -100,7 +100,8 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
             ++idx;
         }
     }
-    changeProfileRegistering(firefoxConfig->group("Settings").readEntry("registerProfiles", "true") == "true", firefoxConfig);
+    const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    changeProfileRegistering(config.readEntry("registerProfiles", "true") == "true", firefoxConfig);
 }
 
 void ProfileManager::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
