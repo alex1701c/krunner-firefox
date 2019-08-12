@@ -10,17 +10,18 @@ class ProfileManager {
 public:
 
     QString firefoxDesktopFile, launchCommand, defaultPath;
-    KSharedConfigPtr firefoxProfilesIni, firefoxConfig;
 
     ProfileManager();
 
+    QList<Profile> syncAndGetCustomProfiles(bool sync = true);
+
     QList<Profile> getFirefoxProfiles();
 
-    QList<Profile> getCustomProfiles();
+    QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 
-    void syncDesktopFile(const QList<Profile> &profiles);
+    void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig);
 
-    void changeProfileRegistering(bool enable);
+    void changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig);
 
     QString getLaunchCommand() const;
 
