@@ -61,7 +61,8 @@ void FirefoxProfileRunnerConfig::load() {
     m_ui->hideDefaultProfile->setChecked(config.readEntry("hideDefaultProfile", "false") == "true");
     m_ui->showAlwaysPrivateWindows->setChecked(config.readEntry("showAlwaysPrivateWindows", "false") == "true");
 
-    profiles = profileManager.syncAndGetCustomProfiles();
+    profiles = profileManager.syncAndGetCustomProfiles(forceProfileSync);
+    forceProfileSync = false;
     const auto icon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
     m_ui->profiles->clear();
 
@@ -129,6 +130,7 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
+    // TODO Call method to sync registering
     // New runner instance has latest configuration
     system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
 
@@ -172,14 +174,17 @@ void FirefoxProfileRunnerConfig::itemSelected() {
 
 void FirefoxProfileRunnerConfig::refreshProfiles() {
     if (!edited) {
+        forceProfileSync = true;
         load();
     } else {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Discard changes?",
                                       "Do you want to refresh the current config and discard all unsaved changes",
                                       QMessageBox::Yes | QMessageBox::No);
-        if (reply == QMessageBox::Yes) load();
-        else return;
+        if (reply == QMessageBox::Yes) {
+            forceProfileSync = true;
+            load();
+        } else return;
     }
     // Disable Buttons like on initial state
     m_ui->profiles->setFocus();

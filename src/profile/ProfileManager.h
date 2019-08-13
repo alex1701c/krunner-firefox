@@ -13,15 +13,15 @@ public:
 
     ProfileManager();
 
-    QList<Profile> syncAndGetCustomProfiles(bool sync = true);
+    QList<Profile> syncAndGetCustomProfiles(bool forceSync = false);
 
-    QList<Profile> getFirefoxProfiles();
+    static QList<Profile> getFirefoxProfiles();
 
     QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 
     void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig);
 
-    void changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig);
+    void changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig);
 
     QString getLaunchCommand() const;
 

@@ -24,7 +24,7 @@ public:
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;
 
-    bool edited = false;
+    bool edited, forceProfileSync = false;
 
 public Q_SLOTS:
 

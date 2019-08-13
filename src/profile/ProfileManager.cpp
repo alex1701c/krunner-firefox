@@ -10,11 +10,13 @@ ProfileManager::ProfileManager() {
     defaultPath = getDefaultProfilePath();
 }
 
-QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool sync) {
+QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
-    if (sync) {
+    const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    if (forceSync || config.readEntry("automaticallyRegisterProfiles", "true") == "true") {
         QList<Profile> firefoxProfiles = getFirefoxProfiles();
         syncDesktopFile(firefoxProfiles, firefoxConfig);
+        qInfo() << "Synced profiles";
     }
     return getCustomProfiles(firefoxConfig);
 }
@@ -78,7 +80,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 #ifdef status_dev
                     qInfo() << "Update " << profile.launchName;
 #endif
-                    profile.writeSettings(firefoxConfig, installedProfile, launchCommand);
+                    profile.writeSettings(firefoxConfig, profile.path, launchCommand);
                 }
             }
         }
@@ -86,7 +88,10 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 #ifdef status_dev
             qInfo() << "Delete " << installedProfile;
 #endif
+            // Delete normal and private window Desktop Action
             firefoxConfig->deleteGroup(installedProfile);
+            firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" +
+                                       QString(installedProfile).remove("Desktop Action new-window-with-profile-"));
         }
     }
     // Add group and register action
@@ -96,22 +101,27 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 #ifdef status_dev
             qInfo() << "Install  " << profile.launchName;
 #endif
-            profile.writeSettings(firefoxConfig, "Desktop Action new-window-with-profile-" + profile.path, launchCommand, idx);
+            // Write settings for normal and private window
+            profile.writeSettings(firefoxConfig, profile.path, launchCommand, idx);
             ++idx;
         }
     }
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
-    changeProfileRegistering(config.readEntry("registerProfiles", "true") == "true", firefoxConfig);
+    bool enableNormal = config.readEntry("registerProfiles", "true") == "true";
+    bool enablePrivate = config.readEntry("registerPrivateWindows", "true") == "true";
+    changeProfileRegistering(enableNormal, enablePrivate, firefoxConfig);
 }
 
-void ProfileManager::changeProfileRegistering(bool enable, KSharedConfigPtr firefoxConfig) {
+void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig) {
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
-    if (enable) {
-        for (const auto &groupName:firefoxConfig->groupList()) {
-            if (groupName.startsWith("Desktop Action new-window-with-profile")) {
-                registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
-            }
+
+    for (const auto &groupName:firefoxConfig->groupList()) {
+        if (enableNormal && groupName.startsWith("Desktop Action new-window-with-profile")) {
+            registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
+        }
+        if (enablePrivate && groupName.startsWith("Desktop Action new-private-window-with-profile-")) {
+            registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
         }
     }
     firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
