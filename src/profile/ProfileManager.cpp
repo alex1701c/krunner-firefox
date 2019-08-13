@@ -2,9 +2,9 @@
 #include <QDebug>
 #include <KConfigCore/KConfigGroup>
 #include "ProfileManager.h"
+#include "helper.h"
 
 ProfileManager::ProfileManager() {
-    //firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
@@ -13,10 +13,12 @@ ProfileManager::ProfileManager() {
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
-    if (forceSync || config.readEntry("automaticallyRegisterProfiles", "true") == "true") {
+    if (forceSync || stringToBool(config.readEntry("automaticallyRegisterProfiles", "true"))) {
         QList<Profile> firefoxProfiles = getFirefoxProfiles();
         syncDesktopFile(firefoxProfiles, firefoxConfig);
+#ifdef  status_dev
         qInfo() << "Synced profiles";
+#endif
     }
     return getCustomProfiles(firefoxConfig);
 }
@@ -50,7 +52,7 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
         if (defaultPath == "<invalid>") defaultPath = profile.path;
         profile.isDefault = profile.path == defaultPath;
-        profile.isEdited = profileGroup.readEntry("Edited", "false") == "true";
+        profile.isEdited = stringToBool(profileGroup.readEntry("Edited", "false"));
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
 
@@ -107,8 +109,8 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
         }
     }
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
-    bool enableNormal = config.readEntry("registerProfiles", "true") == "true";
-    bool enablePrivate = config.readEntry("registerPrivateWindows", "true") == "true";
+    bool enableNormal = stringToBool(config.readEntry("registerNormalWindows", "true"));
+    bool enablePrivate = stringToBool(config.readEntry("registerPrivateWindows", "true"));
     changeProfileRegistering(enableNormal, enablePrivate, firefoxConfig);
 }
 

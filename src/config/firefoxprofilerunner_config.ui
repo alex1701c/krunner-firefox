@@ -41,14 +41,14 @@
         <item>
          <widget class="QCheckBox" name="registerProfiles">
           <property name="text">
-           <string>Register profiles globally</string>
+           <string>Show options to launch profiles in normal windows globally</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="automaticallyRegisterProfiles">
+         <widget class="QCheckBox" name="registerPrivateWindows">
           <property name="text">
-           <string>Automatically check for new profiles when plugin is initialized</string>
+           <string>Show options to launch profiles in private windows globally</string>
           </property>
          </widget>
         </item>
@@ -67,9 +67,25 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="registerPrivateWindows">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>5</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="automaticallyRegisterProfiles">
           <property name="text">
-           <string>Register private windows (globally)</string>
+           <string>Automatically check for new profiles when plugin is initialized</string>
           </property>
          </widget>
         </item>

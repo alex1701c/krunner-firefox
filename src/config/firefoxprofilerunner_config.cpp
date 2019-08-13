@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QtCore/QDir>
 #include <QtWidgets/QMessageBox>
+#include "helper.h"
 
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
@@ -15,8 +16,7 @@ FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent) 
     setupUi(this);
 }
 
-FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QVariantList &args) : KCModule(parent,
-                                                                                                             args) {
+FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QVariantList &args) : KCModule(parent, args) {
     m_ui = new FirefoxProfileRunnerConfigForm(this);
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
@@ -54,28 +54,28 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
 }
 
 void FirefoxProfileRunnerConfig::load() {
-    m_ui->automaticallyRegisterProfiles->setChecked(config.readEntry("automaticallyRegisterProfiles", "true") == "true");
-    m_ui->registerPrivateWindows->setChecked(config.readEntry("registerPrivateWindows", "false") == "true");
-    m_ui->registerProfiles->setChecked(config.readEntry("registerProfiles", "true") == "true");
-    m_ui->showIconForPrivateWindow->setChecked(config.readEntry("showIconForPrivateWindow", "true") == "true");
-    m_ui->hideDefaultProfile->setChecked(config.readEntry("hideDefaultProfile", "false") == "true");
-    m_ui->showAlwaysPrivateWindows->setChecked(config.readEntry("showAlwaysPrivateWindows", "false") == "true");
+    m_ui->automaticallyRegisterProfiles->setChecked(stringToBool(config.readEntry("automaticallyRegisterProfiles", "true")));
+    m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows")));
+    m_ui->registerProfiles->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
+    m_ui->showIconForPrivateWindow->setChecked(stringToBool(config.readEntry("showIconForPrivateWindow", "true")));
+    m_ui->hideDefaultProfile->setChecked(stringToBool(config.readEntry("hideDefaultProfile")));
+    m_ui->showAlwaysPrivateWindows->setChecked(stringToBool(config.readEntry("showAlwaysPrivateWindows")));
 
     profiles = profileManager.syncAndGetCustomProfiles(forceProfileSync);
     forceProfileSync = false;
-    const auto icon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
+    const auto icon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
     for (const auto &profile:profiles) {
+        // Normal window
         auto *item = new QListWidgetItem();
         item->setText(profile.name);
         QList<QVariant> data = {profile.path, profile.isDefault, false, profile.priority};
         item->setData(32, data);
-
         item->setIcon(icon);
         items.append(item);
-
+        // Private window
         auto *item2 = new QListWidgetItem();
         item2->setText(profile.name);
         QList<QVariant> data2 = {profile.path, profile.isDefault, true, profile.privateWindowPriority};
@@ -94,17 +94,20 @@ void FirefoxProfileRunnerConfig::load() {
 
 
 void FirefoxProfileRunnerConfig::save() {
-    config.writeEntry("registerProfiles", m_ui->registerProfiles->isChecked() ? "true" : "false");
-    config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked() ? "true" : "false");
-    config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked() ? "true" : "false");
-    config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked() ? "true" : "false");
-    config.writeEntry("registerPrivateWindows", m_ui->registerPrivateWindows->isChecked() ? "true" : "false");
-    config.writeEntry("automaticallyRegisterProfiles", m_ui->automaticallyRegisterProfiles->isChecked() ? "true" : "false");
+    // Write general settings
+    config.writeEntry("registerNormalWindows", m_ui->registerProfiles->isChecked());
+    config.writeEntry("registerPrivateWindows", m_ui->registerPrivateWindows->isChecked());
+    config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked());
+    config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked());
+    config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked());
+    config.writeEntry("automaticallyRegisterProfiles", m_ui->automaticallyRegisterProfiles->isChecked());
 
     QList<QListWidgetItem *> items;
     for (int i = 0; i < m_ui->profiles->count(); i++) {
         items.append(m_ui->profiles->item(i));
     }
+
+    // Update settings in firefox.desktop file
     const int itemSize = items.size();
     for (auto &profile:profiles) {
         bool matched = false;
@@ -116,7 +119,7 @@ void FirefoxProfileRunnerConfig::save() {
                 profile.name = item->text();
                 profile.priority = 100 - i;
 
-                // Get private window option of window
+                // Get private window option of profile
                 bool privateMatch = false;
                 for (int i2 = 0; i2 < itemSize && !privateMatch; i2++) {
                     const auto &data = items.at(i2)->data(32).toList();
@@ -130,7 +133,11 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
-    // TODO Call method to sync registering
+    // If the runner does not register the profiles on startup
+    if (!m_ui->automaticallyRegisterProfiles->isChecked()) {
+        profileManager.changeProfileRegistering(m_ui->registerProfiles->isChecked(), m_ui->registerPrivateWindows->isChecked(),
+                                                firefoxConfig);
+    }
     // New runner instance has latest configuration
     system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
 
