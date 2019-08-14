@@ -39,7 +39,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QCheckBox" name="registerProfiles">
+         <widget class="QCheckBox" name="registerNormalWindows">
           <property name="text">
            <string>Show options to launch profiles in normal windows globally</string>
           </property>
@@ -77,7 +77,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>5</height>
+            <height>10</height>
            </size>
           </property>
          </spacer>

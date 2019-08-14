@@ -22,7 +22,7 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     layout->addWidget(m_ui, 0, 0);
 
     // General settings
-    connect(m_ui->registerProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->registerNormalWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->registerPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->automaticallyRegisterProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(changed()));
@@ -56,7 +56,7 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
 void FirefoxProfileRunnerConfig::load() {
     m_ui->automaticallyRegisterProfiles->setChecked(stringToBool(config.readEntry("automaticallyRegisterProfiles", "true")));
     m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows")));
-    m_ui->registerProfiles->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
+    m_ui->registerNormalWindows->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
     m_ui->showIconForPrivateWindow->setChecked(stringToBool(config.readEntry("showIconForPrivateWindow", "true")));
     m_ui->hideDefaultProfile->setChecked(stringToBool(config.readEntry("hideDefaultProfile")));
     m_ui->showAlwaysPrivateWindows->setChecked(stringToBool(config.readEntry("showAlwaysPrivateWindows")));
@@ -95,7 +95,7 @@ void FirefoxProfileRunnerConfig::load() {
 
 void FirefoxProfileRunnerConfig::save() {
     // Write general settings
-    config.writeEntry("registerNormalWindows", m_ui->registerProfiles->isChecked());
+    config.writeEntry("registerNormalWindows", m_ui->registerNormalWindows->isChecked());
     config.writeEntry("registerPrivateWindows", m_ui->registerPrivateWindows->isChecked());
     config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked());
     config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked());
@@ -135,7 +135,7 @@ void FirefoxProfileRunnerConfig::save() {
     }
     // If the runner does not register the profiles on startup
     if (!m_ui->automaticallyRegisterProfiles->isChecked()) {
-        profileManager.changeProfileRegistering(m_ui->registerProfiles->isChecked(), m_ui->registerPrivateWindows->isChecked(),
+        profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),
                                                 firefoxConfig);
     }
     // New runner instance has latest configuration
@@ -145,7 +145,7 @@ void FirefoxProfileRunnerConfig::save() {
 }
 
 void FirefoxProfileRunnerConfig::defaults() {
-    m_ui->registerProfiles->setChecked(true);
+    m_ui->registerNormalWindows->setChecked(true);
     m_ui->registerPrivateWindows->setChecked(false);
     m_ui->automaticallyRegisterProfiles->setChecked(true);
     m_ui->hideDefaultProfile->setChecked(false);
@@ -153,6 +153,9 @@ void FirefoxProfileRunnerConfig::defaults() {
     m_ui->showAlwaysPrivateWindows->setChecked(false);
 }
 
+/**
+ * Enable/Disable Up/Down buttons
+ */
 void FirefoxProfileRunnerConfig::itemSelected() {
     const int idx = m_ui->profiles->currentRow();
     if (idx == -1) return; // When the checkboxes are clicked but no item has been selected
@@ -179,6 +182,9 @@ void FirefoxProfileRunnerConfig::itemSelected() {
     m_ui->editProfileName->setDisabled(false);
 }
 
+/**
+ * Refresh profiles from profiles.ini file, all unsaved changes are discarded
+ */
 void FirefoxProfileRunnerConfig::refreshProfiles() {
     if (!edited) {
         forceProfileSync = true;
@@ -199,6 +205,9 @@ void FirefoxProfileRunnerConfig::refreshProfiles() {
     edited = false;
 }
 
+/**
+ * Move item up
+ */
 void FirefoxProfileRunnerConfig::moveUp() {
     edited = true;
     const int current = m_ui->profiles->currentRow();
@@ -217,6 +226,9 @@ void FirefoxProfileRunnerConfig::moveUp() {
     m_ui->profiles->setCurrentRow(newIdx);
 }
 
+/**
+ * Move item down
+ */
 void FirefoxProfileRunnerConfig::moveDown() {
     edited = true;
     const int current = m_ui->profiles->currentRow();
@@ -236,6 +248,9 @@ void FirefoxProfileRunnerConfig::moveDown() {
     m_ui->profiles->setCurrentRow(newIdx);
 }
 
+/**
+ * Update name of profile
+ */
 void FirefoxProfileRunnerConfig::applyProfileName() {
     edited = true;
     if (m_ui->profiles->currentRow() == -1)return;
@@ -256,12 +271,18 @@ void FirefoxProfileRunnerConfig::applyProfileName() {
 
 }
 
+/**
+ * Reset text of name edit field to initial name
+ */
 void FirefoxProfileRunnerConfig::cancelProfileName() {
     if (m_ui->profiles->currentRow() == -1)return;
     m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text());
     m_ui->editProfileName->setFocus();
 }
 
+/**
+ * Validate buttons to cancel/apply the changes to profile name
+ */
 void FirefoxProfileRunnerConfig::editProfileName() {
     if (m_ui->profiles->currentRow() == -1) return;
     m_ui->editProfileNameApply->setDisabled(
@@ -272,8 +293,10 @@ void FirefoxProfileRunnerConfig::editProfileName() {
 
 }
 
+/**
+ * Hide hide/unhide all private window options
+ */
 void FirefoxProfileRunnerConfig::showAlwaysPrivateWindows() {
-    // Hide hide/unhide all private window options
     const int count = m_ui->profiles->count();
     for (int i = 0; i < count; i++) {
         QListWidgetItem *item = m_ui->profiles->item(i);
@@ -281,8 +304,10 @@ void FirefoxProfileRunnerConfig::showAlwaysPrivateWindows() {
     }
 }
 
+/**
+ * Hide default profile from profiles list
+ */
 void FirefoxProfileRunnerConfig::hideDefaultProfile() {
-    // Hide default profile, private window option of default is handles seperately
     const int count = m_ui->profiles->count();
     for (int i = 0; i < count; i++) {
         QListWidgetItem *item = m_ui->profiles->item(i);

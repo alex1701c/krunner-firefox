@@ -4,12 +4,19 @@
 #include "ProfileManager.h"
 #include "helper.h"
 
+/**
+ * Initialize variables
+ */
 ProfileManager::ProfileManager() {
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
 }
 
+/**
+ * Syncronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
+ * @param forceSync
+ */
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
@@ -23,6 +30,9 @@ QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     return getCustomProfiles(firefoxConfig);
 }
 
+/**
+ * Get raw profiles from profiles.ini file
+ */
 QList<Profile> ProfileManager::getFirefoxProfiles() {
     QList<Profile> profiles;
     KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
@@ -38,6 +48,10 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
     return profiles;
 }
 
+/**
+ * Read profiles from firefox.desktop file, these profiles have priority etc. configured
+ * @param firefoxConfig
+ */
 QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig) {
     QList<Profile> profiles;
     if (firefoxDesktopFile == "<error>") return profiles;
@@ -64,6 +78,11 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
     return profiles;
 }
 
+/**
+ * Install/Update/Delete profiles from firefox.desktop files and update the registered Desktop Actions
+ * @param profiles
+ * @param firefoxConfig
+ */
 void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig) {
     if (firefoxDesktopFile == "<error>") return;
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
@@ -114,6 +133,12 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     changeProfileRegistering(enableNormal, enablePrivate, firefoxConfig);
 }
 
+/**
+ * Register/Unregister Desktop Actions
+ * @param enableNormal
+ * @param enablePrivate
+ * @param firefoxConfig
+ */
 void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig) {
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
@@ -129,10 +154,16 @@ void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePriv
     firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
 }
 
+/**
+ * Get launch command from .desktop file, this command is different in firefox-esr
+ */
 QString ProfileManager::getLaunchCommand() const {
     return KSharedConfig::openConfig(firefoxDesktopFile)->group("Desktop Entry").readEntry("Exec").remove(" %u");
 }
 
+/**
+ * Get the Path property of the default profile
+ */
 QString ProfileManager::getDefaultProfilePath() const {
     KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
     QStringList configs = firefoxProfilesIni->groupList();
@@ -151,6 +182,9 @@ QString ProfileManager::getDefaultProfilePath() const {
     return "<invalid>";
 }
 
+/**
+ * Get path to firefox*.desktop file, checks both options for firefox and firefox-esr
+ */
 QString ProfileManager::getDesktopFilePath() const {
     QString file(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
     if (!QFile::exists(file)) {

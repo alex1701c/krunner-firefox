@@ -4,7 +4,7 @@ This plugin allows you to launch Firefox profiles from Krunner and your normal l
 
 The plugin uses a local copy of the firefox.desktop file. In this file it adds Desktop Action entries for
 the profiles. Because of this you can search for the profiles in your normal launcher.  
-If you make changes in your Firefox profile you can sync them manually in the config dialog or they will
+If you make changes in your Firefox profile you can sync them manually in the config dialog or they can
 be applied on startup. 
 
 This plugin is also compatible with firefox-esr.
@@ -21,7 +21,6 @@ Fedora
 `sudo dnf install cmake extra-cmake-modules kf5-ki18n-devel kf5-kservice-devel kf5-krunner-devel kf5-ktextwidgets-devel gettext`  
 
 ### Build instructions
-
 
 The easiest way to install is:  
 `curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`
@@ -67,7 +66,7 @@ You can add a -p flag to your query if you want firefox to open in a private win
 In the config dialog you can change the name and order of your profiles.
 Additionally you can sync the profiles from Firefox (in case you created/renamed them).  
 
-If you uncheck the option to register the profiles globally you can not launch the profiles like in the last screenshot.  
+If you uncheck the options to register the normal/private window launch options profiles globally you can not launch the profiles like in the last screenshot.  
 If the following option is checked the option to launch a normal window with the default profile is not shown.
 This is useful, because the default profile can be launched with the "Applications" plugin.  
 The option to always show private windows is demonstrated in the next screenshot.

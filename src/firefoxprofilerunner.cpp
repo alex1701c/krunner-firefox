@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QtCore/QProcess>
 
+/**
+ * TODO: Add tests
+ */
 FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
