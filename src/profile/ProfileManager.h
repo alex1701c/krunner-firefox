@@ -9,13 +9,13 @@
 class ProfileManager {
 public:
 
-    QString firefoxDesktopFile, launchCommand, defaultPath;
+    QString firefoxDesktopFile, launchCommand, defaultPath, firefoxProfilesIniPath;
 
     ProfileManager();
 
     QList<Profile> syncAndGetCustomProfiles(bool forceSync = false);
 
-    static QList<Profile> getFirefoxProfiles();
+    QList<Profile> getFirefoxProfiles();
 
     QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 

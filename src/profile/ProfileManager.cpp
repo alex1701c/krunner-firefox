@@ -2,12 +2,13 @@
 #include <QDebug>
 #include <KConfigCore/KConfigGroup>
 #include "ProfileManager.h"
-#include "helper.h"
+#include <helper.h>
 
 /**
  * Initialize variables
  */
 ProfileManager::ProfileManager() {
+    firefoxProfilesIniPath = QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini";
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
@@ -35,10 +36,10 @@ QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
  */
 QList<Profile> ProfileManager::getFirefoxProfiles() {
     QList<Profile> profiles;
-    KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
-    QStringList configs = firefoxProfilesIni->groupList().filter(QRegExp(R"(Install.*|Profile.*)"));
+    KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath);
+    QStringList configs = firefoxProfilesIni->groupList().filter(QRegExp(R"(Profile.*)"));
 
-    for (const auto &profileEntry: configs.filter(QRegExp(R"(Profile.*)"))) {
+    for (const auto &profileEntry: configs) {
         Profile profile;
         KConfigGroup profileConfig = firefoxProfilesIni->group(profileEntry);
         profile.launchName = profileConfig.readEntry("Name");
@@ -165,7 +166,7 @@ QString ProfileManager::getLaunchCommand() const {
  * Get the Path property of the default profile
  */
 QString ProfileManager::getDefaultProfilePath() const {
-    KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini");
+    KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath);
     QStringList configs = firefoxProfilesIni->groupList();
     QStringList installConfig = configs.filter(QRegExp(R"(Install.*)"));
     QString path;
