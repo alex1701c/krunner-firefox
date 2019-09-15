@@ -53,6 +53,11 @@ public Q_SLOTS:
 
     void showAlwaysPrivateWindows();
 
+
+    void toggleGeneralConfigVisibility(const QString &forceHide = "");
+    void toggleProxychainsConfigVisibility(const QString &forceHide = "");
+
+
 private:
     FirefoxProfileRunnerConfigForm *m_ui;
 

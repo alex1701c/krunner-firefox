@@ -48,9 +48,14 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     // Refresh profiles button
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(refreshProfiles()));
     connect(m_ui->refreshProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    // Hide/unhide buttons
+    connect(m_ui->generalConfigToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(toggleGeneralConfigVisibility()));
+    connect(m_ui->proxychainsToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(toggleProxychainsConfigVisibility()));
 
     firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    toggleGeneralConfigVisibility("skip");
+    toggleProxychainsConfigVisibility("skip");
 }
 
 void FirefoxProfileRunnerConfig::load() {
@@ -317,6 +322,24 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
             break;
         }
     }
+}
+
+void FirefoxProfileRunnerConfig::toggleGeneralConfigVisibility(const QString &forceHide) {
+    bool hide = false;
+    if (forceHide == "true") hide = true;
+    if (!hide) hide = !m_ui->firefoxGeneralConfigWidget->isHidden();
+    if (forceHide == "skip") hide = false;
+    m_ui->generalConfigToggleHidePushButton->setIcon(QIcon::fromTheme(hide ? "arrow-down" : "arrow-up"));
+    m_ui->firefoxGeneralConfigWidget->setHidden(hide);
+}
+
+void FirefoxProfileRunnerConfig::toggleProxychainsConfigVisibility(const QString &forceHide) {
+    bool hide = false;
+    if (forceHide == "true") hide = true;
+    if (!hide) hide = !m_ui->proxychainsItemsWidget->isHidden();
+    if (forceHide == "skip") hide = false;
+    m_ui->proxychainsToggleHidePushButton->setIcon(QIcon::fromTheme(hide ? "arrow-down" : "arrow-up"));
+    m_ui->proxychainsItemsWidget->setHidden(hide);
 }
 
 
