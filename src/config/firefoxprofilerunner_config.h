@@ -24,7 +24,7 @@ public:
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;
 
-    bool edited, forceProfileSync = false;
+    bool edited, forceProfileSync, proxychainsInstalled = false;
 
 public Q_SLOTS:
 
@@ -54,7 +54,10 @@ public Q_SLOTS:
     void showAlwaysPrivateWindows();
 
 
+    void validateProxychainsOptions();
+
     void toggleGeneralConfigVisibility(const QString &forceHide = "");
+
     void toggleProxychainsConfigVisibility(const QString &forceHide = "");
 
 

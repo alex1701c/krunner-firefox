@@ -7,375 +7,427 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>737</height>
+    <width>709</width>
+    <height>711</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
+    <width>600</width>
     <height>0</height>
    </size>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="parentLayout">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QScrollArea" name="scrollArea">
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>600</width>
        <height>0</height>
       </size>
      </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
      </property>
-     <property name="title">
-      <string>FirefoxProfileRunner Config</string>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item alignment="Qt::AlignLeft">
-            <widget class="QLabel" name="label_2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>General Config</string>
-             </property>
-            </widget>
-           </item>
-           <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="generalConfigToggleHidePushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="firefoxGeneralConfigWidget" native="true">
-           <layout class="QVBoxLayout" name="generalConfigVerticalLayout">
-            <item>
-             <widget class="QCheckBox" name="registerNormalWindows">
-              <property name="text">
-               <string>Show options to launch profiles in normal windows globally</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="registerPrivateWindows">
-              <property name="text">
-               <string>Show options to launch profiles in private windows globally</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="hideDefaultProfile">
-              <property name="text">
-               <string>Hide option to open a normal window with default profile</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="showAlwaysPrivateWindows">
-              <property name="text">
-               <string>Always show option to open private windows  (with plugin)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>10</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="automaticallyRegisterProfiles">
-              <property name="toolTip">
-               <string>With this checked the plugin checks for new profiles every time it is initialized. This increases the preformance of the runner.
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>673</width>
+        <height>805</height>
+       </rect>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777214</height>
+       </size>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QWidget" name="parentLayout" native="true">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item alignment="Qt::AlignLeft">
+                <widget class="QLabel" name="label_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>General Config</string>
+                 </property>
+                </widget>
+               </item>
+               <item alignment="Qt::AlignRight">
+                <widget class="QPushButton" name="generalConfigToggleHidePushButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>Hide/Unhide Section</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <widget class="QWidget" name="firefoxGeneralConfigWidget" native="true">
+               <layout class="QVBoxLayout" name="generalConfigVerticalLayout">
+                <item>
+                 <widget class="QCheckBox" name="registerNormalWindows">
+                  <property name="text">
+                   <string>Show options to launch profiles in normal windows globally</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="registerPrivateWindows">
+                  <property name="text">
+                   <string>Show options to launch profiles in private windows globally</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="hideDefaultProfile">
+                  <property name="text">
+                   <string>Hide option to open a normal window with default profile</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="showAlwaysPrivateWindows">
+                  <property name="text">
+                   <string>Always show option to open private windows  (with plugin)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>10</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="automaticallyRegisterProfiles">
+                  <property name="toolTip">
+                   <string>With this checked the plugin checks for new profiles every time it is initialized. This increases the preformance of the runner.
 You can still sync the profiles manually. </string>
-              </property>
-              <property name="text">
-               <string>Automatically check for new profiles when plugin is initialized</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="showIconForPrivateWindow">
-              <property name="toolTip">
-               <string>Use the private window icon of firefox instead of the normal icon for private windows</string>
-              </property>
-              <property name="text">
-               <string>Use specific icon for private windows</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="proxychainsVerticalLaout">
-        <item>
-         <widget class="QLabel" name="proxychainsNotInstalledLabel">
-          <property name="text">
-           <string>Proxychains4 is not installed ! With proxychains you can run Firefox over a proxy for just this process.</string>
-          </property>
-          <property name="buddy">
-           <cstring>firefoxGeneralConfigWidget</cstring>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="proxychainsConfigGroupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title">
-           <string/>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <layout class="QHBoxLayout" name="proxyLabelAndToggleHorizontalLayout">
-             <item alignment="Qt::AlignLeft">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Proxychains integration (optional)</string>
-               </property>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignRight">
-              <widget class="QPushButton" name="proxychainsToggleHidePushButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="toolTip">
-                <string>Hide/Unhide Section</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QWidget" name="proxychainsItemsWidget" native="true">
-             <layout class="QGridLayout" name="gridLayout">
-              <item row="1" column="0">
-               <layout class="QVBoxLayout" name="proxychainsItemsVerticalLayout">
-                <item>
-                 <widget class="QRadioButton" name="disableProxychainsRadioButton">
+                  </property>
                   <property name="text">
-                   <string>Do not use proxychains</string>
+                   <string>Automatically check for new profiles when plugin is initialized</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QRadioButton" name="launchExistingOptionRadioButton">
+                 <widget class="QCheckBox" name="showIconForPrivateWindow">
                   <property name="toolTip">
-                   <string>Choose for each option individually if you want  to launch it using proxychains</string>
+                   <string>Use the private window icon of firefox instead of the normal icon for private windows</string>
                   </property>
                   <property name="text">
-                   <string>Launch existing options with proxychains ( profiles are selectable)</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="showExtraOptionRadioButton">
-                  <property name="toolTip">
-                   <string>Show additional launch options with proxychains instead of changing the existing ones</string>
-                  </property>
-                  <property name="text">
-                   <string>Show extra options to launch with proxychains</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="forceNewInstanceCheckBox">
-                  <property name="toolTip">
-                   <string>With this option enabled you can only have one running firefox instance with this profile.
-But it guarantees that firefox uses the proxy.  If don't start a new instance and you already have an instance with the selected profile without proxychains running the proxy will not be used </string>
-                  </property>
-                  <property name="text">
-                   <string>Force new instance</string>
+                   <string>Use specific icon for private windows</string>
                   </property>
                  </widget>
                 </item>
                </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QListWidget" name="profiles">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="proxychainsVerticalLaout">
             <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item alignment="Qt::AlignBottom">
-             <widget class="QPushButton" name="moveUp">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
+             <widget class="QLabel" name="proxychainsNotInstalledLabel">
               <property name="text">
-               <string>Move Up</string>
-              </property>
-             </widget>
-            </item>
-            <item alignment="Qt::AlignTop">
-             <widget class="QPushButton" name="moveDown">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Move Down</string>
+               <string>Proxychains4 is not installed ! With proxychains you can run Firefox over a proxy for just this process.</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QGroupBox" name="proxychainsConfigGroupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
+              <property name="title">
+               <string/>
               </property>
-             </spacer>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <layout class="QHBoxLayout" name="proxyLabelAndToggleHorizontalLayout">
+                 <item alignment="Qt::AlignLeft">
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Proxychains integration (optional)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignRight">
+                  <widget class="QPushButton" name="proxychainsToggleHidePushButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Hide/Unhide Section</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QWidget" name="proxychainsItemsWidget" native="true">
+                 <layout class="QGridLayout" name="gridLayout">
+                  <item row="1" column="0">
+                   <layout class="QVBoxLayout" name="proxychainsItemsVerticalLayout">
+                    <item>
+                     <widget class="QRadioButton" name="disableProxychainsRadioButton">
+                      <property name="text">
+                       <string>Do not use proxychains</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="launchExistingOptionRadioButton">
+                      <property name="toolTip">
+                       <string>Choose for each option individually if you want  to launch it using proxychains</string>
+                      </property>
+                      <property name="text">
+                       <string>Launch existing options with proxychains ( profiles are selectable)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="showExtraOptionRadioButton">
+                      <property name="toolTip">
+                       <string>Show additional launch options with proxychains instead of changing the existing ones</string>
+                      </property>
+                      <property name="text">
+                       <string>Show extra options to launch with proxychains</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="forceNewInstanceCheckBox">
+                      <property name="toolTip">
+                       <string>With this option enabled you can only have one running firefox instance with this profile.
+But it guarantees that firefox uses the proxy.  If don't start a new instance and you already have an instance with the selected profile without proxychains running the proxy will not be used </string>
+                      </property>
+                      <property name="text">
+                       <string>Force new instance</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QListWidget" name="profiles">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>300</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item alignment="Qt::AlignBottom">
+                 <widget class="QPushButton" name="moveUp">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Move Up</string>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignTop">
+                 <widget class="QPushButton" name="moveDown">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Move Down</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="profileEditHorizontalLayout">
+            <item>
+             <widget class="QLineEdit" name="editProfileName">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editProfileNameApply">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Apply</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="editProfileNameCancel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="refreshProfiles">
+            <property name="text">
+             <string>Sync Firefox Profile Config</string>
+            </property>
+           </widget>
+          </item>
          </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="profileEditHorizontalLayout">
-        <item>
-         <widget class="QLineEdit" name="editProfileName">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="editProfileNameApply">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Apply</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="editProfileNameCancel">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Reset</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QPushButton" name="refreshProfiles">
-        <property name="text">
-         <string>Sync Firefox Profile Config</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
