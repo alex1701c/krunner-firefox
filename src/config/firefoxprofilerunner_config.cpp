@@ -8,13 +8,17 @@
 #include <QtCore/QDir>
 #include <QtWidgets/QMessageBox>
 #include "helper.h"
-
+/**
+ * TODO Integrate picker to create new profiles with proxychains
+ * TODO Save new profiles
+ * TODO Option to create Desktop Action with proxychains
+ * TODO Launch proxychains from config
+ */
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent) : QWidget(parent) {
     setupUi(this);
-    this->setMinimumHeight(500);
 }
 
 FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QVariantList &args) : KCModule(parent, args) {
@@ -54,15 +58,18 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->generalConfigToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->proxychainsToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(toggleProxychainsConfigVisibility()));
     connect(m_ui->proxychainsToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    // Proxychains options
+    // Proxychains options changed
     connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showExtraOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->forceNewInstanceCheckBox, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
+    //
     connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
     connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
     connect(m_ui->showExtraOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
+    connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(proxychainsSelectionChanged()));
+    connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(proxychainsSelectionChanged()));
+    connect(m_ui->showExtraOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(proxychainsSelectionChanged()));
 
     firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
@@ -112,6 +119,7 @@ void FirefoxProfileRunnerConfig::load() {
         // Load data
         m_ui->forceNewInstanceCheckBox->setChecked(stringToBool(config.readEntry("proxychainsForceNewInstance")));
         const QString proxychainsChoice = config.readEntry("proxychainsIntegration", "disabled");
+        previousProxychainsSelection = proxychainsChoice;
         if (proxychainsChoice == "disabled") m_ui->disableProxychainsRadioButton->setChecked(true);
         else if (proxychainsChoice == "existing") m_ui->launchExistingOptionRadioButton->setChecked(true);
         else m_ui->showExtraOptionRadioButton->setChecked(true);
@@ -363,6 +371,39 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
     }
 }
 
+/**
+ *
+ */
+void FirefoxProfileRunnerConfig::proxychainsSelectionChanged() {
+    if (previousProxychainsSelection == "existing") {
+        const int itemCount = m_ui->profiles->count();
+        for (int i = 0; i < itemCount; ++i) {
+            const auto item = m_ui->profiles->item(i);
+            item->setData(Qt::CheckStateRole, QVariant());
+        }
+    } else if (previousProxychainsSelection == "extra") {
+        qInfo() << "Extra: TODO Remove extra entries";
+    }
+
+    if (m_ui->launchExistingOptionRadioButton->isChecked()) {
+        previousProxychainsSelection = "existing";
+        const int itemCount = m_ui->profiles->count();
+        for (int i = 0; i < itemCount; ++i) {
+            const auto item = m_ui->profiles->item(i);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            item->setCheckState(Qt::Unchecked);
+        }
+    } else if (m_ui->showExtraOptionRadioButton->isChecked()) {
+        qInfo() << "Extra options TODO: Manual picker ";
+        previousProxychainsSelection = "extra";
+    } else {
+        previousProxychainsSelection = "disabled";
+    }
+}
+
+/**
+ * Hide/Show the general config config widgets
+ */
 void FirefoxProfileRunnerConfig::toggleGeneralConfigVisibility(const QString &forceHide) {
     bool hide = false;
     if (forceHide == "true") hide = true;
@@ -372,6 +413,9 @@ void FirefoxProfileRunnerConfig::toggleGeneralConfigVisibility(const QString &fo
     m_ui->firefoxGeneralConfigWidget->setHidden(hide);
 }
 
+/**
+ * Hide/Show the proxychains config config widgets
+ */
 void FirefoxProfileRunnerConfig::toggleProxychainsConfigVisibility(const QString &forceHide) {
     bool hide = false;
     if (forceHide == "true") hide = true;
@@ -381,6 +425,9 @@ void FirefoxProfileRunnerConfig::toggleProxychainsConfigVisibility(const QString
     m_ui->proxychainsItemsWidget->setHidden(hide);
 }
 
+/**
+ * Enable/Disable the launch new instance check box
+ */
 void FirefoxProfileRunnerConfig::validateProxychainsOptions() {
     m_ui->forceNewInstanceCheckBox->setDisabled(m_ui->disableProxychainsRadioButton->isChecked());
 }
