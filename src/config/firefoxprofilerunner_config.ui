@@ -51,9 +51,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-7</y>
+        <y>-126</y>
         <width>673</width>
-        <height>850</height>
+        <height>821</height>
        </rect>
       </property>
       <property name="maximumSize">
@@ -172,16 +172,6 @@ You can still sync the profiles manually. </string>
                   </property>
                   <property name="text">
                    <string>Automatically check for new profiles when plugin is initialized</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="showIconForPrivateWindow">
-                  <property name="toolTip">
-                   <string>Use the private window icon of firefox instead of the normal icon for private windows</string>
-                  </property>
-                  <property name="text">
-                   <string>Use specific icon for private windows</string>
                   </property>
                  </widget>
                 </item>

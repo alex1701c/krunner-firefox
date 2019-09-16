@@ -33,7 +33,6 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(hideDefaultProfile()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(itemSelected()));
-    connect(m_ui->showIconForPrivateWindow, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(showAlwaysPrivateWindows()));
     connect(m_ui->showAlwaysPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(itemSelected()));
@@ -87,7 +86,6 @@ void FirefoxProfileRunnerConfig::load() {
     m_ui->automaticallyRegisterProfiles->setChecked(stringToBool(config.readEntry("automaticallyRegisterProfiles", "true")));
     m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows")));
     m_ui->registerNormalWindows->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
-    m_ui->showIconForPrivateWindow->setChecked(stringToBool(config.readEntry("showIconForPrivateWindow", "true")));
     m_ui->hideDefaultProfile->setChecked(stringToBool(config.readEntry("hideDefaultProfile")));
     m_ui->showAlwaysPrivateWindows->setChecked(stringToBool(config.readEntry("showAlwaysPrivateWindows")));
 
@@ -147,7 +145,6 @@ void FirefoxProfileRunnerConfig::save() {
     config.writeEntry("registerNormalWindows", m_ui->registerNormalWindows->isChecked());
     config.writeEntry("registerPrivateWindows", m_ui->registerPrivateWindows->isChecked());
     config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked());
-    config.writeEntry("showIconForPrivateWindow", m_ui->showIconForPrivateWindow->isChecked());
     config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked());
     config.writeEntry("automaticallyRegisterProfiles", m_ui->automaticallyRegisterProfiles->isChecked());
 
@@ -208,7 +205,6 @@ void FirefoxProfileRunnerConfig::defaults() {
     m_ui->registerPrivateWindows->setChecked(false);
     m_ui->automaticallyRegisterProfiles->setChecked(true);
     m_ui->hideDefaultProfile->setChecked(false);
-    m_ui->showIconForPrivateWindow->setChecked(true);
     m_ui->showAlwaysPrivateWindows->setChecked(false);
 }
 
@@ -237,7 +233,7 @@ void FirefoxProfileRunnerConfig::itemSelected() {
     }
     m_ui->moveUp->setDisabled(upDisabled);
     m_ui->moveDown->setDisabled(downDisabled);
-    m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text());
+    m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text().remove("Proxychains: "));
     m_ui->editProfileName->setDisabled(false);
 }
 
@@ -312,16 +308,27 @@ void FirefoxProfileRunnerConfig::moveDown() {
  */
 void FirefoxProfileRunnerConfig::applyProfileName() {
     edited = true;
-    if (m_ui->profiles->currentRow() == -1)return;
     const QString editedText = m_ui->editProfileName->text();
+    if (m_ui->profiles->currentRow() == -1)return;
     const QString textBeforeEditing = m_ui->profiles->currentItem()->text();
     const int count = m_ui->profiles->count();
-    m_ui->profiles->currentItem()->setText(editedText);
-    for (int i = 0; i < count; ++i) {
-        auto *item = m_ui->profiles->item(i);
-        if (item->text() == textBeforeEditing) {
-            item->setText(editedText);
-            break;
+
+    if (!proxychainsInstalled) {
+        m_ui->profiles->currentItem()->setText(editedText);
+        for (int i = 0; i < count; ++i) {
+            auto *item = m_ui->profiles->item(i);
+            if (item->text() == textBeforeEditing) {
+                item->setText(editedText);
+                break;
+            }
+        }
+    } else {
+        const QString rawTextBeforeEditing = QString(textBeforeEditing).remove("Proxychains: ");
+        for (int i = 0; i < count; ++i) {
+            auto *item = m_ui->profiles->item(i);
+            const QString itemText = item->text();
+            if (itemText == rawTextBeforeEditing) item->setText(editedText);
+            else if (itemText == textBeforeEditing) item->setText("Proxychains: " + editedText);
         }
     }
     m_ui->editProfileNameApply->setDisabled(true);
@@ -418,7 +425,6 @@ void FirefoxProfileRunnerConfig::proxychainsSelectionChanged() {
             item->setCheckState(Qt::Unchecked);
         }
     } else if (m_ui->showExtraOptionRadioButton->isChecked()) {
-        qInfo() << "Extra options TODO: Manual picker ";
         m_ui->proxychainsExtraControlsWidget->setHidden(false);
         previousProxychainsSelection = "extra";
         m_ui->proxychainsExtraComboBox->clear();
