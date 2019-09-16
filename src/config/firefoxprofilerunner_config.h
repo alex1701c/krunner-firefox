@@ -66,6 +66,8 @@ public Q_SLOTS:
 
     void toggleProxychainsConfigVisibility(const QString &forceHide = "");
 
+    void validateExtraOptionButtons();
+
     void addExtraOption();
 
     void removeExtraOption();

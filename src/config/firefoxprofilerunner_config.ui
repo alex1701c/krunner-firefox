@@ -51,7 +51,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-153</y>
+        <y>-7</y>
         <width>673</width>
         <height>850</height>
        </rect>
@@ -307,6 +307,9 @@ You can still sync the profiles manually. </string>
                          </item>
                          <item alignment="Qt::AlignRight">
                           <widget class="QPushButton" name="proxychainsExtraAddPushButton">
+                           <property name="enabled">
+                            <bool>false</bool>
+                           </property>
                            <property name="text">
                             <string>Add Option</string>
                            </property>
@@ -314,6 +317,9 @@ You can still sync the profiles manually. </string>
                          </item>
                          <item alignment="Qt::AlignRight">
                           <widget class="QPushButton" name="proxychainsExtraRemovePushButton">
+                           <property name="enabled">
+                            <bool>false</bool>
+                           </property>
                            <property name="text">
                             <string>Remove Option</string>
                            </property>
