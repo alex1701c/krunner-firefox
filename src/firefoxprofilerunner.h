@@ -11,13 +11,12 @@ Q_OBJECT
 public:
     FirefoxProfileRunner(QObject *parent, const QVariantList &args);
 
-    ~FirefoxProfileRunner() override;
-
     QString launchCommand;
     QList<Profile> profiles;
     KConfigGroup config;
     ProfileManager profileManager;
-    bool hideDefaultProfile, showAlwaysPrivateWindows, showIconForPrivateWindow;
+    bool hideDefaultProfile, showAlwaysPrivateWindows;
+    QIcon firefoxIcon, firefoxPrivateWindowIcon;
 
     QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
 

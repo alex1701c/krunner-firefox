@@ -1,4 +1,5 @@
 #include "firefoxprofilerunner.h"
+#include "helper.h"
 #include "profile/Profile.h"
 #include <KLocalizedString>
 #include <QDebug>
@@ -9,18 +10,17 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 }
 
-FirefoxProfileRunner::~FirefoxProfileRunner() = default;
-
 void FirefoxProfileRunner::reloadConfiguration() {
     profileManager = ProfileManager();
     profiles = profileManager.syncAndGetCustomProfiles();
     launchCommand = profileManager.getLaunchCommand();
 
+    firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
+    firefoxPrivateWindowIcon = QIcon("/usr/share/icons/private_browsing_firefox.svg");
 
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
-    hideDefaultProfile = config.readEntry("hideDefaultProfile", "false") == "true";
-    showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", "false") == "true";
-    showIconForPrivateWindow = config.readEntry("showIconForPrivateWindow", "true") == "true";
+    hideDefaultProfile = stringToBool(config.readEntry("hideDefaultProfile"));
+    showAlwaysPrivateWindows = stringToBool(config.readEntry("showAlwaysPrivateWindows", "true"));
 
 #ifdef status_dev
     for (const auto &p:profiles) {
@@ -73,12 +73,7 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 Plasma::QueryMatch
 FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
-    if (showIconForPrivateWindow && !data.value("private-window").toString().isEmpty()) {
-        match.setIconName("/usr/share/icons/private_browsing_firefox.svg");
-    } else {
-        if (launchCommand.endsWith("firefox-esr")) match.setIconName("firefox-esr");
-        else match.setIconName("firefox");
-    }
+    match.setIcon(data.count("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
