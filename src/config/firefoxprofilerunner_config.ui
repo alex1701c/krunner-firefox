@@ -51,9 +51,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-153</y>
         <width>673</width>
-        <height>805</height>
+        <height>850</height>
        </rect>
       </property>
       <property name="maximumSize">
@@ -281,14 +281,48 @@ You can still sync the profiles manually. </string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="showExtraOptionRadioButton">
-                      <property name="toolTip">
-                       <string>Show additional launch options with proxychains instead of changing the existing ones</string>
-                      </property>
-                      <property name="text">
-                       <string>Show extra options to launch with proxychains</string>
-                      </property>
-                     </widget>
+                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                      <item>
+                       <widget class="QRadioButton" name="showExtraOptionRadioButton">
+                        <property name="toolTip">
+                         <string>Show additional launch options with proxychains instead of changing the existing ones</string>
+                        </property>
+                        <property name="text">
+                         <string>Show extra options to launch with proxychains</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="proxychainsExtraControlsWidget" native="true">
+                        <layout class="QHBoxLayout" name="horizontalLayout_4">
+                         <item>
+                          <widget class="QComboBox" name="proxychainsExtraComboBox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                          </widget>
+                         </item>
+                         <item alignment="Qt::AlignRight">
+                          <widget class="QPushButton" name="proxychainsExtraAddPushButton">
+                           <property name="text">
+                            <string>Add Option</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item alignment="Qt::AlignRight">
+                          <widget class="QPushButton" name="proxychainsExtraRemovePushButton">
+                           <property name="text">
+                            <string>Remove Option</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="forceNewInstanceCheckBox">

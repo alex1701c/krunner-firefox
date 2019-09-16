@@ -19,6 +19,7 @@ Q_OBJECT
 public:
     explicit FirefoxProfileRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
+    QIcon firefoxIcon, firefoxPrivateWindowIcon;
     ProfileManager profileManager;
     QList<Profile> profiles;
     KSharedConfigPtr firefoxConfig;
@@ -29,13 +30,21 @@ public:
 
 public Q_SLOTS:
 
-
+    // KCModule slots
     void save() override;
 
     void load() override;
 
     void defaults() override;
 
+    // General config slots
+    void showAlwaysPrivateWindows();
+
+    void hideDefaultProfile();
+
+    void refreshProfiles();
+
+    // Profile sorting/editing signals
     void itemSelected();
 
     void moveUp();
@@ -48,13 +57,7 @@ public Q_SLOTS:
 
     void editProfileName();
 
-    void refreshProfiles();
-
-    void hideDefaultProfile();
-
-    void showAlwaysPrivateWindows();
-
-
+    // Proxychains config slots
     void proxychainsSelectionChanged();
 
     void validateProxychainsOptions();
@@ -62,6 +65,10 @@ public Q_SLOTS:
     void toggleGeneralConfigVisibility(const QString &forceHide = "");
 
     void toggleProxychainsConfigVisibility(const QString &forceHide = "");
+
+    void addExtraOption();
+
+    void removeExtraOption();
 
 
 private:
