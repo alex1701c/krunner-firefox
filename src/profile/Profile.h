@@ -9,17 +9,27 @@ class Profile {
 
 public:
     QString name;
+    // TODO Fill value
+    QString launchCommand;
     QString launchName;
     QString path;
     int priority;
-    int privateWindowPriority;
     bool isDefault;
     bool isEdited;
+    bool launchNormalWindowWithProxychains;
+    bool extraNormalWindowProxychainsLaunchOption;
+    int extraNormalWindowProxychainsOptionPriority;
+
+    int privateWindowPriority;
+    bool launchPrivateWindowWithProxychains;
+    bool extraprivateWindowProxychainsLaunchOption;
+    int extraPrivateWindowProxychainsOptionPriority;
+
 
     void writeSettings(KSharedConfigPtr firefoxConfig, const QString &profile, const QString &command,
                        int initialPriority = 0) const;
 
-    void writeConfigChanges(KSharedConfigPtr firefoxConfig);
+    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "");
 };
 
 

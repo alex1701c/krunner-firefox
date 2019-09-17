@@ -9,10 +9,12 @@
 #include <QtWidgets/QMessageBox>
 #include "helper.h"
 /**
- * TODO Integrate picker to create new profiles with proxychains
- * TODO Save new profiles
- * TODO Option to create Desktop Action with proxychains
- * TODO Launch proxychains from config
+ * //TODO Write profile settings and adjust proxychains values
+ * TODO Optimize global config
+ * TODO Register desktop actions for proxychains
+ * TODO Writing of initial config and proxychains settings???
+ * TODO md5sum to check if profiles.ini changed
+ * TODO
  */
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
@@ -94,7 +96,6 @@ void FirefoxProfileRunnerConfig::load() {
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
-    // Items data Structure List {profilePath, isDefault, type, priority
     for (const auto &profile:profiles) {
         // Normal window
         auto *item = new QListWidgetItem();
@@ -158,6 +159,49 @@ void FirefoxProfileRunnerConfig::save() {
         else proxychainsChoice = "extra";
         config.writeEntry("proxychainsIntegration", proxychainsChoice);
     }
+
+    // Organize entries in a map
+    const int profilesCount = m_ui->profiles->count();
+    //  <profilePath, <type, item> >
+    QMap<QString, QMap<QString, QListWidgetItem *>> organizedItems;
+    for (int i = 0; i < profilesCount; ++i) {
+        auto *item = m_ui->profiles->item(i);
+        auto data = item->data(32).toList();
+        data.replace(3, 100 - i);
+        item->setData(32, data);
+        auto newData = organizedItems.value(data.at(0).toString());
+        newData.insert(data.at(2).toString(), item);
+        organizedItems.insert(data.at(0).toString(), newData);
+    }
+
+    // Sync profiles with entries from map
+    const QString forceNewInstance = m_ui->forceNewInstanceCheckBox->isChecked() ? " --new-instance" : "";
+    for (auto &profile:profiles) {
+        auto itemMap = organizedItems.value(profile.path);
+        for (const auto &key:itemMap.keys()) {
+            const auto item = itemMap.value(key);
+            const auto itemData = item->data(32).toStringList();
+            if (key == "normal") {
+                profile.name = item->text();
+                profile.priority = itemData.at(3).toInt();
+                profile.privateWindowPriority = itemData.at(3).toInt();
+                profile.launchNormalWindowWithProxychains = item->checkState() == Qt::Checked;
+            } else if (key == "private") {
+                profile.privateWindowPriority = itemData.at(3).toInt();
+                profile.launchPrivateWindowWithProxychains = item->checkState() == Qt::Checked;
+            } else if (key == "proxychains-normal") {
+                profile.extraNormalWindowProxychainsLaunchOption = true;
+                profile.extraNormalWindowProxychainsOptionPriority = itemData.at(3).toInt();
+            } else if (key == "proxychains-private") {
+                profile.extraprivateWindowProxychainsLaunchOption = true;
+                profile.extraPrivateWindowProxychainsOptionPriority = itemData.at(3).toInt();
+            }
+            profile.writeConfigChanges(firefoxConfig, forceNewInstance);
+        }
+    }
+
+    return;
+    /* region old_settings
     QList<QListWidgetItem *> items;
     for (int i = 0; i < m_ui->profiles->count(); i++) {
         items.append(m_ui->profiles->item(i));
@@ -189,6 +233,7 @@ void FirefoxProfileRunnerConfig::save() {
             }
         }
     }
+    endregion */
     // If the runner does not register the profiles on startup
     if (!m_ui->automaticallyRegisterProfiles->isChecked()) {
         profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),

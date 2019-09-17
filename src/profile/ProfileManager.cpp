@@ -70,6 +70,8 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.isEdited = stringToBool(profileGroup.readEntry("Edited", "false"));
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
+        // TODO Convert to global settings
+        profile.launchCommand = launchCommand;
 
         profiles.append(profile);
     }
