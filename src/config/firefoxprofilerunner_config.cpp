@@ -175,7 +175,7 @@ void FirefoxProfileRunnerConfig::save() {
     }
 
     // Sync profiles with entries from map
-    const QString forceNewInstance = m_ui->forceNewInstanceCheckBox->isChecked() ? " --new-instance" : "";
+    const QString instanceOpt = m_ui->forceNewInstanceCheckBox->isChecked() ? " --new-instance" : "";
     for (auto &profile:profiles) {
         auto itemMap = organizedItems.value(profile.path);
         for (const auto &key:itemMap.keys()) {
@@ -193,47 +193,14 @@ void FirefoxProfileRunnerConfig::save() {
                 profile.extraNormalWindowProxychainsLaunchOption = true;
                 profile.extraNormalWindowProxychainsOptionPriority = itemData.at(3).toInt();
             } else if (key == "proxychains-private") {
-                profile.extraprivateWindowProxychainsLaunchOption = true;
+                profile.extraPrivateWindowProxychainsLaunchOption = true;
                 profile.extraPrivateWindowProxychainsOptionPriority = itemData.at(3).toInt();
             }
-            profile.writeConfigChanges(firefoxConfig, forceNewInstance);
+            profile.writeConfigChanges(firefoxConfig, instanceOpt);
         }
     }
 
     return;
-    /* region old_settings
-    QList<QListWidgetItem *> items;
-    for (int i = 0; i < m_ui->profiles->count(); i++) {
-        items.append(m_ui->profiles->item(i));
-    }
-
-    // Update settings in firefox.desktop file
-    const int itemSize = items.size();
-    for (auto &profile:profiles) {
-        bool matched = false;
-        for (int i = 0; i < itemSize && !matched; i++) {
-            const auto &item = items.at(i);
-            const auto itemData = item->data(32).toList();
-            if (itemData.first() == profile.path && itemData.at(2).toString() == "normal") {
-                if (profile.launchName != item->text()) profile.isEdited = true;
-                profile.name = item->text();
-                profile.priority = 100 - i;
-
-                // Get private window option of profile
-                bool privateMatch = false;
-                for (int i2 = 0; i2 < itemSize && !privateMatch; i2++) {
-                    const auto &data = items.at(i2)->data(32).toList();
-                    if (data.first() == profile.path && data.at(2).toBool()) {
-                        privateMatch = true;
-                        profile.privateWindowPriority = 100 - i2;
-                    }
-                }
-                profile.writeConfigChanges(firefoxConfig);
-                matched = true;
-            }
-        }
-    }
-    endregion */
     // If the runner does not register the profiles on startup
     if (!m_ui->automaticallyRegisterProfiles->isChecked()) {
         profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),

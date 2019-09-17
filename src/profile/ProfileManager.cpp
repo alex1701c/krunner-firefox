@@ -42,6 +42,7 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
     for (const auto &profileEntry: configs) {
         Profile profile;
         KConfigGroup profileConfig = firefoxProfilesIni->group(profileEntry);
+        profile.launchCommand = launchCommand;
         profile.launchName = profileConfig.readEntry("Name");
         profile.path = profileConfig.readEntry("Path");
         profiles.append(profile);
@@ -70,14 +71,13 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.isEdited = stringToBool(profileGroup.readEntry("Edited", "false"));
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
-        // TODO Convert to global settings
         profile.launchCommand = launchCommand;
-
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
         return profile1.priority > profile2.priority;
     });
+    qInfo() << "Found profiles: " << profiles.count();
     return profiles;
 }
 
@@ -104,7 +104,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 #ifdef status_dev
                     qInfo() << "Update " << profile.launchName;
 #endif
-                    profile.writeSettings(firefoxConfig, profile.path, launchCommand);
+                    profile.writeSettings(firefoxConfig);
                 }
             }
         }
@@ -126,7 +126,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
             qInfo() << "Install  " << profile.launchName;
 #endif
             // Write settings for normal and private window
-            profile.writeSettings(firefoxConfig, profile.path, launchCommand, idx);
+            profile.writeSettings(firefoxConfig, idx);
             ++idx;
         }
     }

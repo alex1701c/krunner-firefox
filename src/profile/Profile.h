@@ -6,10 +6,8 @@
 #include <KSharedConfig>
 
 class Profile {
-
 public:
     QString name;
-    // TODO Fill value
     QString launchCommand;
     QString launchName;
     QString path;
@@ -17,17 +15,16 @@ public:
     bool isDefault;
     bool isEdited;
     bool launchNormalWindowWithProxychains;
-    bool extraNormalWindowProxychainsLaunchOption;
-    int extraNormalWindowProxychainsOptionPriority;
+    bool extraNormalWindowProxychainsLaunchOption = false;
+    int extraNormalWindowProxychainsOptionPriority = 0;
 
-    int privateWindowPriority;
+    int privateWindowPriority = 0;
     bool launchPrivateWindowWithProxychains;
-    bool extraprivateWindowProxychainsLaunchOption;
-    int extraPrivateWindowProxychainsOptionPriority;
+    bool extraPrivateWindowProxychainsLaunchOption = false;
+    int extraPrivateWindowProxychainsOptionPriority = 0;
 
 
-    void writeSettings(KSharedConfigPtr firefoxConfig, const QString &profile, const QString &command,
-                       int initialPriority = 0) const;
+    void writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority = 0) const;
 
     void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "");
 };
