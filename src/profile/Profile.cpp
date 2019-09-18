@@ -9,8 +9,7 @@
  * @param firefoxConfig
  * @param initialPriority
  */
-void
-Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority) const {
+void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority) const {
     // Write settings for normal window
     KConfigGroup profileNormalConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);
     if (profileNormalConfig.readEntry("Edited", "false") != "true") {
@@ -50,7 +49,9 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     }
     profileConfig.writeEntry("Priority", this->priority);
     profileConfig.writeEntry("PrivateWindowPriority", this->privateWindowPriority);
+    profileConfig.writeEntry("ProxychainsNormalWindowOption", this->extraNormalWindowProxychainsLaunchOption);
     profileConfig.writeEntry("ProxychainsNormalWindowPriority", this->extraNormalWindowProxychainsOptionPriority);
+    profileConfig.writeEntry("ProxychainsPrivateWindowOption", this->extraPrivateWindowProxychainsLaunchOption);
     profileConfig.writeEntry("ProxychainsPrivateWindowPriority", this->extraPrivateWindowProxychainsOptionPriority);
     profileConfig.writeEntry("LaunchNormalWindowWithProxychains", this->launchNormalWindowWithProxychains);
     profileConfig.writeEntry("LaunchPrivateWindowWithProxychains", this->launchPrivateWindowWithProxychains);
@@ -86,5 +87,18 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     } else {
         proxychainsPrivateConfig.deleteGroup();
     }
+}
+
+void Profile::toString() const {
+    qInfo() << "name: " << this->name << " launchCommand: " << this->launchCommand << " launchName: "
+            << this->launchName << " path: " << this->path << " priority: "
+            << this->priority << " isDefault: " << this->isDefault << " isEdited: " << this->isEdited
+            << " launchNormalWindowWithProxychains: " << this->launchNormalWindowWithProxychains
+            << " extraNormalWindowProxychainsLaunchOption: " << this->extraNormalWindowProxychainsLaunchOption
+            << " extraNormalWindowProxychainsOptionPriority: " << this->extraNormalWindowProxychainsOptionPriority
+            << " privateWindowPriority: " << this->privateWindowPriority << " launchPrivateWindowWithProxychains: "
+            << this->launchPrivateWindowWithProxychains << " extraPrivateWindowProxychainsLaunchOption: "
+            << this->extraPrivateWindowProxychainsLaunchOption << " extraPrivateWindowProxychainsOptionPriority: "
+            << this->extraPrivateWindowProxychainsOptionPriority << "\n";
 }
 

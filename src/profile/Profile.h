@@ -4,6 +4,7 @@
 #include <QtCore/QString>
 #include <QList>
 #include <KSharedConfig>
+#include <ostream>
 
 class Profile {
 public:
@@ -25,6 +26,8 @@ public:
 
 
     void writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority = 0) const;
+
+    void toString() const;
 
     void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "");
 };

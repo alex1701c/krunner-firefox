@@ -4,6 +4,9 @@
 #include "ProfileManager.h"
 #include <helper.h>
 
+
+#define DEBUG_OUTPUT
+
 /**
  * Initialize variables
  */
@@ -32,7 +35,7 @@ QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
 }
 
 /**
- * Get raw profiles from profiles.ini file
+ * Get raw profiles from profiles.ini file, these contain just the name, path and launch command
  */
 QList<Profile> ProfileManager::getFirefoxProfiles() {
     QList<Profile> profiles;
@@ -52,7 +55,7 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
 
 /**
  * Read profiles from firefox.desktop file, these profiles have priority etc. configured
- * @param firefoxConfig
+ * @param firefoxConfig KSharedConfigPtr of firefox.desktop file
  */
 QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig) {
     QList<Profile> profiles;
@@ -70,14 +73,24 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = stringToBool(profileGroup.readEntry("Edited", "false"));
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
-        profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
         profile.launchCommand = launchCommand;
+        profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
+        profile.launchNormalWindowWithProxychains = stringToBool(profileGroup.readEntry("LaunchNormalWindowWithProxychains"));
+        profile.launchPrivateWindowWithProxychains = stringToBool(profileGroup.readEntry("LaunchPrivateWindowWithProxychains"));
+        // Proxychains extra options
+        profile.extraNormalWindowProxychainsLaunchOption = stringToBool(profileGroup.readEntry("ProxychainsNormalWindowOption"));
+        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", "0").toInt();
+        profile.extraPrivateWindowProxychainsLaunchOption = stringToBool(profileGroup.readEntry("ProxychainsPrivateWindowOption"));
+        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", "0").toInt();
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
         return profile1.priority > profile2.priority;
     });
+#ifdef DEBUG_OUTPUT
     qInfo() << "Found profiles: " << profiles.count();
+    for (const auto &profile:profiles) profile.toString();
+#endif
     return profiles;
 }
 
