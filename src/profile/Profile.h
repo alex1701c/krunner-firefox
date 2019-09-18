@@ -15,12 +15,12 @@ public:
     int priority;
     bool isDefault;
     bool isEdited;
-    bool launchNormalWindowWithProxychains;
+    bool launchNormalWindowWithProxychains = false;
     bool extraNormalWindowProxychainsLaunchOption = false;
     int extraNormalWindowProxychainsOptionPriority = 0;
 
     int privateWindowPriority = 0;
-    bool launchPrivateWindowWithProxychains;
+    bool launchPrivateWindowWithProxychains = false;
     bool extraPrivateWindowProxychainsLaunchOption = false;
     int extraPrivateWindowProxychainsOptionPriority = 0;
 
@@ -29,7 +29,7 @@ public:
 
     void toString() const;
 
-    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "");
+    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "") const;
 };
 
 

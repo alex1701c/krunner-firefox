@@ -5,8 +5,6 @@
 #include <helper.h>
 
 
-#define DEBUG_OUTPUT
-
 /**
  * Initialize variables
  */
@@ -87,7 +85,7 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
         return profile1.priority > profile2.priority;
     });
-#ifdef DEBUG_OUTPUT
+#ifdef status_dev
     qInfo() << "Found profiles: " << profiles.count();
     for (const auto &profile:profiles) profile.toString();
 #endif

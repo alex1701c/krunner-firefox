@@ -33,10 +33,10 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority)
 }
 
 /**
- * Write changes from the config dialog
+ * Write changes from the config dialog to the firefox.desktop file
  * @param firefoxConfig
  */
-void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance) {
+void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance) const {
     // General config/normal launch option
     KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);
     profileConfig.writeEntry("Name", this->name);

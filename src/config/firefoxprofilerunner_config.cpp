@@ -94,6 +94,8 @@ void FirefoxProfileRunnerConfig::load() {
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
+    QMap<QListWidgetItem *, Profile> itemProfileMap;
+    const bool addItemsToSet = config.readEntry("proxychainsIntegration", "disabled") == "existing";
     for (const auto &profile:profiles) {
         // Normal window
         auto *item = new QListWidgetItem();
@@ -109,6 +111,10 @@ void FirefoxProfileRunnerConfig::load() {
         item2->setData(32, data2);
         item2->setIcon(firefoxPrivateWindowIcon);
         items.append(item2);
+        if (addItemsToSet) {
+            itemProfileMap.insert(item, profile);
+            itemProfileMap.insert(item2, profile);
+        }
     }
     std::sort(items.begin(), items.end(), [](QListWidgetItem *item1, QListWidgetItem *item2) -> bool {
         return item1->data(32).toList().last() > item2->data(32).toList().last();
@@ -132,6 +138,7 @@ void FirefoxProfileRunnerConfig::load() {
         m_ui->proxychainsNotInstalledLabel->hide();
         toggleProxychainsConfigVisibility(stringToBool(config.readEntry("proxychainsMinimized")) ? "true" : "skip");
         validateProxychainsOptions();
+        loadInitialSettings(itemProfileMap);
     } else {
         m_ui->proxychainsConfigGroupBox->hide();
     }
@@ -175,6 +182,15 @@ void FirefoxProfileRunnerConfig::save() {
     // Sync profiles with entries from map
     const QString instanceOpt = m_ui->forceNewInstanceCheckBox->isChecked() ? " --new-instance" : "";
     for (auto &profile:profiles) {
+        // Reset optional values to false/0
+        profile.privateWindowPriority = 0;
+        profile.launchNormalWindowWithProxychains = false;
+        profile.launchPrivateWindowWithProxychains = false;
+        profile.extraNormalWindowProxychainsLaunchOption = false;
+        profile.extraNormalWindowProxychainsOptionPriority = 0;
+        profile.extraPrivateWindowProxychainsLaunchOption = false;
+        profile.extraPrivateWindowProxychainsOptionPriority = 0;
+
         auto itemMap = organizedItems.value(profile.path);
         for (const auto &key:itemMap.keys()) {
             const auto item = itemMap.value(key);
@@ -182,7 +198,6 @@ void FirefoxProfileRunnerConfig::save() {
             if (key == "normal") {
                 profile.name = item->text();
                 profile.priority = itemData.at(3).toInt();
-                profile.privateWindowPriority = itemData.at(3).toInt();
                 profile.launchNormalWindowWithProxychains = item->checkState() == Qt::Checked;
             } else if (key == "private") {
                 profile.privateWindowPriority = itemData.at(3).toInt();
@@ -194,8 +209,8 @@ void FirefoxProfileRunnerConfig::save() {
                 profile.extraPrivateWindowProxychainsLaunchOption = true;
                 profile.extraPrivateWindowProxychainsOptionPriority = itemData.at(3).toInt();
             }
-            profile.writeConfigChanges(firefoxConfig, instanceOpt);
         }
+        profile.writeConfigChanges(firefoxConfig, instanceOpt);
     }
 
     return;
@@ -394,6 +409,24 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
             item->setHidden(m_ui->hideDefaultProfile->isChecked());
             break;
         }
+    }
+}
+
+void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
+    if (previousProxychainsSelection == "existing") {
+        const int itemCount = m_ui->profiles->count();
+        for (int i = 0; i < itemCount; ++i) {
+            const auto item = m_ui->profiles->item(i);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            const bool isNormalWindow = item->data(32).toStringList().at(2) == "normal";
+            const auto profile = itemProfileMap.value(item);
+
+            const auto state = ((isNormalWindow && profile.launchNormalWindowWithProxychains) ||
+                                (!isNormalWindow && profile.launchPrivateWindowWithProxychains)) ? Qt::Checked : Qt::Unchecked;
+            item->setCheckState(state);
+        }
+    } else if (previousProxychainsSelection == "extra") {
+        qInfo() << "Extra options load";
     }
 }
 
