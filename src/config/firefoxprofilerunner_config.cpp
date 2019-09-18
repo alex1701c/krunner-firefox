@@ -62,6 +62,9 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showExtraOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->forceNewInstanceCheckBox, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->proxychainsExtraAddPushButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->proxychainsExtraRemovePushButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
+    connect(m_ui->profiles, SIGNAL(itemChanged(QListWidgetItem * )), SLOT(changed()));
     // Proxychains options validation/ui changes
     connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
     connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(validateProxychainsOptions()));
@@ -413,8 +416,8 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
 }
 
 void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
+    const int itemCount = m_ui->profiles->count();
     if (previousProxychainsSelection == "existing") {
-        const int itemCount = m_ui->profiles->count();
         for (int i = 0; i < itemCount; ++i) {
             const auto item = m_ui->profiles->item(i);
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -426,7 +429,38 @@ void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem 
             item->setCheckState(state);
         }
     } else if (previousProxychainsSelection == "extra") {
-        qInfo() << "Extra options load";
+        m_ui->proxychainsExtraControlsWidget->setHidden(false);
+        QList<QListWidgetItem *> additionalItems;
+        for (const auto &profile:profiles) {
+            if (profile.extraNormalWindowProxychainsLaunchOption) {
+                auto *item = new QListWidgetItem();
+                item->setText("Proxychains: " + profile.name);
+                QList<QVariant> data = {profile.path, false, "proxychains-normal", profile.extraNormalWindowProxychainsOptionPriority};
+                item->setData(32, data);
+                item->setIcon(firefoxIcon);
+                additionalItems.append(item);
+            }
+            if (profile.extraPrivateWindowProxychainsLaunchOption) {
+                auto *item = new QListWidgetItem();
+                item->setText("Proxychains: " + profile.name);
+                QList<QVariant> data = {profile.path, false, "proxychains-private",
+                                        profile.extraPrivateWindowProxychainsOptionPriority};
+                item->setData(32, data);
+                item->setIcon(firefoxPrivateWindowIcon);
+                additionalItems.append(item);
+            }
+            m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name, QStringList(
+                    {profile.path, "proxychains-normal", boolToString(profile.extraNormalWindowProxychainsLaunchOption)}));
+            m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name, QStringList(
+                    {profile.path, "proxychains-private", boolToString(profile.extraPrivateWindowProxychainsLaunchOption)}));
+        }
+        for (int i = itemCount - 1; i > 0; --i) {
+            additionalItems.append(m_ui->profiles->takeItem(i));
+        }
+        std::sort(additionalItems.begin(), additionalItems.end(), [](QListWidgetItem *item1, QListWidgetItem *item2) -> bool {
+            return item1->data(32).toList().last() > item2->data(32).toList().last();
+        });
+        for (const auto &item:additionalItems) m_ui->profiles->addItem(item);
     }
 }
 
@@ -437,6 +471,12 @@ void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem 
  * unchecked the extra entries are removed from the ListView
  */
 void FirefoxProfileRunnerConfig::proxychainsSelectionChanged() {
+    // Return if the current checkbox has been clicked
+    if ((previousProxychainsSelection == "existing" && m_ui->launchExistingOptionRadioButton->isChecked()) ||
+        (previousProxychainsSelection == "extra" && m_ui->showExtraOptionRadioButton->isChecked()) ||
+        (previousProxychainsSelection == "disabled" && m_ui->disableProxychainsRadioButton->isChecked())) {
+        return;
+    }
     // Remove old config
     if (previousProxychainsSelection == "existing") {
         const int itemCount = m_ui->profiles->count();
