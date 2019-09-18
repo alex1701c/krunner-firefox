@@ -9,12 +9,10 @@
 #include <QtWidgets/QMessageBox>
 #include "helper.h"
 /**
- * //TODO Write profile settings and adjust proxychains values
- * TODO Optimize global config
+ * TODO Load proxychins selection
  * TODO Register desktop actions for proxychains
  * TODO Writing of initial config and proxychains settings???
  * TODO md5sum to check if profiles.ini changed
- * TODO
  */
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)

@@ -7,8 +7,6 @@
 /**
  * Write/Overwrite the config of the Desktop Actions for normal/private windows
  * @param firefoxConfig
- * @param profilePath
- * @param this->launchCommand
  * @param initialPriority
  */
 void
@@ -54,6 +52,8 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     profileConfig.writeEntry("PrivateWindowPriority", this->privateWindowPriority);
     profileConfig.writeEntry("ProxychainsNormalWindowPriority", this->extraNormalWindowProxychainsOptionPriority);
     profileConfig.writeEntry("ProxychainsPrivateWindowPriority", this->extraPrivateWindowProxychainsOptionPriority);
+    profileConfig.writeEntry("LaunchNormalWindowWithProxychains", this->launchNormalWindowWithProxychains);
+    profileConfig.writeEntry("LaunchPrivateWindowWithProxychains", this->launchPrivateWindowWithProxychains);
 
     // Private window launch options
     KConfigGroup privateDesktopAction = firefoxConfig->group("Desktop Action new-private-window-with-profile-" + this->path);
@@ -66,21 +66,25 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     }
 
     // Extra proxychains normal window option
+    KConfigGroup proxychainsNormalConfig = firefoxConfig->group(
+            "Desktop Action new-proxychains-normal-window-with-profile-" + this->path);
     if (this->extraNormalWindowProxychainsLaunchOption) {
-        KConfigGroup proxychainsNormalConfig = firefoxConfig->group(
-                "Desktop Action new-proxychains-normal-window-with-profile-" + this->path);
         proxychainsNormalConfig.writeEntry("Name", "Proxychains: " + this->name);
         proxychainsNormalConfig.writeEntry("Exec", "proxychains4 " + this->launchCommand +
                                                    " -P \"" + this->launchName + "\"" + forceNewInstance);
+    } else {
+        proxychainsNormalConfig.deleteGroup();
     }
 
     // Extra proxychains private window option
+    KConfigGroup proxychainsPrivateConfig = firefoxConfig->group(
+            "Desktop Action new-proxychains-private-window-with-profile-" + this->path);
     if (this->extraPrivateWindowProxychainsLaunchOption) {
-        KConfigGroup proxychainsPrivateConfig = firefoxConfig->group(
-                "Desktop Action new-proxychains-private-window-with-profile-" + this->path);
         proxychainsPrivateConfig.writeEntry("Name", "Proxychains: " + this->name);
         proxychainsPrivateConfig.writeEntry("Exec", "proxychains4 " + this->launchCommand + " -P \"" +
                                                     this->launchName + "\" -private-window" + forceNewInstance);
+    } else {
+        proxychainsPrivateConfig.deleteGroup();
     }
 }
 
