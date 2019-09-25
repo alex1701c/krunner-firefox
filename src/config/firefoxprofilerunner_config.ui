@@ -53,7 +53,7 @@
         <x>0</x>
         <y>0</y>
         <width>673</width>
-        <height>772</height>
+        <height>862</height>
        </rect>
       </property>
       <property name="maximumSize">
@@ -173,10 +173,58 @@
           <item>
            <layout class="QVBoxLayout" name="proxychainsVerticalLaout">
             <item>
-             <widget class="QLabel" name="proxychainsNotInstalledLabel">
-              <property name="text">
-               <string>Proxychains4 is not installed ! With proxychains you can run Firefox over a proxy for just this process.</string>
-              </property>
+             <widget class="QWidget" name="proxychainsNotInstalledWidget" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="proxychainsNotInstalledLabel">
+                   <property name="text">
+                    <string>Proxychains4 is not installed !</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignHCenter">
+                  <widget class="QPushButton" name="proxychainsLearnMorePushButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Learn more</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignLeft">
+                  <widget class="QPushButton" name="proxychainsHideMessagePushButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string> Don't show again</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="proxychainsLearnMoreLabel">
+                 <property name="lineWidth">
+                  <number>1</number>
+                 </property>
+                 <property name="text">
+                  <string>With proxychains4 installed you can run individual processes or in this case
+Firefox profiles over a proxy.
+This is especially useful if you can't/don't want to use a system wide proxy.</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>

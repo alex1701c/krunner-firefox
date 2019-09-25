@@ -58,6 +58,9 @@ public Q_SLOTS:
     void editProfileName();
 
     // Proxychains config slots
+    void learnMoreProxychains();
+    void hideMessage();
+
     void loadInitialSettings(const QMap<QListWidgetItem *, Profile>& itemProfileMap);
 
     void proxychainsSelectionChanged();

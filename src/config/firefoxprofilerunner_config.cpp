@@ -9,10 +9,8 @@
 #include <QtWidgets/QMessageBox>
 #include "helper.h"
 /**
- * TODO Load proxychins selection
+ * TODO Syncing with proxychains
  * TODO Register desktop actions for proxychains
- * TODO Writing of initial config and proxychains settings???
- * TODO md5sum to check if profiles.ini changed
  */
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
@@ -57,6 +55,8 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->proxychainsToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(toggleProxychainsConfigVisibility()));
     connect(m_ui->proxychainsToggleHidePushButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     // Proxychains options changed
+    connect(m_ui->proxychainsLearnMorePushButton, SIGNAL(clicked(bool)), this, SLOT(learnMoreProxychains()));
+    connect(m_ui->proxychainsHideMessagePushButton, SIGNAL(clicked(bool)), this, SLOT(hideMessage()));
     connect(m_ui->disableProxychainsRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->launchExistingOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->showExtraOptionRadioButton, SIGNAL(clicked(bool)), this, SLOT(changed()));
@@ -136,13 +136,16 @@ void FirefoxProfileRunnerConfig::load() {
         else if (proxychainsChoice == "existing") m_ui->launchExistingOptionRadioButton->setChecked(true);
         else m_ui->showExtraOptionRadioButton->setChecked(true);
         // Validate
-        m_ui->proxychainsNotInstalledLabel->hide();
+        m_ui->proxychainsNotInstalledWidget->hide();
         toggleProxychainsConfigVisibility(stringToBool(config.readEntry("proxychainsMinimized")) ? "true" : "skip");
         validateProxychainsOptions();
         loadInitialSettings(itemProfileMap);
     } else {
+        m_ui->proxychainsLearnMoreLabel->hide();
         m_ui->proxychainsConfigGroupBox->hide();
+        if (config.readEntry("hide_not_installed_message") == "true") m_ui->proxychainsNotInstalledWidget->hide();
     }
+
     emit changed(false);
 }
 
@@ -609,6 +612,15 @@ void FirefoxProfileRunnerConfig::removeExtraOption() {
             break;
         }
     }
+}
+
+void FirefoxProfileRunnerConfig::learnMoreProxychains() {
+    m_ui->proxychainsLearnMoreLabel->setHidden(!m_ui->proxychainsLearnMoreLabel->isHidden());
+}
+
+void FirefoxProfileRunnerConfig::hideMessage() {
+    config.writeEntry("hide_not_installed_message", true);
+    m_ui->proxychainsNotInstalledWidget->setHidden(true);
 }
 
 
