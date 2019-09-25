@@ -29,7 +29,6 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     // General settings
     connect(m_ui->registerNormalWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->registerPrivateWindows, SIGNAL(clicked(bool)), this, SLOT(changed()));
-    connect(m_ui->automaticallyRegisterProfiles, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(changed()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(hideDefaultProfile()));
     connect(m_ui->hideDefaultProfile, SIGNAL(clicked(bool)), this, SLOT(itemSelected()));
@@ -86,7 +85,6 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
 }
 
 void FirefoxProfileRunnerConfig::load() {
-    m_ui->automaticallyRegisterProfiles->setChecked(stringToBool(config.readEntry("automaticallyRegisterProfiles", "true")));
     m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows")));
     m_ui->registerNormalWindows->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
     m_ui->hideDefaultProfile->setChecked(stringToBool(config.readEntry("hideDefaultProfile")));
@@ -155,7 +153,6 @@ void FirefoxProfileRunnerConfig::save() {
     config.writeEntry("registerPrivateWindows", m_ui->registerPrivateWindows->isChecked());
     config.writeEntry("hideDefaultProfile", m_ui->hideDefaultProfile->isChecked());
     config.writeEntry("showAlwaysPrivateWindows", m_ui->showAlwaysPrivateWindows->isChecked());
-    config.writeEntry("automaticallyRegisterProfiles", m_ui->automaticallyRegisterProfiles->isChecked());
 
     // Write proxychains settings
     if (proxychainsInstalled) {
@@ -217,11 +214,9 @@ void FirefoxProfileRunnerConfig::save() {
     }
 
     return;
-    // If the runner does not register the profiles on startup
-    if (!m_ui->automaticallyRegisterProfiles->isChecked()) {
-        profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),
-                                                firefoxConfig);
-    }
+    // Change registering based on new settings
+    profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),
+                                            firefoxConfig);
     // New runner instance has latest configuration
     system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
 
@@ -231,7 +226,6 @@ void FirefoxProfileRunnerConfig::save() {
 void FirefoxProfileRunnerConfig::defaults() {
     m_ui->registerNormalWindows->setChecked(true);
     m_ui->registerPrivateWindows->setChecked(false);
-    m_ui->automaticallyRegisterProfiles->setChecked(true);
     m_ui->hideDefaultProfile->setChecked(false);
     m_ui->showAlwaysPrivateWindows->setChecked(false);
 }
@@ -337,7 +331,7 @@ void FirefoxProfileRunnerConfig::moveDown() {
 void FirefoxProfileRunnerConfig::applyProfileName() {
     edited = true;
     const QString editedText = m_ui->editProfileName->text();
-    if (m_ui->profiles->currentRow() == -1)return;
+    if (m_ui->profiles->currentRow() == -1) return;
     const QString textBeforeEditing = m_ui->profiles->currentItem()->text();
     const int count = m_ui->profiles->count();
 
@@ -369,7 +363,7 @@ void FirefoxProfileRunnerConfig::applyProfileName() {
  * Reset text of name edit field to initial name
  */
 void FirefoxProfileRunnerConfig::cancelProfileName() {
-    if (m_ui->profiles->currentRow() == -1)return;
+    if (m_ui->profiles->currentRow() == -1) return;
     m_ui->editProfileName->setText(m_ui->profiles->currentItem()->text());
     m_ui->editProfileName->setFocus();
 }
@@ -380,9 +374,7 @@ void FirefoxProfileRunnerConfig::cancelProfileName() {
 void FirefoxProfileRunnerConfig::editProfileName() {
     if (m_ui->profiles->currentRow() == -1) return;
     m_ui->editProfileNameApply->setDisabled(
-            m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text() ||
-            m_ui->editProfileName->text().isEmpty()
-    );
+            m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text() || m_ui->editProfileName->text().isEmpty());
     m_ui->editProfileNameCancel->setDisabled(m_ui->profiles->currentItem()->text() == m_ui->editProfileName->text());
 
 }
@@ -415,6 +407,13 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
     }
 }
 
+/**
+ * Load intitial settings, uses the previousProxychainsSelection variable to determine which option should
+ * be loaded
+ * @param itemProfileMap Used to get the profile based on the QListWidgetItem, this profile
+ * is used to determine the CheckedState of the item.
+ * This parameter is only required if the data for the "Use existing profiles" option should be loaded
+ */
 void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
     const int itemCount = m_ui->profiles->count();
     if (previousProxychainsSelection == "existing") {

@@ -3,6 +3,7 @@
 #include <KConfigCore/KConfigGroup>
 #include "ProfileManager.h"
 #include <helper.h>
+#include <QtCore/QCryptographicHash>
 
 
 /**
@@ -21,8 +22,19 @@ ProfileManager::ProfileManager() {
  */
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
-    const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
-    if (forceSync || stringToBool(config.readEntry("automaticallyRegisterProfiles", "true"))) {
+    auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    const QString lastHash = config.readEntry("lastHash");
+    bool hasChanged = false;
+    QFile file(firefoxProfilesIniPath);
+    if (file.open(QFile::ReadOnly)) {
+        QCryptographicHash hash(QCryptographicHash::Md5);
+        if (hash.addData(&file)) {
+            const QString newHash = hash.result();
+            config.writeEntry("lastHash", newHash);
+            hasChanged = lastHash != newHash;
+        }
+    }
+    if (forceSync || hasChanged) {
         QList<Profile> firefoxProfiles = getFirefoxProfiles();
         syncDesktopFile(firefoxProfiles, firefoxConfig);
 #ifdef  status_dev
