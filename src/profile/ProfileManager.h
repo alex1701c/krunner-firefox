@@ -21,7 +21,7 @@ public:
 
     void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig);
 
-    void changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig);
+    void changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra, KSharedConfigPtr firefoxConfig);
 
     QString getLaunchCommand() const;
 

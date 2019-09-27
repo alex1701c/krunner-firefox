@@ -156,7 +156,8 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     const auto config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
     bool enableNormal = stringToBool(config.readEntry("registerNormalWindows", "true"));
     bool enablePrivate = stringToBool(config.readEntry("registerPrivateWindows", "true"));
-    changeProfileRegistering(enableNormal, enablePrivate, firefoxConfig);
+    bool enableProxychainsExtra = stringToBool(config.readEntry("showProxychainsOptionsGlobally"));
+    //changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
 }
 
 /**
@@ -165,16 +166,19 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
  * @param enablePrivate
  * @param firefoxConfig
  */
-void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig) {
+void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra,
+                                              KSharedConfigPtr firefoxConfig) {
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
 
-    for (const auto &groupName:firefoxConfig->groupList()) {
+    for (auto &groupName:firefoxConfig->groupList()) {
         if (enableNormal && groupName.startsWith("Desktop Action new-window-with-profile")) {
-            registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
-        }
-        if (enablePrivate && groupName.startsWith("Desktop Action new-private-window-with-profile-")) {
-            registeredActions.append(QString(groupName).remove("Desktop Action ") + ";");
+            registeredActions.append(groupName.remove("Desktop Action ") + ";");
+        } else if (enablePrivate && groupName.startsWith("Desktop Action new-private-window-with-profile-")) {
+            registeredActions.append(groupName.remove("Desktop Action ") + ";");
+        } else if (enableProxychainsExtra && groupName.startsWith("Desktop Action new-proxychains-") &&
+                   !firefoxConfig->group(groupName).keyList().isEmpty()) {
+            registeredActions.append(groupName.remove("Desktop Action ") + ";");
         }
     }
     firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);

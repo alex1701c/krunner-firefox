@@ -82,6 +82,7 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
             "Desktop Action new-proxychains-private-window-with-profile-" + this->path);
     if (this->extraPrivateWindowProxychainsLaunchOption) {
         proxychainsPrivateConfig.writeEntry("Name", "Proxychains: " + this->name);
+        proxychainsPrivateConfig.writeEntry("Icon", "/usr/share/icons/private_browsing_firefox.svg");
         proxychainsPrivateConfig.writeEntry("Exec", "proxychains4 " + this->launchCommand + " -P \"" +
                                                     this->launchName + "\" -private-window" + forceNewInstance);
     } else {

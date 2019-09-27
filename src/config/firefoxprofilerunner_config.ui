@@ -53,7 +53,7 @@
         <x>0</x>
         <y>0</y>
         <width>673</width>
-        <height>862</height>
+        <height>890</height>
        </rect>
       </property>
       <property name="maximumSize">
@@ -340,6 +340,13 @@ This is especially useful if you can't/don't want to use a system wide proxy.</s
                        </widget>
                       </item>
                      </layout>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="showProxychainsOptionsGloballyCheckBox">
+                      <property name="text">
+                       <string>Show proxychains options globally</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="forceNewInstanceCheckBox">
