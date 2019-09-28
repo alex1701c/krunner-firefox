@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QtCore/QDir>
 #include "helper.h"
+
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxProfileRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
 
@@ -616,10 +617,16 @@ void FirefoxProfileRunnerConfig::removeExtraOption() {
     }
 }
 
+/**
+ * Toggle visibility of learn more label
+ */
 void FirefoxProfileRunnerConfig::learnMoreProxychains() {
     m_ui->proxychainsLearnMoreLabel->setHidden(!m_ui->proxychainsLearnMoreLabel->isHidden());
 }
 
+/**
+ * Hide proxychains not installed message and persist choice in config
+ */
 void FirefoxProfileRunnerConfig::hideMessage() {
     config.writeEntry("hide_not_installed_message", true);
     m_ui->proxychainsNotInstalledWidget->setHidden(true);
