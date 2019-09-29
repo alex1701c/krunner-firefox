@@ -82,11 +82,12 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
 }
 
 void FirefoxProfileRunnerConfig::load() {
-    m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows")));
+    m_ui->registerPrivateWindows->setChecked(stringToBool(config.readEntry("registerPrivateWindows", "true")));
     m_ui->registerNormalWindows->setChecked(stringToBool(config.readEntry("registerNormalWindows", "true")));
     m_ui->hideDefaultProfile->setChecked(stringToBool(config.readEntry("hideDefaultProfile")));
-    m_ui->showAlwaysPrivateWindows->setChecked(stringToBool(config.readEntry("showAlwaysPrivateWindows")));
+    m_ui->showAlwaysPrivateWindows->setChecked(stringToBool(config.readEntry("showAlwaysPrivateWindows", "true")));
 
+    profileManager = ProfileManager();
     profiles = profileManager.syncAndGetCustomProfiles(forceProfileSync);
     forceProfileSync = false;
     m_ui->profiles->clear();
@@ -121,7 +122,6 @@ void FirefoxProfileRunnerConfig::load() {
 
     // Initial validation
     showAlwaysPrivateWindows();
-    hideDefaultProfile();
     toggleGeneralConfigVisibility(stringToBool(config.readEntry("generalMinimized")) ? "true" : "skip");
     if (proxychainsInstalled) {
         // Load data
@@ -144,6 +144,7 @@ void FirefoxProfileRunnerConfig::load() {
         m_ui->proxychainsConfigGroupBox->hide();
         if (config.readEntry("hide_not_installed_message") == "true") m_ui->proxychainsNotInstalledWidget->hide();
     }
+    hideDefaultProfile();
 
     emit changed(false);
 }
@@ -161,7 +162,7 @@ void FirefoxProfileRunnerConfig::save() {
             m_ui->showProxychainsOptionsGloballyCheckBox->isChecked() && m_ui->showExtraOptionRadioButton->isChecked();
     if (proxychainsInstalled) {
         config.writeEntry("proxychainsMinimized", m_ui->proxychainsItemsWidget->isHidden());
-        config.writeEntry("proxychainsMinimized", m_ui->proxychainsItemsWidget->isHidden());
+        config.writeEntry("proxychainsForceNewInstance", m_ui->forceNewInstanceCheckBox->isChecked());
         config.writeEntry("showProxychainsOptionsGlobally", showExtraProxychainsOptionsGlobally);
         QString proxychainsChoice;
         if (m_ui->disableProxychainsRadioButton->isChecked()) proxychainsChoice = "disabled";
@@ -284,6 +285,7 @@ void FirefoxProfileRunnerConfig::refreshProfiles() {
     m_ui->profiles->setFocus();
     if (m_ui->profiles->count() > 0) m_ui->profiles->setCurrentRow(0);
     edited = false;
+    hideDefaultProfile();
 }
 
 /**
@@ -397,7 +399,7 @@ void FirefoxProfileRunnerConfig::showAlwaysPrivateWindows() {
 }
 
 /**
- * Hide default profile from profiles list
+ * Hide default profile from profiles list if checkbox is checked
  */
 void FirefoxProfileRunnerConfig::hideDefaultProfile() {
     const int count = m_ui->profiles->count();
@@ -412,7 +414,7 @@ void FirefoxProfileRunnerConfig::hideDefaultProfile() {
 }
 
 /**
- * Load intitial settings, uses the previousProxychainsSelection variable to determine which option should
+ * Load initial settings, uses the previousProxychainsSelection variable to determine which option should
  * be loaded
  * @param itemProfileMap Used to get the profile based on the QListWidgetItem, this profile
  * is used to determine the CheckedState of the item.
@@ -433,6 +435,7 @@ void FirefoxProfileRunnerConfig::loadInitialSettings(const QMap<QListWidgetItem 
         }
     } else if (previousProxychainsSelection == "extra") {
         m_ui->proxychainsExtraControlsWidget->setHidden(false);
+        m_ui->proxychainsExtraComboBox->clear();
         QList<QListWidgetItem *> additionalItems;
         for (const auto &profile:profiles) {
             if (profile.extraNormalWindowProxychainsLaunchOption) {

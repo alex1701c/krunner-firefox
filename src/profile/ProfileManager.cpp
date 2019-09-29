@@ -136,10 +136,14 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
             qInfo() << "Delete " << installedProfile;
 #endif
             // Delete normal and private window Desktop Action
+            const QString profileName = QString(installedProfile).remove("Desktop Action new-window-with-profile-");
             firefoxConfig->deleteGroup(installedProfile);
-            firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" +
-                                       QString(installedProfile).remove("Desktop Action new-window-with-profile-"));
+            firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" + profileName);
+            firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" + profileName);
+            firefoxConfig->deleteGroup("Desktop Action new-proxychains-normal-window-with-profile-" + profileName);
+            firefoxConfig->deleteGroup("Desktop Action new-proxychains-private-window-with-profile-" + profileName);
         }
+        firefoxConfig->sync();
     }
     // Add group and register action
     int idx = 1;
@@ -157,7 +161,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     bool enableNormal = stringToBool(config.readEntry("registerNormalWindows", "true"));
     bool enablePrivate = stringToBool(config.readEntry("registerPrivateWindows", "true"));
     bool enableProxychainsExtra = stringToBool(config.readEntry("showProxychainsOptionsGlobally"));
-    //changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
+    changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
 }
 
 /**
@@ -169,6 +173,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra,
                                               KSharedConfigPtr firefoxConfig) {
     QString registeredActions = "new-window;new-private-window;";
+    firefoxConfig->sync();
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
 
     for (auto &groupName:firefoxConfig->groupList()) {

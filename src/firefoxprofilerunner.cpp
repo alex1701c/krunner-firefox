@@ -22,9 +22,8 @@ void FirefoxProfileRunner::reloadConfiguration() {
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
     hideDefaultProfile = stringToBool(config.readEntry("hideDefaultProfile"));
     showAlwaysPrivateWindows = stringToBool(config.readEntry("showAlwaysPrivateWindows", "true"));
-    proxychainsIntegration = config.readEntry("proxychainsIntegration", "disabled");
     proxychainsForceNewInstance = stringToBool(config.readEntry("proxychainsForceNewInstance"));
-    proxychainsIntegrated = proxychainsIntegration != "disabled";
+    proxychainsIntegrated = config.readEntry("proxychainsIntegration", "disabled") != "disabled";
 
 #ifdef status_dev
     for (const auto &p:profiles) {
@@ -74,11 +73,11 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
     //qInfo() << data;
     if (data.contains("proxychains")) {
         args.prepend(localLaunchCommand);
+        args.prepend("-q");
         localLaunchCommand = "proxychains4";
         if (proxychainsForceNewInstance) args.append("--new-instance");
     }
     if (data.contains("private-window")) args.append("-private-window");
-
 
     QProcess::startDetached(localLaunchCommand, args);
 }
@@ -98,11 +97,15 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
     for (auto &profile:profiles) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
+            bool skipMatch = false;
 
             data.insert("name", profile.launchName);
             if (privateWindow) data.insert("private-window", "true");
             // Hide default profile
-            if (profile.isDefault && hideDefaultProfile && !privateWindow) continue;
+            if (profile.isDefault && hideDefaultProfile && !privateWindow) {
+                if (!profile.extraNormalWindowProxychainsLaunchOption) continue;
+                skipMatch = true;
+            }
             QString defaultNote = profile.isDefault ? " (default)" : "";
             QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
             float priority = (float) profile.priority / 100;
@@ -128,7 +131,7 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
                                                (float) profile.extraPrivateWindowProxychainsOptionPriority / 100));
                 }
             }
-            matches.append(createMatch(text, data, priority));
+            if (!skipMatch) matches.append(createMatch(text, data, priority));
         }
     }
     return matches;

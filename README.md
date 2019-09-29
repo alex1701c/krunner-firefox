@@ -4,11 +4,11 @@ This plugin allows you to launch Firefox profiles from Krunner and your normal l
 
 The plugin uses a local copy of the firefox.desktop file. In this file it adds Desktop Action entries for
 the profiles. Because of this you can search for the profiles in your normal launcher.  
-If you make changes in your Firefox profile you can sync them manually in the config dialog or they can
-be applied on startup. 
-
 This plugin is also compatible with firefox-esr.
- 
+
+Furthermore it provides proxychains4 integration. This allows you to launch specific profiles over a proxy.
+This integration os optional.
+
 ### Required Dependencies
 
 Debian/Ubuntu  
