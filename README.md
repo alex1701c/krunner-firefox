@@ -7,7 +7,7 @@ the profiles. Because of this you can search for the profiles in your normal lau
 This plugin is also compatible with firefox-esr.
 
 Furthermore it provides proxychains4 integration. This allows you to launch specific profiles over a proxy.
-This integration os optional.
+This integration is optional.
 
 ### Required Dependencies
 
@@ -52,35 +52,34 @@ and change the path for the unzip command
 
 #### Overview
 The plugin gets triggered by firef.  
-![Overview](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/overview.png)
+![Overview](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_overview.png)
 
 #### Search
 After the trigger word you can search the profiles.  
-![Search](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/filter_profiles.png)
-
-#### Private Window
-You can add a -p flag to your query if you want firefox to open in a private window.  
-![Private Window](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/private_window_flag.png)
+![Search](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_search.png)
 
 #### Config Dialog  
-In the config dialog you can change the name and order of your profiles.
-Additionally you can sync the profiles from Firefox (in case you created/renamed them).  
-
-If you uncheck the options to register the normal/private window launch options profiles globally you can not launch the profiles like in the last screenshot.  
+If you uncheck the options to register the normal/private window launch options profiles globally you can not launch
+the profiles like in the last screenshot.  
 If the following option is checked the option to launch a normal window with the default profile is not shown.
 This is useful, because the default profile can be launched with the "Applications" plugin.  
-The option to always show private windows is demonstrated in the next screenshot.
-This is useful if you have only one/a few profiles.   
-With the last checkbox selected the private window options will have the icon of the private windows in Firefox (as in the next screenshot).  
+The option to always show private windows is demonstrated in the first screenshot.  
 
-![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_dialog.png)
+Using the Move Up/Down buttons you can change the order of the options.   
+The text field below is used to rename the profiles. This does not modify the Firefox
+configuration, just the displayed name for the runner.  
+![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/general_config_dialog.png)
 
-#### Overview With Private Windows  
-Here the options to always show private windows and to hide the default profile are enabled.  
-(For demonstration purposes are here only 2 profiles).  
-![Overview With Private Window](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/hide_default_show_private_windows.png)
+#### Config Dialog Proxychains
+If proxychains4 is installed you can add extra launch options. This way Firefox is started over a proxy
+but no system proxy has to be configured.  
+The force new instance button adds the "--new-instance" flag to the launch arguments of Firefox. This way
+you can be sure that Firefox is started over a proxy, but you can only have one instance of Firefox with 
+the selected profile running.  
+![Config Dialog Proxychains](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_extra.png)  
+The existing launch options can also be modified to use proxychains.  
+![Config Dialog Proxychains Change Existing](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_existing.png)   
 
-#### Search from normal launcher
-You can also search by name for the profiles in your launcher or with the "Applications" Krunner plugin.    
-![Search from normal launcher](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/search_profiles_from_launcher.png)
+#### Overview With All Global Options    
+![Overview With All Global Options](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/global_overview_proxychains.png)
 

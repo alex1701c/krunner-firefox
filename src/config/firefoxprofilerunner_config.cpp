@@ -230,9 +230,18 @@ void FirefoxProfileRunnerConfig::save() {
 
 void FirefoxProfileRunnerConfig::defaults() {
     m_ui->registerNormalWindows->setChecked(true);
-    m_ui->registerPrivateWindows->setChecked(false);
+    m_ui->registerPrivateWindows->setChecked(true);
     m_ui->hideDefaultProfile->setChecked(false);
-    m_ui->showAlwaysPrivateWindows->setChecked(false);
+    m_ui->showAlwaysPrivateWindows->setChecked(true);
+
+    if (proxychainsInstalled) {
+        m_ui->disableProxychainsRadioButton->setChecked(true);
+        m_ui->forceNewInstanceCheckBox->setChecked(false);
+        m_ui->showProxychainsOptionsGloballyCheckBox->setChecked(false);
+        proxychainsSelectionChanged();
+    }
+    hideDefaultProfile();
+    emit changed();
 }
 
 /**

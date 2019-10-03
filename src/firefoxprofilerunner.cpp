@@ -85,7 +85,7 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 Plasma::QueryMatch
 FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
-    match.setIcon(data.count("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
+    match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
