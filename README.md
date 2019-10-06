@@ -68,15 +68,17 @@ The option to always show private windows is demonstrated in the first screensho
 Using the Move Up/Down buttons you can change the order of the options.   
 The text field below is used to rename the profiles. This does not modify the Firefox
 configuration, just the displayed name for the runner.  
-![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/general_config_dialog.png)
+![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/general_config_dialog.png)  
 
 #### Config Dialog Proxychains
 If proxychains4 is installed you can add extra launch options. This way Firefox is started over a proxy
-but no system proxy has to be configured.  
+but no system wide proxy has to be configured.  
 The force new instance button adds the "--new-instance" flag to the launch arguments of Firefox. This way
 you can be sure that Firefox is started over a proxy, but you can only have one instance of Firefox with 
 the selected profile running.  
 ![Config Dialog Proxychains](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_extra.png)  
+This configuration would look like this in Krunner:  
+![Proxychains Config Example](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_search_proxychains.png)  
 The existing launch options can also be modified to use proxychains.  
 ![Config Dialog Proxychains Change Existing](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_existing.png)   
 
