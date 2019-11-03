@@ -359,13 +359,21 @@ void FirefoxProfileRunnerConfig::applyProfileName() {
                 break;
             }
         }
+
     } else {
+        // Rename entries in sortable list
         const QString rawTextBeforeEditing = QString(textBeforeEditing).remove("Proxychains: ");
         for (int i = 0; i < count; ++i) {
             auto *item = m_ui->profiles->item(i);
             const QString itemText = item->text();
             if (itemText == rawTextBeforeEditing) item->setText(editedText);
             else if (itemText == textBeforeEditing) item->setText("Proxychains: " + editedText);
+        }
+        // Rename entries in combo box
+        const int comboboxCount = m_ui->proxychainsExtraComboBox->count();
+        for (int i = 0; i < comboboxCount; ++i) {
+            const QString itemText = m_ui->proxychainsExtraComboBox->itemText(i);
+            if (itemText == rawTextBeforeEditing) m_ui->proxychainsExtraComboBox->setItemText(i, editedText);
         }
     }
     m_ui->editProfileNameApply->setDisabled(true);
@@ -597,7 +605,8 @@ void FirefoxProfileRunnerConfig::addExtraOption() {
     }
     // Create item and add it to profiles list
     auto *item = new QListWidgetItem();
-    item->setText("Proxychains: " + profile.name);
+    // The text from the profile is not up to date if it has been renamed
+    item->setText("Proxychains: " + m_ui->proxychainsExtraComboBox->itemText(currentIndex));
     QList<QVariant> data = {profile.path, profile.isDefault, profileInfo.at(1), profile.priority};
     item->setData(32, data);
     item->setIcon(profileInfo.at(1) == "proxychains-normal" ? firefoxIcon : firefoxPrivateWindowIcon);
