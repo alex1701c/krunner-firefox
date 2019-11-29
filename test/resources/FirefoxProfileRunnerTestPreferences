@@ -1,7 +1,0 @@
-[Runners][FirefoxProfileRunner]
-automaticallyRegisterProfiles=false
-hideDefaultProfile=true
-registerNormalWindows=true
-registerPrivateWindows=true
-showAlwaysPrivateWindows=true
-showIconForPrivateWindow=true

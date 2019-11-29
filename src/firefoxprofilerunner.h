@@ -2,7 +2,7 @@
 #define FIREFOXPROFILERUNNER_H
 
 #include <KRunner/AbstractRunner>
-#include <profile/ProfileManager.h>
+#include "profile/ProfileManager.h"
 #include <QtCore/QFileSystemWatcher>
 #include "profile/Profile.h"
 
