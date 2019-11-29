@@ -23,7 +23,9 @@ Fedora
 ### Build instructions
 
 The easiest way to install is:  
-`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`
+`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`  
+Or you can install it without admin privileges:  
+`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install-user.sh | bash`  
 
 Or you can do it manually:  
 ```
@@ -33,7 +35,7 @@ git clone https://github.com/alex1701c/FirefoxProfileRunner
 cd FirefoxProfileRunner
 mkdir build
 cd build
-cmake -DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins` ..
+cmake -DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins` -DCMAKE_BUILD_TYPE=Release ..
 make
 sudo make install
 kquitapp5 krunner 2> /dev/null; kstart5 --windowclass krunner krunner > /dev/null 2>&1 &
@@ -43,7 +45,7 @@ To get the icon for the private window you have to extract it:
 ```
 mkdir -p /tmp/firefoxprofile_installer
 unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/icons/private_browsing_firefox.svg
+sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
 rm -rf /tmp/firefoxprofile_installer
 ```
 If you install it manually for firefox-esr you should adjust the icon in src/plasma-runner-firefoxprofilerunner.desktop

@@ -15,9 +15,7 @@ void FirefoxProfileRunner::reloadConfiguration() {
     profileManager = ProfileManager();
     profiles = profileManager.syncAndGetCustomProfiles();
     launchCommand = profileManager.launchCommand;
-
     firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
-    firefoxPrivateWindowIcon = QIcon("/usr/share/icons/private_browsing_firefox.svg");
 
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
     hideDefaultProfile = stringToBool(config.readEntry("hideDefaultProfile"));

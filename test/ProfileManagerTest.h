@@ -61,21 +61,21 @@ private slots:
         QCOMPARE(rawProfiles.size(), 2);
         manager.syncDesktopFile(rawProfiles, firefoxConfig);
         QCOMPARE(firefoxConfig->groupList().filter(QRegExp(R"(^Desktop Action new-(?:private-)?window-with-profile)")).size(), 4);
-        manager.changeProfileRegistering(true, true, firefoxConfig);
+        manager.changeProfileRegistering(true, true, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 6);
 
         // Unregister private windows
-        manager.changeProfileRegistering(true, false, firefoxConfig);
+        manager.changeProfileRegistering(true, false, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 4);
         QCOMPARE(firefoxConfig->group("Desktop Entry").readEntry("Actions").split(";")
                          .filter(QRegExp(R"(^new-private-window-with-profile)")).count(), 0);
 
         // Unregister all windows
-        manager.changeProfileRegistering(false, false, firefoxConfig);
+        manager.changeProfileRegistering(false, false, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 2);
 
         // Register all options
-        manager.changeProfileRegistering(true, true, firefoxConfig);
+        manager.changeProfileRegistering(true, true, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 6);
 
         // Check if profiles are read correctly

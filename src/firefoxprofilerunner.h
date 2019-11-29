@@ -16,7 +16,8 @@ public:
     KConfigGroup config;
     ProfileManager profileManager;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
-    QIcon firefoxIcon, firefoxPrivateWindowIcon;
+    QIcon firefoxIcon;
+    const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
 
     QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
 

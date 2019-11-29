@@ -6,6 +6,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QDebug>
 #include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include "helper.h"
 
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
@@ -78,7 +79,7 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
     proxychainsInstalled = QFile::exists("/usr/bin/proxychains4");
     firefoxIcon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
-    firefoxPrivateWindowIcon = QIcon("/usr/share/icons/private_browsing_firefox.svg");
+    firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
 }
 
 void FirefoxProfileRunnerConfig::load() {
@@ -223,7 +224,7 @@ void FirefoxProfileRunnerConfig::save() {
     profileManager.changeProfileRegistering(m_ui->registerNormalWindows->isChecked(), m_ui->registerPrivateWindows->isChecked(),
                                             showExtraProxychainsOptionsGlobally, firefoxConfig);
     // New runner instance has latest configuration
-    system("kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
+    QProcess::startDetached("bash", QStringList() << "-c" << "kquitapp5 krunner;kstart5 krunner > /dev/null 2&>1");
 
     emit changed(true);
 }
