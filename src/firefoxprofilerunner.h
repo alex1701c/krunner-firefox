@@ -3,6 +3,7 @@
 
 #include <KRunner/AbstractRunner>
 #include <profile/ProfileManager.h>
+#include <QtCore/QFileSystemWatcher>
 #include "profile/Profile.h"
 
 class FirefoxProfileRunner : public Plasma::AbstractRunner {
@@ -11,10 +12,11 @@ Q_OBJECT
 public:
     FirefoxProfileRunner(QObject *parent, const QVariantList &args);
 
+    QFileSystemWatcher watcher;
     QString launchCommand;
+    QRegExp filterRegex = QRegExp(R"(^fire\w*(?: (.+))$)");
+    const QRegExp privateWindowFlagRegex = QRegExp(" -p *$");
     QList<Profile> profiles;
-    KConfigGroup config;
-    ProfileManager profileManager;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;
     const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
@@ -28,7 +30,9 @@ public: // Plasma::AbstractRunner API
 
     void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
 
-    void reloadConfiguration() override;
+protected Q_SLOTS:
+
+    void reloadPluginConfiguration(const QString &configFile = "");
 };
 
 #endif

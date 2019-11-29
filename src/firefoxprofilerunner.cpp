@@ -5,30 +5,57 @@
 #include <QDebug>
 #include <QtCore/QProcess>
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 
 FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
+
+    const QString configFolder = QDir::homePath() + "/.config/krunnerplugins/";
+    const QDir configDir(configFolder);
+    if (!configDir.exists()) configDir.mkpath(configFolder);
+    // Create file
+    QFile configFile(configFolder + "firefoxprofilerunnerrc");
+    if (!configFile.exists()) {
+        configFile.open(QIODevice::WriteOnly);
+        configFile.close();
+    }
+    // Add file watcher for config
+    watcher.addPath(configFolder + "firefoxprofilerunnerrc");
+    connect(&watcher, SIGNAL(fileChanged(QString)), this, SLOT(reloadPluginConfiguration(QString)));
+    reloadPluginConfiguration();
 }
 
-void FirefoxProfileRunner::reloadConfiguration() {
-    profileManager = ProfileManager();
+void FirefoxProfileRunner::reloadPluginConfiguration(const QString &configFile) {
+#ifdef status_dev
+    qInfo() << "Firefox reload config";
+#endif
+    auto profileManager = ProfileManager();
     profiles = profileManager.syncAndGetCustomProfiles();
+    if (profiles.isEmpty()) {
+        // If the profiles.ini file has not changes and there are no profiles
+        // For instance if you rerun the install script
+        profiles = profileManager.syncAndGetCustomProfiles(true);
+    }
     launchCommand = profileManager.launchCommand;
     firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
 
-    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    KConfigGroup config = KSharedConfig::openConfig(QDir::homePath() + "/.config/krunnerplugins/firefoxprofilerunnerrc")
+            ->group("Config");
+    if (!configFile.isEmpty()) config.config()->reparseConfiguration();
+
+    // If the file gets edited with a text editor, it often gets replaced by the edited version
+    // https://stackoverflow.com/a/30076119/9342842
+    if (!configFile.isEmpty()) {
+        if (QFile::exists(configFile)) {
+            watcher.addPath(configFile);
+        }
+    }
+
     hideDefaultProfile = stringToBool(config.readEntry("hideDefaultProfile"));
     showAlwaysPrivateWindows = stringToBool(config.readEntry("showAlwaysPrivateWindows", "true"));
     proxychainsForceNewInstance = stringToBool(config.readEntry("proxychainsForceNewInstance"));
     proxychainsIntegrated = config.readEntry("proxychainsIntegration", "disabled") != "disabled";
-
-#ifdef status_dev
-    for (const auto &p:profiles) {
-        qInfo() << "Name: " << p.name << "Launch Name: " << p.launchName << "Path: " << p.path
-                << "Is Default: " << p.isDefault << "Priority: " << p.priority << "Edited: " << p.isEdited;
-    }
-#endif
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(
@@ -46,14 +73,13 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
 
     QList<Plasma::QueryMatch> matches;
     bool privateWindow = false;
-    if (term.contains(QRegExp(" -p *$"))) {
+    if (term.contains(privateWindowFlagRegex)) {
         privateWindow = true;
-        term.remove(QRegExp(" -p *$"));
+        term.remove(privateWindowFlagRegex);
     }
 
-    QRegExp regExp(R"(^fire\w*(?: (.+))$)");
-    regExp.indexIn(term);
-    QString filter = regExp.capturedTexts().last();
+    filterRegex.indexIn(term);
+    const QString filter = filterRegex.capturedTexts().at(1);
 
     // Create matches and pass in value of private window flag
     matches.append(createProfileMatches(filter, privateWindow));
@@ -68,7 +94,9 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
     QString localLaunchCommand = launchCommand;
-    //qInfo() << data;
+#ifdef status_dev
+    qInfo() << data;
+#endif
     if (data.contains("proxychains")) {
         args.prepend(localLaunchCommand);
         args.prepend("-q");
@@ -84,7 +112,11 @@ Plasma::QueryMatch
 FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
     match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
+#ifdef status_dev
+    match.setText(text + " " + QString::number(relevance));
+#else
     match.setText(text);
+#endif
     match.setData(data);
     match.setRelevance(relevance);
     return match;
@@ -92,7 +124,7 @@ FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVari
 
 QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
     QList<Plasma::QueryMatch> matches;
-    for (auto &profile:profiles) {
+    for (const auto &profile:profiles) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
             bool skipMatch = false;
@@ -104,8 +136,8 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
                 if (!profile.extraNormalWindowProxychainsLaunchOption) continue;
                 skipMatch = true;
             }
-            QString defaultNote = profile.isDefault ? " (default)" : "";
-            QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
+            const QString defaultNote = profile.isDefault ? " (default)" : "";
+            const QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
             float priority = (float) profile.priority / 100;
             if (privateWindow && profile.privateWindowPriority != 0) {
                 priority = (float) profile.privateWindowPriority / 100;

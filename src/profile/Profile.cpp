@@ -26,7 +26,7 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority)
         profilePrivateConfig.writeEntry("Name", this->name.isEmpty() ? this->launchName : this->name);
     }
     profilePrivateConfig.writeEntry("LaunchName", this->launchName);
-    profilePrivateConfig.writeEntry("Icon", "/usr/share/icons/private_browsing_firefox.svg");
+    profilePrivateConfig.writeEntry("Icon", "private_browsing_firefox");
     profilePrivateConfig.writeEntry("Edited", profileNormalConfig.readEntry("Edited", "false"));
     profilePrivateConfig.writeEntry("Exec", this->launchCommand + " -P \"" + this->launchName + "\" -private-window");
 
@@ -82,7 +82,7 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
             "Desktop Action new-proxychains-private-window-with-profile-" + this->path);
     if (this->extraPrivateWindowProxychainsLaunchOption) {
         proxychainsPrivateConfig.writeEntry("Name", "Proxychains: " + this->name);
-        proxychainsPrivateConfig.writeEntry("Icon", "/usr/share/icons/private_browsing_firefox.svg");
+        proxychainsPrivateConfig.writeEntry("Icon", "private_browsing_firefox");
         proxychainsPrivateConfig.writeEntry("Exec", "proxychains4 " + this->launchCommand + " -P \"" +
                                                     this->launchName + "\" -private-window" + forceNewInstance);
     } else {
@@ -100,6 +100,6 @@ void Profile::toString() const {
             << " privateWindowPriority: " << this->privateWindowPriority << " launchPrivateWindowWithProxychains: "
             << this->launchPrivateWindowWithProxychains << " extraPrivateWindowProxychainsLaunchOption: "
             << this->extraPrivateWindowProxychainsLaunchOption << " extraPrivateWindowProxychainsOptionPriority: "
-            << this->extraPrivateWindowProxychainsOptionPriority << "\n";
+            << this->extraPrivateWindowProxychainsOptionPriority;
 }
 

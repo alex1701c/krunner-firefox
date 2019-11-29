@@ -19,7 +19,7 @@ public:
 
     QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 
-    void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig);
+    void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config);
 
     void changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra, KSharedConfigPtr firefoxConfig);
 

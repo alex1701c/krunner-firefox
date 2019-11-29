@@ -76,7 +76,9 @@ FirefoxProfileRunnerConfig::FirefoxProfileRunnerConfig(QWidget *parent, const QV
     connect(m_ui->proxychainsExtraRemovePushButton, SIGNAL(clicked(bool)), this, SLOT(validateExtraOptionButtons()));
 
     firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
-    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("FirefoxProfileRunner");
+    config = KSharedConfig::openConfig(QDir::homePath() + "/.config/krunnerplugins/firefoxprofilerunnerrc")
+            ->group("Config");
+    config.config()->reparseConfiguration();
     proxychainsInstalled = QFile::exists("/usr/bin/proxychains4");
     firefoxIcon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
     firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
@@ -116,7 +118,7 @@ void FirefoxProfileRunnerConfig::load() {
             itemProfileMap.insert(item2, profile);
         }
     }
-    std::sort(items.begin(), items.end(), [](QListWidgetItem *item1, QListWidgetItem *item2) -> bool {
+    std::sort(items.begin(), items.end(), [](const QListWidgetItem *item1, const QListWidgetItem *item2) -> bool {
         return item1->data(32).toList().last() > item2->data(32).toList().last();
     });
     for (const auto &item:items) m_ui->profiles->addItem(item);
