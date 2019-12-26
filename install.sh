@@ -22,9 +22,9 @@ mkdir -p ~/.local/share/applications
 cp /usr/share/applications/firefox*.desktop ~/.local/share/applications/
 
 # Clone project if it is downloaded using curl
-if [[ $(basename "$PWD") != "FirefoxProfileRunner"* ]]; then
-  git clone https://github.com/alex1701c/FirefoxProfileRunner
-  cd FirefoxProfileRunner/
+if [[ $(basename "$PWD") != "krunner-firefox"* ]]; then
+  git clone https://github.com/alex1701c/krunner-firefox
+  cd krunner-firefox/
 fi
 
 mkdir -p build

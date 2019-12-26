@@ -23,16 +23,16 @@ Fedora
 ### Build instructions
 
 The easiest way to install is:  
-`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install.sh | bash`  
+`curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install.sh | bash`  
 Or you can install it without admin privileges:  
-`curl https://raw.githubusercontent.com/alex1701c/FirefoxProfileRunner/master/install-user.sh | bash`  
+`curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install-user.sh | bash`  
 
 Or you can do it manually:  
 ```
 mkdir -p ~/.local/share/applications
 cp /usr/share/applications/firefox*.desktop ~/.local/share/applications/
-git clone https://github.com/alex1701c/FirefoxProfileRunner
-cd FirefoxProfileRunner
+git clone https://github.com/alex1701c/krunner-firefox
+cd krunner-firefox
 mkdir build
 cd build
 cmake -DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins` -DCMAKE_BUILD_TYPE=Release ..
