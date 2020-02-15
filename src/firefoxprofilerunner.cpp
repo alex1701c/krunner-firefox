@@ -1,5 +1,4 @@
 #include "firefoxprofilerunner.h"
-#include "helper.h"
 #include "profile/Profile.h"
 #include <KLocalizedString>
 #include <QDebug>
@@ -8,12 +7,11 @@
 #include <QtCore/QDir>
 
 /**
- * TODO Make class names shorter
  * TODO Remove edited property
  * TODO Externalize config keys/constant data
  * TODO Improve debugging output
  */
-FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &args)
+FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 
@@ -28,11 +26,11 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
     }
     // Add file watcher for config
     watcher.addPath(configFolder + "firefoxprofilerunnerrc");
-    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxProfileRunner::reloadPluginConfiguration);
+    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
     reloadPluginConfiguration();
 }
 
-void FirefoxProfileRunner::reloadPluginConfiguration(const QString &configFile) {
+void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
 #ifdef status_dev
     qInfo() << "Firefox reload config";
 #endif
@@ -71,7 +69,7 @@ void FirefoxProfileRunner::reloadPluginConfiguration(const QString &configFile) 
     setSyntaxes(syntaxes);
 }
 
-void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
+void FirefoxRunner::match(Plasma::RunnerContext &context) {
     QString term = context.query();
     if (!context.isValid() || !term.startsWith(prefix)) {
         return;
@@ -94,7 +92,7 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
     context.addMatches(matches);
 }
 
-void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
+void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
     Q_UNUSED(context)
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
@@ -114,7 +112,7 @@ void FirefoxProfileRunner::run(const Plasma::RunnerContext &context, const Plasm
 }
 
 Plasma::QueryMatch
-FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
+FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
     match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
 #ifdef status_dev
@@ -127,7 +125,7 @@ FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVari
     return match;
 }
 
-QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
+QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
     QList<Plasma::QueryMatch> matches;
     for (const auto &profile: qAsConst(profiles)) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
@@ -174,7 +172,7 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
 }
 
 
-K_EXPORT_PLASMA_RUNNER(firefoxprofilerunner, FirefoxProfileRunner)
+K_EXPORT_PLASMA_RUNNER(firefoxprofilerunner, FirefoxRunner)
 
 // needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "firefoxprofilerunner.moc"

@@ -14,11 +14,11 @@ public:
     explicit FirefoxProfileRunnerConfigForm(QWidget *parent);
 };
 
-class FirefoxProfileRunnerConfig : public KCModule {
+class FirefoxRunnerConfig : public KCModule {
 Q_OBJECT
 
 public:
-    explicit FirefoxProfileRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
+    explicit FirefoxRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
     QIcon firefoxIcon, firefoxPrivateWindowIcon;
     ProfileManager profileManager;
@@ -65,7 +65,6 @@ public Q_SLOTS:
 
 private:
     FirefoxProfileRunnerConfigForm *m_ui;
-
 };
 
 #endif

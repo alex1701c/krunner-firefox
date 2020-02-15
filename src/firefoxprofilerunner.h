@@ -7,17 +7,17 @@
 #include <QRegularExpression>
 #include "profile/Profile.h"
 
-class FirefoxProfileRunner : public Plasma::AbstractRunner {
+class FirefoxRunner : public Plasma::AbstractRunner {
 Q_OBJECT
 
 public:
-    FirefoxProfileRunner(QObject *parent, const QVariantList &args);
+    FirefoxRunner(QObject *parent, const QVariantList &args);
 
     QLatin1String prefix = QLatin1String("fire");
     QFileSystemWatcher watcher;
     QString launchCommand;
     QRegularExpression filterRegex = QRegularExpression(R"(^fire\w*(?: (.+))$)");
-    const QRegExp privateWindowFlagRegex = QRegExp(" -p *$");
+    const QRegularExpression privateWindowFlagRegex = QRegularExpression(" -p *$");
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;

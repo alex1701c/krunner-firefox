@@ -2,7 +2,6 @@
 #include <QDebug>
 #include <KConfigCore/KConfigGroup>
 #include "ProfileManager.h"
-#include <helper.h>
 #include <QtCore/QCryptographicHash>
 #include <QRegularExpression>
 
