@@ -12,7 +12,7 @@
 void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority) const {
     // Write settings for normal window
     KConfigGroup profileNormalConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);
-    if (profileNormalConfig.readEntry("Edited", "false") != "true") {
+    if (!profileNormalConfig.readEntry("Edited", false)) {
         profileNormalConfig.writeEntry("Name", this->name.isEmpty() ? this->launchName : this->name);
     }
     profileNormalConfig.writeEntry("LaunchName", this->launchName);
@@ -22,12 +22,12 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority)
 
     // Write settings for private window
     KConfigGroup profilePrivateConfig = firefoxConfig->group("Desktop Action new-private-window-with-profile-" + this->path);
-    if (profilePrivateConfig.readEntry("Edited", "false") != "true") {
+    if (!profilePrivateConfig.readEntry("Edited", false)) {
         profilePrivateConfig.writeEntry("Name", this->name.isEmpty() ? this->launchName : this->name);
     }
     profilePrivateConfig.writeEntry("LaunchName", this->launchName);
     profilePrivateConfig.writeEntry("Icon", "private_browsing_firefox");
-    profilePrivateConfig.writeEntry("Edited", profileNormalConfig.readEntry("Edited", "false"));
+    profilePrivateConfig.writeEntry("Edited", profileNormalConfig.readEntry("Edited", false));
     profilePrivateConfig.writeEntry("Exec", this->launchCommand + " -P \"" + this->launchName + "\" -private-window");
 
 }

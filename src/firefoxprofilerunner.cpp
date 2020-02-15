@@ -7,6 +7,12 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 
+/**
+ * TODO Make class names shorter
+ * TODO Remove edited property
+ * TODO Externalize config keys/constant data
+ * TODO Improve debugging output
+ */
 FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
@@ -22,7 +28,7 @@ FirefoxProfileRunner::FirefoxProfileRunner(QObject *parent, const QVariantList &
     }
     // Add file watcher for config
     watcher.addPath(configFolder + "firefoxprofilerunnerrc");
-    connect(&watcher, SIGNAL(fileChanged(QString)), this, SLOT(reloadPluginConfiguration(QString)));
+    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxProfileRunner::reloadPluginConfiguration);
     reloadPluginConfiguration();
 }
 
@@ -52,24 +58,24 @@ void FirefoxProfileRunner::reloadPluginConfiguration(const QString &configFile) 
         }
     }
 
-    hideDefaultProfile = stringToBool(config.readEntry("hideDefaultProfile"));
-    showAlwaysPrivateWindows = stringToBool(config.readEntry("showAlwaysPrivateWindows", "true"));
-    proxychainsForceNewInstance = stringToBool(config.readEntry("proxychainsForceNewInstance"));
+    hideDefaultProfile = config.readEntry("hideDefaultProfile", false);
+    showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", true);
+    proxychainsForceNewInstance = config.readEntry("proxychainsForceNewInstance", false);
     proxychainsIntegrated = config.readEntry("proxychainsIntegration", "disabled") != "disabled";
 
     QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(
-            Plasma::RunnerSyntax("firefox :q?",
-                                 "Plugin gets triggered by firef... after that you can search the profiles by name")
+    syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
+                                         "Plugin gets triggered by firef... after that you can search the profiles by name")
     );
     syntaxes.append(Plasma::RunnerSyntax("firefox :q -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);
 }
 
 void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
-    if (!context.isValid()) return;
     QString term = context.query();
-    if (!term.startsWith("fire")) return;
+    if (!context.isValid() || !term.startsWith(prefix)) {
+        return;
+    }
 
     QList<Plasma::QueryMatch> matches;
     bool privateWindow = false;
@@ -78,8 +84,7 @@ void FirefoxProfileRunner::match(Plasma::RunnerContext &context) {
         term.remove(privateWindowFlagRegex);
     }
 
-    filterRegex.indexIn(term);
-    const QString filter = filterRegex.capturedTexts().at(1);
+    const QString filter = filterRegex.match(term).captured(1);
 
     // Create matches and pass in value of private window flag
     matches.append(createProfileMatches(filter, privateWindow));
@@ -124,7 +129,7 @@ FirefoxProfileRunner::createMatch(const QString &text, const QMap<QString, QVari
 
 QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
     QList<Plasma::QueryMatch> matches;
-    for (const auto &profile:profiles) {
+    for (const auto &profile: qAsConst(profiles)) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
             bool skipMatch = false;
@@ -137,7 +142,8 @@ QList<Plasma::QueryMatch> FirefoxProfileRunner::createProfileMatches(const QStri
                 skipMatch = true;
             }
             const QString defaultNote = profile.isDefault ? " (default)" : "";
-            const QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name + defaultNote;
+            const QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name +
+                                                                                                  defaultNote;
             float priority = (float) profile.priority / 100;
             if (privateWindow && profile.privateWindowPriority != 0) {
                 priority = (float) profile.privateWindowPriority / 100;

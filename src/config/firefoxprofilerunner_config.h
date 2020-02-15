@@ -5,6 +5,7 @@
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
 #include "profile/ProfileManager.h"
+#include "kcmutils_version.h"
 
 class FirefoxProfileRunnerConfigForm : public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
 Q_OBJECT
@@ -29,53 +30,36 @@ public:
     bool edited, forceProfileSync, proxychainsInstalled = false;
 
 public Q_SLOTS:
-
-    // KCModule slots
     void save() override;
-
     void load() override;
-
     void defaults() override;
 
     // General config slots
     void showAlwaysPrivateWindows();
-
     void hideDefaultProfile();
-
     void refreshProfiles();
 
     // Profile sorting/editing signals
     void itemSelected();
-
     void moveUp();
-
     void moveDown();
 
     void applyProfileName();
-
     void cancelProfileName();
-
     void editProfileName();
-
-    // Proxychains config slots
-    void learnMoreProxychains();
-
-    void hideMessage();
 
     void loadInitialSettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap);
 
+    // Proxychains config slots
+    void learnMoreProxychains();
+    void hideMessage();
     void proxychainsSelectionChanged();
-
     void validateProxychainsOptions();
-
-    void toggleGeneralConfigVisibility(const QString &forceHide = "");
-
+    inline void toggleGeneralConfigVisibility() { toggleGeneralConfigVisibility(QString()); };
+    void toggleGeneralConfigVisibility(const QString &forceHide);
     void toggleProxychainsConfigVisibility(const QString &forceHide = "");
-
     void validateExtraOptionButtons();
-
     void addExtraOption();
-
     void removeExtraOption();
 
 

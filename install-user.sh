@@ -6,7 +6,6 @@ if [[ -e /usr/lib/firefox/browser/omni.ja ]]; then
     unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d ~/tmp/firefoxprofile_installer > /dev/null 2>&1
 else
     unzip /usr/lib/firefox-esr/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d ~/tmp/firefoxprofile_installer > /dev/null 2>&1
-    # Very dirty workaround but this way you can install it without manual modifications
     sed -i "s/Icon=.*/Icon=firefox-esr/" src/plasma-runner-firefoxprofilerunner.desktop
 fi
 
@@ -40,7 +39,7 @@ if [[ -z "${QT_PLUGIN_PATH}" || "${QT_PLUGIN_PATH}" != *".local/lib/qt/plugins/"
     export QT_PLUGIN_PATH=~/.local/lib/qt/plugins/:$QT_PLUGIN_PATH
 fi
 
-cmake -DQT_PLUGIN_INSTALL_DIR="~/.local/lib/qt/plugins" -DKDE_INSTALL_KSERVICES5DIR="~/.local/share/kservices5" -DCMAKE_BUILD_TYPE=Release  ..
+cmake -DKDE_INSTALL_QTPLUGINDIR="~/.local/lib/qt/plugins" -DKDE_INSTALL_KSERVICES5DIR="~/.local/share/kservices5" -DCMAKE_BUILD_TYPE=Release  ..
 make -j$(nproc)
 make install
 

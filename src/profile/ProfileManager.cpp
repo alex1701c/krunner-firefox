@@ -4,6 +4,7 @@
 #include "ProfileManager.h"
 #include <helper.h>
 #include <QtCore/QCryptographicHash>
+#include <QRegularExpression>
 
 
 /**
@@ -59,7 +60,7 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
     QList<Profile> profiles;
     const KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath);
     firefoxProfilesIni->reparseConfiguration();
-    const QStringList configs = firefoxProfilesIni->groupList().filter(QRegExp(R"(Profile.*)"));
+    const QStringList configs = firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"));
 
     for (const auto &profileEntry: configs) {
         Profile profile;
@@ -80,7 +81,7 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
     QList<Profile> profiles;
     if (firefoxDesktopFile == "<error>") return profiles;
     const QStringList installedProfiles =
-            firefoxConfig->groupList().filter(QRegExp("Desktop Action new-window-with-profile-.*"));
+            firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
     for (const auto &profileGroupName:installedProfiles) {
         auto profileGroup = firefoxConfig->group(profileGroupName);
         if (!profileGroup.exists() || profileGroup.keyList().isEmpty()) continue;
@@ -90,17 +91,17 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
         if (defaultPath == "<invalid>") defaultPath = profile.path;
         profile.isDefault = profile.path == defaultPath;
-        profile.isEdited = stringToBool(profileGroup.readEntry("Edited", "false"));
+        profile.isEdited = profileGroup.readEntry("Edited", false);
         profile.priority = profileGroup.readEntry("Priority", "0").toInt();
         profile.launchCommand = launchCommand;
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
-        profile.launchNormalWindowWithProxychains = stringToBool(profileGroup.readEntry("LaunchNormalWindowWithProxychains"));
-        profile.launchPrivateWindowWithProxychains = stringToBool(profileGroup.readEntry("LaunchPrivateWindowWithProxychains"));
+        profile.launchNormalWindowWithProxychains = profileGroup.readEntry("LaunchNormalWindowWithProxychains", false);
+        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains", false);
         // Proxychains extra options
-        profile.extraNormalWindowProxychainsLaunchOption = stringToBool(profileGroup.readEntry("ProxychainsNormalWindowOption"));
-        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", "0").toInt();
-        profile.extraPrivateWindowProxychainsLaunchOption = stringToBool(profileGroup.readEntry("ProxychainsPrivateWindowOption"));
-        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", "0").toInt();
+        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption", false);
+        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", 0);
+        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption", false);
+        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", 0);
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
@@ -122,7 +123,8 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
 void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config) {
     if (firefoxDesktopFile == "<error>") return;
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
-    const QStringList installedProfiles = firefoxConfig->groupList().filter(QRegExp("Desktop Action new-window-with-profile-.*"));
+    const QStringList installedProfiles = firefoxConfig->groupList()
+            .filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
 
     QStringList deleted;
     QString newInstalls;
@@ -168,9 +170,9 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     }
     firefoxConfig->sync();
 
-    bool enableNormal = stringToBool(config.readEntry("registerNormalWindows", "true"));
-    bool enablePrivate = stringToBool(config.readEntry("registerPrivateWindows", "true"));
-    bool enableProxychainsExtra = stringToBool(config.readEntry("showProxychainsOptionsGlobally"));
+    bool enableNormal = config.readEntry("registerNormalWindows", true);
+    bool enablePrivate = config.readEntry("registerPrivateWindows", true);
+    bool enableProxychainsExtra = config.readEntry("showProxychainsOptionsGlobally", false);
     changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
 }
 
@@ -185,7 +187,7 @@ void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePriv
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
     QStringList desktopActions = firefoxConfig->groupList().filter("Desktop Action");
-    for (auto &groupName:desktopActions) {
+    for (auto &groupName: desktopActions) {
         if (firefoxConfig->group(groupName).keyList().isEmpty()) continue;
         if (enableNormal && groupName.startsWith("Desktop Action new-window-with-profile")) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
@@ -216,17 +218,17 @@ QString ProfileManager::getLaunchCommand() const {
 QString ProfileManager::getDefaultProfilePath() const {
     const KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath);
     const QStringList configs = firefoxProfilesIni->groupList();
-    const QStringList installConfig = configs.filter(QRegExp(R"(Install.*)"));
+    const QStringList installConfig = configs.filter(QRegularExpression(R"(Install.*)"));
     QString path;
     if (!installConfig.empty()) {
-        path = firefoxProfilesIni->group(installConfig.first()).readEntry("Default", "");
+        path = firefoxProfilesIni->group(installConfig.first()).readEntry("Default");
     }
     if (!path.isEmpty()) {
         return path;
     }
-    for (const auto &profileName:firefoxProfilesIni->groupList().filter(QRegExp(R"(Profile.*)"))) {
+    for (const auto &profileName:firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"))) {
         const auto profile = firefoxProfilesIni->group(profileName);
-        if (profile.readEntry("Default", "0") == "1") return profile.readEntry("Path");
+        if (profile.readEntry("Default", 0) == 1) return profile.readEntry("Path");
     }
     return "<invalid>";
 }

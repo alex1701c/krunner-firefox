@@ -24,5 +24,5 @@ target_link_libraries(kcm_krunner_firefoxprofilerunner
 add_dependencies(krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner)
 
 
-install(TARGETS krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner DESTINATION ${PLUGIN_INSTALL_DIR})
+install(TARGETS krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
 install(FILES plasma-runner-firefoxprofilerunner.desktop config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
