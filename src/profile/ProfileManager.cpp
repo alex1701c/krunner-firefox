@@ -10,7 +10,7 @@
  * Initialize variables
  */
 ProfileManager::ProfileManager() {
-    firefoxProfilesIniPath = QDir::homePath() + "/" + ".mozilla/firefox/profiles.ini";
+    firefoxProfilesIniPath = QDir::homePath() + "/.mozilla/firefox/profiles.ini";
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
@@ -23,8 +23,7 @@ ProfileManager::ProfileManager() {
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     firefoxConfig->reparseConfiguration();
-    KConfigGroup config = KSharedConfig::openConfig(QDir::homePath() + "/.config/krunnerplugins/firefoxprofilerunnerrc")
-            ->group("Config");
+    KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
     config.config()->reparseConfiguration();
     const QString lastHash = config.readEntry("lastHash");
     bool hasChanged = false;
@@ -91,16 +90,21 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         if (defaultPath == "<invalid>") defaultPath = profile.path;
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", false);
-        profile.priority = profileGroup.readEntry("Priority", "0").toInt();
+        profile.priority = profileGroup.readEntry("Priority", 0);
         profile.launchCommand = launchCommand;
-        profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", "0").toInt();
+        profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", 0);
         profile.launchNormalWindowWithProxychains = profileGroup.readEntry("LaunchNormalWindowWithProxychains", false);
-        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains", false);
+        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains",
+                                                                            false);
         // Proxychains extra options
-        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption", false);
-        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", 0);
-        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption", false);
-        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", 0);
+        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption",
+                                                                                  false);
+        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority",
+                                                                                    0);
+        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption",
+                                                                                   false);
+        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority",
+                                                                                     0);
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
@@ -119,7 +123,8 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
  * @param profiles
  * @param firefoxConfig
  */
-void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config) {
+void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig,
+                                     const KConfigGroup &config) {
     if (firefoxDesktopFile == "<error>") return;
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
     const QStringList installedProfiles = firefoxConfig->groupList()
@@ -169,9 +174,9 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     }
     firefoxConfig->sync();
 
-    bool enableNormal = config.readEntry("registerNormalWindows", true);
-    bool enablePrivate = config.readEntry("registerPrivateWindows", true);
-    bool enableProxychainsExtra = config.readEntry("showProxychainsOptionsGlobally", false);
+    bool enableNormal = config.readEntry(Config::RegisterNormalWindows, true);
+    bool enablePrivate = config.readEntry(Config::RegisterPrivateWindows, true);
+    bool enableProxychainsExtra = config.readEntry(Config::ShowProxychainsOptionsGlobally, false);
     changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
 }
 

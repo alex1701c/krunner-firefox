@@ -33,6 +33,8 @@ public Q_SLOTS:
     void save() override;
     void load() override;
     void defaults() override;
+    void connectSignals();
+    void connectOptionalProxySignals();
 
     // General config slots
     void showAlwaysPrivateWindows();
@@ -48,7 +50,7 @@ public Q_SLOTS:
     void cancelProfileName();
     void editProfileName();
 
-    void loadInitialSettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap);
+    void loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap);
 
     // Proxychains config slots
     void learnMoreProxychains();

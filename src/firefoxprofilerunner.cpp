@@ -6,26 +6,26 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 
+#include "Config.h"
+
 /**
  * TODO Remove edited property
- * TODO Externalize config keys/constant data
- * TODO Improve debugging output
+ * TODO Option to use private window as action
  */
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 
-    const QString configFolder = QDir::homePath() + "/.config/krunnerplugins/";
-    const QDir configDir(configFolder);
-    if (!configDir.exists()) configDir.mkpath(configFolder);
+    const QDir configDir(Config::ConfigDir);
+    if (!configDir.exists()) configDir.mkpath(Config::ConfigDir);
     // Create file
-    QFile configFile(configFolder + "firefoxprofilerunnerrc");
+    QFile configFile(Config::ConfigFile);
     if (!configFile.exists()) {
         configFile.open(QIODevice::WriteOnly);
         configFile.close();
     }
     // Add file watcher for config
-    watcher.addPath(configFolder + "firefoxprofilerunnerrc");
+    watcher.addPath(Config::ConfigFile);
     connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
     reloadPluginConfiguration();
 }
@@ -44,8 +44,7 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
     launchCommand = profileManager.launchCommand;
     firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
 
-    KConfigGroup config = KSharedConfig::openConfig(QDir::homePath() + "/.config/krunnerplugins/firefoxprofilerunnerrc")
-            ->group("Config");
+    KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
     if (!configFile.isEmpty()) config.config()->reparseConfiguration();
 
     // If the file gets edited with a text editor, it often gets replaced by the edited version
@@ -56,10 +55,10 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
         }
     }
 
-    hideDefaultProfile = config.readEntry("hideDefaultProfile", false);
-    showAlwaysPrivateWindows = config.readEntry("showAlwaysPrivateWindows", true);
-    proxychainsForceNewInstance = config.readEntry("proxychainsForceNewInstance", false);
-    proxychainsIntegrated = config.readEntry("proxychainsIntegration", "disabled") != "disabled";
+    hideDefaultProfile = config.readEntry(Config::HideDefaultProfile, false);
+    showAlwaysPrivateWindows = config.readEntry(Config::ShowAlwaysPrivateWindows, true);
+    proxychainsForceNewInstance = config.readEntry(Config::ProxychainsForceNewInstance, false);
+    proxychainsIntegrated = config.readEntry(Config::ProxychainsIntegration, "disabled") != "disabled";
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
@@ -115,11 +114,7 @@ Plasma::QueryMatch
 FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
     match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
-#ifdef status_dev
-    match.setText(text + " " + QString::number(relevance));
-#else
     match.setText(text);
-#endif
     match.setData(data);
     match.setRelevance(relevance);
     return match;

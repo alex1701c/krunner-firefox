@@ -5,6 +5,7 @@
 #include <QList>
 #include <KSharedConfig>
 #include "Profile.h"
+#include <Config.h>
 
 class ProfileManager {
 public:
