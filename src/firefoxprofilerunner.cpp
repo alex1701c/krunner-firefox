@@ -15,7 +15,9 @@
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
+}
 
+void FirefoxRunner::init() {
     const QDir configDir(Config::ConfigDir);
     if (!configDir.exists()) configDir.mkpath(Config::ConfigDir);
     // Create file
@@ -31,6 +33,7 @@ FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
 }
 
 void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
+    qInfo() << "firefox reload config";
 #ifdef status_dev
     qInfo() << "Firefox reload config";
 #endif
@@ -60,6 +63,13 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
     proxychainsForceNewInstance = config.readEntry(Config::ProxychainsForceNewInstance, false);
     proxychainsIntegrated = config.readEntry(Config::ProxychainsIntegration, "disabled") != "disabled";
 
+    privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
+    if (privateWindowsAsActions) {
+        matchActions = {addAction("private-window", firefoxPrivateWindowIcon, "Open profile in private window")};
+    } else {
+        matchActions.clear();
+    }
+
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
                                          "Plugin gets triggered by firef... after that you can search the profiles by name")
@@ -76,7 +86,7 @@ void FirefoxRunner::match(Plasma::RunnerContext &context) {
 
     QList<Plasma::QueryMatch> matches;
     bool privateWindow = false;
-    if (term.contains(privateWindowFlagRegex)) {
+    if (!privateWindowsAsActions && term.contains(privateWindowFlagRegex)) {
         privateWindow = true;
         term.remove(privateWindowFlagRegex);
     }
@@ -85,10 +95,22 @@ void FirefoxRunner::match(Plasma::RunnerContext &context) {
 
     // Create matches and pass in value of private window flag
     matches.append(createProfileMatches(filter, privateWindow));
+
     // If private window flag is not set and private windows should always be shown create matches
-    if (!privateWindow && showAlwaysPrivateWindows) matches.append(createProfileMatches(filter, true));
+    if (!privateWindow && showAlwaysPrivateWindows) {
+        matches.append(createProfileMatches(filter, true));
+    }
 
     context.addMatches(matches);
+}
+
+QList<QAction *> FirefoxRunner::actionsForMatch(const Plasma::QueryMatch &match) {
+    Q_UNUSED(match)
+
+    if (!match.text().startsWith(proxychainsDisplayPrefix)) {
+        return matchActions;
+    }
+    return {};
 }
 
 void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
@@ -103,9 +125,14 @@ void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::Quer
         args.prepend(localLaunchCommand);
         args.prepend("-q");
         localLaunchCommand = "proxychains4";
-        if (proxychainsForceNewInstance) args.append("--new-instance");
+        if (proxychainsForceNewInstance) {
+            args.append("--new-instance");
+        }
     }
-    if (data.contains("private-window")) args.append("-private-window");
+    // Private window if data has private window key or the action exists
+    if (data.contains("private-window") || match.selectedAction()) {
+        args.append("-private-window");
+    }
 
     QProcess::startDetached(localLaunchCommand, args);
 }
@@ -134,15 +161,17 @@ QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &fil
                 if (!profile.extraNormalWindowProxychainsLaunchOption) continue;
                 skipMatch = true;
             }
-            const QString defaultNote = profile.isDefault ? " (default)" : "";
-            const QString text = privateWindow ? "Private Window " + profile.name + defaultNote : profile.name +
-                                                                                                  defaultNote;
+            QString text = profile.name;
+            if (privateWindow) text.prepend("Private Window ");
+            if (profile.isDefault) text.append(" (default)");
+
             float priority = (float) profile.priority / 100;
             if (privateWindow && profile.privateWindowPriority != 0) {
                 priority = (float) profile.privateWindowPriority / 100;
             } else if (privateWindow) {
                 priority = (float) profile.priority / 101;
             }
+
             if (proxychainsIntegrated) {
                 if (!privateWindow && profile.launchNormalWindowWithProxychains) {
                     data.insert("proxychains", true);
@@ -151,12 +180,14 @@ QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &fil
                 } else if (!privateWindow && profile.extraNormalWindowProxychainsLaunchOption) {
                     QMap<QString, QVariant> extraData(data);
                     extraData.insert("proxychains", true);
-                    matches.append(createMatch("Proxychains: " + text, extraData,
+                    matches.append(createMatch(proxychainsDisplayPrefix + text, extraData,
                                                (float) profile.extraNormalWindowProxychainsOptionPriority / 100));
-                } else if (privateWindow && profile.extraPrivateWindowProxychainsLaunchOption) {
+                } else if ((privateWindowsAsActions || privateWindow) &&
+                           profile.extraPrivateWindowProxychainsLaunchOption) {
                     QMap<QString, QVariant> extraData(data);
                     extraData.insert("proxychains", true);
-                    matches.append(createMatch("Proxychains: " + text, extraData,
+                    extraData.insert("private-window", true);
+                    matches.append(createMatch(proxychainsDisplayPrefix + text, extraData,
                                                (float) profile.extraPrivateWindowProxychainsOptionPriority / 100));
                 }
             }

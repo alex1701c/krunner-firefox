@@ -40,6 +40,7 @@ public Q_SLOTS:
     void showAlwaysPrivateWindows();
     void hideDefaultProfile();
     void refreshProfiles();
+    void privateWindowsAsActionsChanged();
 
     // Profile sorting/editing signals
     void itemSelected();
@@ -57,9 +58,8 @@ public Q_SLOTS:
     void hideMessage();
     void proxychainsSelectionChanged();
     void validateProxychainsOptions();
-    inline void toggleGeneralConfigVisibility() { toggleGeneralConfigVisibility(QString()); };
-    void toggleGeneralConfigVisibility(const QString &forceHide);
-    void toggleProxychainsConfigVisibility(const QString &forceHide = "");
+    void toggleGeneralConfigVisibility();
+    void toggleProxychainsConfigVisibility();
     void validateExtraOptionButtons();
     void addExtraOption();
     void removeExtraOption();

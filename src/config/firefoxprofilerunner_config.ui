@@ -52,8 +52,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>673</width>
-        <height>890</height>
+        <width>672</width>
+        <height>914</height>
        </rect>
       </property>
       <property name="maximumSize">
@@ -113,6 +113,10 @@
                  <property name="text">
                   <string/>
                  </property>
+                 <property name="icon">
+                  <iconset theme="arrow-up">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -145,6 +149,13 @@
                  <widget class="QCheckBox" name="showAlwaysPrivateWindows">
                   <property name="text">
                    <string>Always show option to open private windows  (with plugin)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="privateWindowAction">
+                  <property name="text">
+                   <string>Show option to open private window as action (with plugin)</string>
                   </property>
                  </widget>
                 </item>
@@ -264,6 +275,10 @@ This is especially useful if you can't/don't want to use a system wide proxy.</s
                    </property>
                    <property name="text">
                     <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="arrow-up">
+                     <normaloff>.</normaloff>.</iconset>
                    </property>
                   </widget>
                  </item>

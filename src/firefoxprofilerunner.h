@@ -22,19 +22,19 @@ public:
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;
     const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
+    bool privateWindowsAsActions;
+    QList<QAction *> matchActions;
+    const QString proxychainsDisplayPrefix = "Proxychains: ";
 
     QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
-
     Plasma::QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
 
 public: // Plasma::AbstractRunner API
-    void match(Plasma::RunnerContext &context) override;
-
-    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
-
-protected Q_SLOTS:
-
+    void init() override;
     void reloadPluginConfiguration(const QString &configFile = "");
+    void match(Plasma::RunnerContext &context) override;
+    QList<QAction *> actionsForMatch(const Plasma::QueryMatch &match) override;
+    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
 };
 
 #endif

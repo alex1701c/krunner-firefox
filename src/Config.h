@@ -17,6 +17,7 @@ namespace {
         // Profile settings
         constexpr static const auto RegisterNormalWindows = "registerNormalWindows";
         constexpr static const auto RegisterPrivateWindows = "registerPrivateWindows";
+        constexpr static const auto PrivateWindowAction = "privateWindowActions";
         constexpr static const auto ShowProxychainsOptionsGlobally = "showProxychainsOptionsGlobally";
         // UI settings
         constexpr static const auto ProxychainsMinimized = "proxychainsMinimized";
