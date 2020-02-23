@@ -10,6 +10,7 @@
 
 /**
  * TODO Remove edited property
+ * TODO Remove edited variable in GUI
  * TODO Option to use private window as action
  */
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
