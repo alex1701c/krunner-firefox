@@ -7,18 +7,6 @@
 #include "profile/ProfileManager.h"
 #include "kcmutils_version.h"
 
-enum ProfileWidgetType {
-    Normal, Private, ProxychainsNormal, ProxychainsPrivate, TMP
-};
-
-struct ListWidgetProfileData {
-    QString path;
-    bool isDefault;
-    ProfileWidgetType type;
-    int priority;
-};
-Q_DECLARE_METATYPE(ListWidgetProfileData)
-
 class FirefoxProfileRunnerConfigForm: public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
 Q_OBJECT
 
