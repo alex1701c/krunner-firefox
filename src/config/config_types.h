@@ -13,6 +13,16 @@ struct ProfileData {
 };
 Q_DECLARE_METATYPE(ProfileData)
 
+namespace Proxychains {
+enum ProxychainsSelection {
+    Existing = 2,
+    Extra = 1,
+    None = -1,
+    Disabled = 0
+};
+}
+Q_DECLARE_METATYPE(Proxychains::ProxychainsSelection)
+
 struct ProxychainsData {
     QString path;
     ProfileType type;
