@@ -88,6 +88,8 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     } else {
         proxychainsPrivateConfig.deleteGroup();
     }
+    //profileConfig.sync();
+    //profileConfig.config()->sync();
 }
 
 void Profile::toString() const {

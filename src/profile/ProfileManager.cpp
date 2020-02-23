@@ -77,34 +77,29 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
  */
 QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig) {
     QList<Profile> profiles;
-    if (firefoxDesktopFile == "<error>") return profiles;
+    if (firefoxDesktopFile == "<error>") { return profiles; }
     const QStringList installedProfiles =
-            firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
+        firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
     for (const auto &profileGroupName:installedProfiles) {
         auto profileGroup = firefoxConfig->group(profileGroupName);
-        if (!profileGroup.exists() || profileGroup.keyList().isEmpty()) continue;
+        if (!profileGroup.exists() || profileGroup.keyList().isEmpty()) { continue; }
         Profile profile;
         profile.name = profileGroup.readEntry("Name");
         profile.launchName = profileGroup.readEntry("LaunchName");
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
-        if (defaultPath == "<invalid>") defaultPath = profile.path;
+        if (defaultPath == "<invalid>") { defaultPath = profile.path; }
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", false);
         profile.priority = profileGroup.readEntry("Priority", 0);
         profile.launchCommand = launchCommand;
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", 0);
         profile.launchNormalWindowWithProxychains = profileGroup.readEntry("LaunchNormalWindowWithProxychains", false);
-        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains",
-                                                                            false);
+        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains", false);
         // Proxychains extra options
-        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption",
-                                                                                  false);
-        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority",
-                                                                                    0);
-        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption",
-                                                                                   false);
-        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority",
-                                                                                     0);
+        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption", false);
+        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", 0);
+        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption", false);
+        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", 0);
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
@@ -125,10 +120,10 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
  */
 void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig,
                                      const KConfigGroup &config) {
-    if (firefoxDesktopFile == "<error>") return;
+    if (firefoxDesktopFile == "<error>") { return; }
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
     const QStringList installedProfiles = firefoxConfig->groupList()
-            .filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
+        .filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
 
     QStringList deleted;
     QString newInstalls;
@@ -189,16 +184,16 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra,
                                               KSharedConfigPtr firefoxConfig) {
     QString registeredActions = "new-window;new-private-window;";
-    if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) registeredActions.clear();
+    if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) { registeredActions.clear(); }
     QStringList desktopActions = firefoxConfig->groupList().filter("Desktop Action");
     for (auto &groupName: desktopActions) {
-        if (firefoxConfig->group(groupName).keyList().isEmpty()) continue;
+        if (firefoxConfig->group(groupName).keyList().isEmpty()) { continue; }
         if (enableNormal && groupName.startsWith("Desktop Action new-window-with-profile")) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         } else if (enablePrivate && groupName.startsWith("Desktop Action new-private-window-with-profile-")) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         } else if (enableProxychainsExtra && groupName.startsWith("Desktop Action new-proxychains-") &&
-                   !firefoxConfig->group(groupName).keyList().isEmpty()) {
+            !firefoxConfig->group(groupName).keyList().isEmpty()) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         }
     }
@@ -232,7 +227,7 @@ QString ProfileManager::getDefaultProfilePath() const {
     }
     for (const auto &profileName:firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"))) {
         const auto profile = firefoxProfilesIni->group(profileName);
-        if (profile.readEntry("Default", 0) == 1) return profile.readEntry("Path");
+        if (profile.readEntry("Default", 0) == 1) { return profile.readEntry("Path"); }
     }
     return "<invalid>";
 }

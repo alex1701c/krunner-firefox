@@ -6,6 +6,7 @@
 #include <KConfigCore/KConfigGroup>
 #include "profile/ProfileManager.h"
 #include "kcmutils_version.h"
+#include "config_types.h"
 
 class FirefoxProfileRunnerConfigForm: public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
 Q_OBJECT
@@ -29,7 +30,7 @@ public:
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;
 
-    QString previousProxychainsSelection;
+    Proxychains::ProxychainsSelection previousProxychainsSelection = Proxychains::None;
     bool edited, forceProfileSync, proxychainsInstalled = false;
 
 public Q_SLOTS:

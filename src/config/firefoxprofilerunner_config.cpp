@@ -11,8 +11,8 @@
 K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
 
-#include "config_types.h"
 #define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
+#define proxychainsWidgetData(item) (item)->data(Qt::UserRole).value<ProxychainsData>()
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent)
     : QWidget(parent) {
@@ -52,8 +52,11 @@ void FirefoxRunnerConfig::load() {
 
     QList<QListWidgetItem *> items;
     QMap<QListWidgetItem *, Profile> itemProfileMap;
-    const bool addItemsToSet = config.readEntry(Config::ProxychainsIntegration, "disabled") == "existing";
-    for (const auto &profile: qAsConst(profiles)) {
+    const bool addItemsToSet =
+        (Proxychains::ProxychainsSelection) config.readEntry<int>(Config::ProxychainsIntegration, Proxychains::Disabled)
+            == Proxychains::Existing;
+    for (int i = 0; i < profiles.count(); ++i) {
+        auto &profile = profiles.at(i);
         // Normal window
         auto *item = new QListWidgetItem();
         item->setText(profile.name);
@@ -95,11 +98,16 @@ void FirefoxRunnerConfig::load() {
         m_ui->forceNewInstanceCheckBox->setChecked(config.readEntry(Config::ProxychainsForceNewInstance, false));
         m_ui->showProxychainsOptionsGloballyCheckBox->setChecked(config.readEntry(Config::ShowProxychainsOptionsGlobally,
                                                                                   false));
-        const QString proxychainsChoice = config.readEntry(Config::ProxychainsIntegration, "disabled");
+        const auto proxychainsChoice = (Proxychains::ProxychainsSelection) config.readEntry<int>(Config::ProxychainsIntegration,
+                                                                                                 Proxychains::Disabled);
         previousProxychainsSelection = proxychainsChoice;
-        if (proxychainsChoice == "disabled") { m_ui->disableProxychainsRadioButton->setChecked(true); }
-        else if (proxychainsChoice == "existing") { m_ui->launchExistingOptionRadioButton->setChecked(true); }
-        else { m_ui->showExtraOptionRadioButton->setChecked(true); }
+        if (proxychainsChoice == Proxychains::Disabled) {
+            m_ui->disableProxychainsRadioButton->setChecked(true);
+        } else if (proxychainsChoice == Proxychains::Existing) {
+            m_ui->launchExistingOptionRadioButton->setChecked(true);
+        } else {
+            m_ui->showExtraOptionRadioButton->setChecked(true);
+        }
         // Validate
         m_ui->proxychainsNotInstalledWidget->hide();
         if (config.readEntry(Config::ProxychainsMinimized, false)) {
@@ -107,6 +115,7 @@ void FirefoxRunnerConfig::load() {
         }
         validateProxychainsOptions();
         loadInitialProxySettings(itemProfileMap);
+        proxychainsSelectionChanged();
     } else {
         m_ui->showProxychainsOptionsGloballyCheckBox->hide();
         m_ui->proxychainsLearnMoreLabel->hide();
@@ -134,15 +143,15 @@ void FirefoxRunnerConfig::save() {
         config.writeEntry(Config::ProxychainsMinimized, m_ui->proxychainsItemsWidget->isHidden());
         config.writeEntry(Config::ProxychainsForceNewInstance, m_ui->forceNewInstanceCheckBox->isChecked());
         config.writeEntry(Config::ShowProxychainsOptionsGlobally, showExtraProxychainsOptionsGlobally);
-        QString proxychainsChoice;
+        Proxychains::ProxychainsSelection proxychainsChoice;
         if (m_ui->disableProxychainsRadioButton->isChecked()) {
-            proxychainsChoice = "disabled";
+            proxychainsChoice = Proxychains::Disabled;
         } else if (m_ui->launchExistingOptionRadioButton->isChecked()) {
-            proxychainsChoice = "existing";
+            proxychainsChoice = Proxychains::Existing;
         } else {
-            proxychainsChoice = "extra";
+            proxychainsChoice = Proxychains::Extra;
         }
-        config.writeEntry(Config::ProxychainsIntegration, proxychainsChoice);
+        config.writeEntry(Config::ProxychainsIntegration, (int) proxychainsChoice);
     }
 
     // Organize entries in a map <profilePath, <type, item> >
@@ -527,7 +536,7 @@ void FirefoxRunnerConfig::hideDefaultProfile() {
  * This parameter is only required if the data for the "Use existing profiles" option should be loaded
  */
 void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
-    if (previousProxychainsSelection == "existing") {
+    if (previousProxychainsSelection == Proxychains::Existing) {
         for (int i = 0; i < m_ui->profiles->count(); ++i) {
             const auto item = m_ui->profiles->item(i);
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -538,7 +547,7 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *,
                 (!isNormalWindow && profile.launchPrivateWindowWithProxychains)) ? Qt::Checked : Qt::Unchecked;
             item->setCheckState(state);
         }
-    } else if (previousProxychainsSelection == "extra") {
+    } else if (previousProxychainsSelection == Proxychains::Extra) {
         m_ui->proxychainsExtraControlsWidget->setHidden(false);
         m_ui->proxychainsExtraComboBox->clear();
         QList<QListWidgetItem *> additionalItems;
@@ -546,10 +555,8 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *,
             if (profile.extraNormalWindowProxychainsLaunchOption) {
                 auto *item = new QListWidgetItem();
                 item->setText("Proxychains: " + profile.name);
-                QVariant data = QVariant::fromValue(
-                    ProfileData{profile.path, false, ProfileType::ProxychainsNormal,
-                                profile.extraNormalWindowProxychainsOptionPriority}
-                );
+                QVariant data = QVariant::fromValue(ProfileData{profile.path, false, ProfileType::ProxychainsNormal,
+                                                                profile.extraNormalWindowProxychainsOptionPriority});
                 item->setData(Qt::UserRole, data);
                 item->setIcon(firefoxIcon);
                 additionalItems.append(item);
@@ -557,19 +564,16 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *,
             if (profile.extraPrivateWindowProxychainsLaunchOption) {
                 auto *item = new QListWidgetItem();
                 item->setText("Proxychains: " + profile.name);
-                QVariant data = QVariant::fromValue(
-                    ProfileData{profile.path, false, ProfileType::ProxychainsPrivate,
-                                profile.extraPrivateWindowProxychainsOptionPriority});
+                QVariant data = QVariant::fromValue(ProfileData{profile.path, false, ProfileType::ProxychainsPrivate,
+                                                                profile.extraPrivateWindowProxychainsOptionPriority});
                 item->setData(Qt::UserRole, data);
                 item->setIcon(firefoxPrivateWindowIcon);
                 additionalItems.append(item);
             }
-            m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name, QStringList(
-                {profile.path, "proxychains-normal",
-                 QVariant(profile.extraNormalWindowProxychainsLaunchOption).toString()}));
-            m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name, QStringList(
-                {profile.path, "proxychains-private",
-                 QVariant(profile.extraPrivateWindowProxychainsLaunchOption).toString()}));
+            m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name, QVariant::fromValue(
+                ProxychainsData{profile.path, ProxychainsNormal, profile.extraNormalWindowProxychainsLaunchOption}));
+            m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name, QVariant::fromValue(
+                ProxychainsData{profile.path, ProxychainsPrivate, profile.extraPrivateWindowProxychainsLaunchOption}));
         }
         for (int i = m_ui->profiles->count() - 1; i > 0; --i) {
             additionalItems.append(m_ui->profiles->takeItem(i));
@@ -582,30 +586,25 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *,
             m_ui->profiles->addItem(item);
         }
     }
-    m_ui->showProxychainsOptionsGloballyCheckBox->setHidden(previousProxychainsSelection != "extra");
+    m_ui->showProxychainsOptionsGloballyCheckBox->setHidden(previousProxychainsSelection != Proxychains::Extra);
 }
 
 /**
- * TODO Proxychains combobox data type
  * Remove old config for proxychains and enable new one
  * For the "Launch existing ..." option the checkboxes next to the profiles are addded/removed
  * For the "Show extra .." option the proxychainsExtraControlsWidget gets shown/hidden and if the option gets
  * unchecked the extra entries are removed from the ListView
  */
 void FirefoxRunnerConfig::proxychainsSelectionChanged() {
+    return;
     // Return if the current checkbox has been clicked
-    if ((previousProxychainsSelection == "existing" && m_ui->launchExistingOptionRadioButton->isChecked()) ||
-        (previousProxychainsSelection == "extra" && m_ui->showExtraOptionRadioButton->isChecked()) ||
-        (previousProxychainsSelection == "disabled" && m_ui->disableProxychainsRadioButton->isChecked())) {
+    if ((previousProxychainsSelection == Proxychains::Existing && m_ui->launchExistingOptionRadioButton->isChecked()) ||
+        (previousProxychainsSelection == Proxychains::Extra && m_ui->showExtraOptionRadioButton->isChecked()) ||
+        (previousProxychainsSelection == Proxychains::Disabled && m_ui->disableProxychainsRadioButton->isChecked())) {
         return;
     }
     // Remove old config
-    if (previousProxychainsSelection == "existing") {
-        for (int i = 0; i < m_ui->profiles->count(); ++i) {
-            const auto item = m_ui->profiles->item(i);
-            item->setData(Qt::CheckStateRole, QVariant());
-        }
-    } else if (previousProxychainsSelection == "extra") {
+    if (previousProxychainsSelection == Proxychains::Extra) {
         QList<int> toRemove;
         for (int i = 0; i < m_ui->profiles->count(); ++i) {
             const auto item = m_ui->profiles->item(i);
@@ -615,31 +614,40 @@ void FirefoxRunnerConfig::proxychainsSelectionChanged() {
             m_ui->profiles->model()->removeRow(toRemove.at(i) - i);
         }
         m_ui->proxychainsExtraControlsWidget->hide();
+    } else if (m_ui->disableProxychainsRadioButton->isChecked()) {
+        for (int i = 0; i < m_ui->profiles->count(); ++i) {
+            const auto item = m_ui->profiles->item(i);
+            item->setFlags(item->flags() ^ Qt::ItemIsUserCheckable);
+            item->setData(Qt::CheckStateRole, QVariant());
+        }
     }
 
     // Enable new config
     if (m_ui->launchExistingOptionRadioButton->isChecked()) {
-        previousProxychainsSelection = "existing";
         const int itemCount = m_ui->profiles->count();
         for (int i = 0; i < itemCount; ++i) {
             const auto item = m_ui->profiles->item(i);
             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
             item->setCheckState(Qt::Unchecked);
         }
+        previousProxychainsSelection = Proxychains::Existing;
     } else if (m_ui->showExtraOptionRadioButton->isChecked()) {
         m_ui->proxychainsExtraControlsWidget->setHidden(false);
-        previousProxychainsSelection = "extra";
         m_ui->proxychainsExtraComboBox->clear();
         for (const auto &profile: qAsConst(profiles)) {
             m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name,
-                                                    QStringList({profile.path, "proxychains-normal", "false"}));
+                                                    QVariant::fromValue(ProxychainsData{profile.path,
+                                                                                        ProxychainsNormal,
+                                                                                        false}));
             m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name,
-                                                    QStringList({profile.path, "proxychains-private", "false"}));
+                                                    QVariant::fromValue(ProxychainsData{profile.path, ProxychainsPrivate,
+                                                                                        false}));
         }
+        previousProxychainsSelection = Proxychains::Extra;
     } else {
-        previousProxychainsSelection = "disabled";
+        previousProxychainsSelection = Proxychains::Disabled;
     }
-    m_ui->showProxychainsOptionsGloballyCheckBox->setHidden(previousProxychainsSelection != "extra");
+    m_ui->showProxychainsOptionsGloballyCheckBox->setHidden(previousProxychainsSelection != Proxychains::Extra);
 }
 
 /**
@@ -669,29 +677,26 @@ void FirefoxRunnerConfig::validateProxychainsOptions() {
 
 /**
  * Disable/enable the add/remove buttons for the proxychains combobox
- * TODO Proxychains combobox data type
  */
 void FirefoxRunnerConfig::validateExtraOptionButtons() {
     const int currentIndex = m_ui->proxychainsExtraComboBox->currentIndex();
     if (currentIndex == -1) {
         return;
     }
-    const bool alreadyExists = m_ui->proxychainsExtraComboBox->itemData(currentIndex).toList().at(2).toBool();
+    const bool alreadyExists = m_ui->proxychainsExtraComboBox->itemData(currentIndex).value<ProxychainsData>().isDisplayed;
     m_ui->proxychainsExtraAddPushButton->setDisabled(alreadyExists);
     m_ui->proxychainsExtraRemovePushButton->setDisabled(!alreadyExists);
 }
 
 /**
  * Add selected proxychains option to the list of profiles and mark it as added in combo box
- * TODO Proxychains combobox data type
  */
 void FirefoxRunnerConfig::addExtraOption() {
     Profile profile{};
     const int currentIndex = m_ui->proxychainsExtraComboBox->currentIndex();
-    auto profileInfo = m_ui->proxychainsExtraComboBox->itemData(currentIndex).toStringList();
-    const auto profilePath = profileInfo.at(0);
+    auto profileInfo = m_ui->proxychainsExtraComboBox->itemData(currentIndex).value<ProxychainsData>();
     for (const auto &p: qAsConst(profiles)) {
-        if (p.path == profilePath) {
+        if (p.path == profileInfo.path) {
             profile = p;
             break;
         }
@@ -706,31 +711,28 @@ void FirefoxRunnerConfig::addExtraOption() {
                                                     ProfileType::TMP,
                                                     profile.priority});
     item->setData(Qt::UserRole, data);
-    item->setIcon(profileInfo.at(1) == "proxychains-normal" ? firefoxIcon : firefoxPrivateWindowIcon);
+    item->setIcon(profileInfo.type == ProxychainsNormal ? firefoxIcon : firefoxPrivateWindowIcon);
     m_ui->profiles->addItem(item);
-    profileInfo.replace(2, "true");
-    m_ui->proxychainsExtraComboBox->setItemData(currentIndex, profileInfo);
+    profileInfo.isDisplayed = true;
+    m_ui->proxychainsExtraComboBox->setItemData(currentIndex, QVariant::fromValue(profileInfo));
 }
 
 /**
  * Remove selected proxychains option from the list of profiles and mark it as removed in combo box
- * TODO Proxychains combobox data type
  */
 void FirefoxRunnerConfig::removeExtraOption() {
     const int currentIndex = m_ui->proxychainsExtraComboBox->currentIndex();
-    auto profileInfo = m_ui->proxychainsExtraComboBox->itemData(currentIndex).toStringList();
-    const QString profilePath = profileInfo.at(0);
-    const QString profileType = profileInfo.at(1);
+    auto profileInfo = m_ui->proxychainsExtraComboBox->itemData(currentIndex).value<ProxychainsData>();
 
     // Find and remove item based on path and type
     for (int i = 0; i < m_ui->profiles->count(); ++i) {
         const auto item = m_ui->profiles->item(i);
-        const auto itemData = item->data(32).toStringList();
-        if (itemData.at(0) == profilePath && itemData.at(2) == profileType) {
+        const auto itemData = item->data(Qt::UserRole).value<ProxychainsData>();
+        if (itemData.path == profileInfo.path && itemData.type == profileInfo.type) {
             m_ui->profiles->model()->removeRow(i);
-            profileInfo.replace(2, "false");
-            m_ui->proxychainsExtraComboBox->setItemData(currentIndex, profileInfo);
-            break;
+            profileInfo.isDisplayed = false;
+            m_ui->proxychainsExtraComboBox->setItemData(currentIndex, QVariant::fromValue(profileInfo));
+            return;
         }
     }
 }
