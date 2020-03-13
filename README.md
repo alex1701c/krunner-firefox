@@ -9,6 +9,8 @@ This plugin is also compatible with firefox-esr.
 Furthermore it provides proxychains4 integration. This allows you to launch specific profiles over a proxy.
 This integration is optional.
 
+You can find deb/rpm packages on the release page.
+
 ### Required Dependencies
 
 Debian/Ubuntu  
@@ -32,8 +34,6 @@ Or you can install it without admin privileges:
 
 Or you can do it manually:  
 ```
-mkdir -p ~/.local/share/applications
-cp /usr/share/applications/firefox*.desktop ~/.local/share/applications/
 git clone https://github.com/alex1701c/krunner-firefox
 cd krunner-firefox
 mkdir build
