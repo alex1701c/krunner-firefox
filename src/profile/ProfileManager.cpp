@@ -11,10 +11,10 @@
  */
 ProfileManager::ProfileManager() {
     firefoxProfilesIniPath = QDir::homePath() + "/.mozilla/firefox/profiles.ini";
+    initializeConfigFiles();
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
-    initializeConfigFiles();
 }
 
 /**
@@ -31,7 +31,7 @@ void ProfileManager::initializeConfigFiles() {
         configFile.open(QIODevice::WriteOnly);
         configFile.close();
     }
-    if (ProfileManager::getDesktopFilePath() == QLatin1String("<error>")) {
+    if (ProfileManager::getDesktopFilePath(true) == QLatin1String("<error>")) {
         QDir localAppDir;
         const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
         if (QFile::exists(normalFirefox)) {
@@ -263,12 +263,14 @@ QString ProfileManager::getDefaultProfilePath() const {
 /**
  * Get path to firefox*.desktop file, checks both options for firefox and firefox-esr
  */
-QString ProfileManager::getDesktopFilePath() {
+QString ProfileManager::getDesktopFilePath(bool quiet) {
     QString file(QDir::homePath() + "/.local/share/applications/firefox.desktop");
     if (!QFile::exists(file)) {
         file = QDir::homePath() + "/.local/share/applications/firefox-esr.desktop";
         if (!QFile::exists(file)) {
-            qWarning() << "Can not find a firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
+            if (!quiet) {
+                qWarning() << "Can not find a firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
+            }
             return "<error>";
         }
     }

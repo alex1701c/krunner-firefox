@@ -23,7 +23,7 @@ public:
 
     QString getLaunchCommand() const;
     QString getDefaultProfilePath() const;
-    static QString getDesktopFilePath();
+    static QString getDesktopFilePath(bool quiet = false);
 };
 
 
