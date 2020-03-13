@@ -4,7 +4,6 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMessageBox>
 #include <QDebug>
-#include <QtCore/QDir>
 #include <QtCore/QProcess>
 #include <Config.h>
 
@@ -12,7 +11,6 @@ K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
                  registerPlugin<FirefoxRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
 
 #define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
-#define proxychainsWidgetData(item) (item)->data(Qt::UserRole).value<ProxychainsData>()
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent)
     : QWidget(parent) {

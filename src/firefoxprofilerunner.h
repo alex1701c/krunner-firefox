@@ -21,7 +21,7 @@ public:
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;
-    const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
+    const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox", QIcon::fromTheme("view-private"));
     bool privateWindowsAsActions;
     QList<QAction *> matchActions;
     const QString proxychainsDisplayPrefix = "Proxychains: ";

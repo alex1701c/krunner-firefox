@@ -8,37 +8,24 @@
 
 #include "Config.h"
 
-/**
- * TODO Remove edited property
- * TODO Remove edited variable in GUI
- * TODO Option to use private window as action
- */
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 }
 
 void FirefoxRunner::init() {
-    const QDir configDir(Config::ConfigDir);
-    if (!configDir.exists()) configDir.mkpath(Config::ConfigDir);
-    // Create file
-    QFile configFile(Config::ConfigFile);
-    if (!configFile.exists()) {
-        configFile.open(QIODevice::WriteOnly);
-        configFile.close();
-    }
-    // Add file watcher for config
+    filterRegex.optimize();
+    privateWindowFlagRegex.optimize();
     watcher.addPath(Config::ConfigFile);
     connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
     reloadPluginConfiguration();
 }
 
 void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
-    qInfo() << "firefox reload config";
 #ifdef status_dev
     qInfo() << "Firefox reload config";
 #endif
-    auto profileManager = ProfileManager();
+    ProfileManager profileManager;
     profiles = profileManager.syncAndGetCustomProfiles();
     if (profiles.isEmpty()) {
         // If the profiles.ini file has not changes and there are no profiles

@@ -16,10 +16,6 @@ mkdir -p ~/.local/share/pixmaps/
 mv ~/tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg ~/.local/share/pixmaps/private_browsing_firefox.svg
 rm -rf ~/tmp/firefoxprofile_installer
 
-# This plugin uses a local copy of the firefox desktop file to avoid permission issues
-mkdir -p ~/.local/share/applications
-cp /usr/share/applications/firefox*.desktop ~/.local/share/applications/
-
 # Clone project if it is downloaded using curl
 if [[ $(basename "$PWD") != "krunner-firefox"* ]]; then
   git clone https://github.com/alex1701c/krunner-firefox

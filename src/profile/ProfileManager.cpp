@@ -14,6 +14,34 @@ ProfileManager::ProfileManager() {
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
+    initializeConfigFiles();
+}
+
+/**
+ * Creates necessary config files
+ */
+void ProfileManager::initializeConfigFiles() {
+    const QDir configDir(Config::ConfigDir);
+    if (!configDir.exists()) {
+        configDir.mkpath(Config::ConfigDir);
+    }
+    // Create file
+    QFile configFile(Config::ConfigFile);
+    if (!configFile.exists()) {
+        configFile.open(QIODevice::WriteOnly);
+        configFile.close();
+    }
+    if (ProfileManager::getDesktopFilePath() == QLatin1String("<error>")) {
+        QDir localAppDir;
+        const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
+        if (QFile::exists(normalFirefox)) {
+            QFile::copy(normalFirefox, QDir::homePath() + "/.local/share/applications/firefox.desktop");
+        }
+        const QString esrFirefox = QStringLiteral("/usr/share/applications/firefox-esr.desktop");
+        if (QFile::exists(esrFirefox)) {
+            QFile::copy(esrFirefox, QDir::homePath() + "/.local/share/applications/firefox-esr.desktop");
+        }
+    }
 }
 
 /**
@@ -235,10 +263,10 @@ QString ProfileManager::getDefaultProfilePath() const {
 /**
  * Get path to firefox*.desktop file, checks both options for firefox and firefox-esr
  */
-QString ProfileManager::getDesktopFilePath() const {
-    QString file(QDir::homePath() + "/" + ".local/share/applications/firefox.desktop");
+QString ProfileManager::getDesktopFilePath() {
+    QString file(QDir::homePath() + "/.local/share/applications/firefox.desktop");
     if (!QFile::exists(file)) {
-        file = QDir::homePath() + "/" + ".local/share/applications/firefox-esr.desktop";
+        file = QDir::homePath() + "/.local/share/applications/firefox-esr.desktop";
         if (!QFile::exists(file)) {
             qWarning() << "Can not find a firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
             return "<error>";
