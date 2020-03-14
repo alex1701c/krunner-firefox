@@ -32,7 +32,8 @@ void ProfileManager::initializeConfigFiles() {
         configFile.close();
     }
     if (ProfileManager::getDesktopFilePath(true) == QLatin1String("<error>")) {
-        QDir localAppDir;
+        QDir localAppDir(QDir::homePath() + "/.local/share/applications/");
+        localAppDir.mkpath(".");
         const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
         if (QFile::exists(normalFirefox)) {
             QFile::copy(normalFirefox, QDir::homePath() + "/.local/share/applications/firefox.desktop");
