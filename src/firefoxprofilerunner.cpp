@@ -6,6 +6,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 
+#include <krunner_version.h>
 #include "Config.h"
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
@@ -186,7 +187,11 @@ QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &fil
 }
 
 
+#if KRUNNER_VERSION >= QT_VERSION_CHECK(5, 72, 0)
+K_EXPORT_PLASMA_RUNNER_WITH_JSON(FirefoxRunner, "plasma-runner-firefoxprofilerunner.json")
+#else
 K_EXPORT_PLASMA_RUNNER(firefoxprofilerunner, FirefoxRunner)
+#endif
 
 // needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "firefoxprofilerunner.moc"

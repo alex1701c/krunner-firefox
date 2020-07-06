@@ -5,7 +5,7 @@ Icon=firefox
 
 X-KDE-ServiceTypes=Plasma/Runner
 Type=Service
-X-KDE-Library=krunner_firefoxprofilerunner
+X-KDE-Library=/kf5/krunner/krunner_firefoxprofilerunner
 X-KDE-PluginInfo-Author=Alex1701c
 X-KDE-PluginInfo-Email=alex1701c.dev@gmx.net
 X-KDE-PluginInfo-Name=firefoxprofilerunner
