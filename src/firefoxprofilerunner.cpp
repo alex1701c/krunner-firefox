@@ -10,7 +10,12 @@
 #include "Config.h"
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
-        : Plasma::AbstractRunner(parent, args) {
+        : Plasma::AbstractRunner(parent, args),
+        prefix(QLatin1String("fire")),
+        filterRegex(QRegularExpression(QSL(R"(^fire\w*(?: (.+))$)"))),
+        privateWindowFlagRegex(QRegularExpression(QSL(" -p *$"))),
+        proxychainsDisplayPrefix(QSL("Proxychains: ")) {
+    firefoxPrivateWindowIcon = QIcon::fromTheme(QSL("private_browsing_firefox"), QIcon::fromTheme(QSL("view-private")));
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
 }
 
