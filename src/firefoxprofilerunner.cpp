@@ -11,17 +11,15 @@
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args),
-        prefix(QLatin1String("fire")),
-        filterRegex(QRegularExpression(QSL(R"(^fire\w*(?: (.+))$)"))),
-        privateWindowFlagRegex(QRegularExpression(QSL(" -p *$"))),
+        filterRegex(QRegularExpression(QStringLiteral("^firef(o(x)?)?( (?<filter>.*))?$"))),
         proxychainsDisplayPrefix(QSL("Proxychains: ")) {
-    firefoxPrivateWindowIcon = QIcon::fromTheme(QSL("private_browsing_firefox"), QIcon::fromTheme(QSL("view-private")));
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
+    firefoxPrivateWindowIcon = QIcon::fromTheme(QSL("private_browsing_firefox"), QIcon::fromTheme(QSL("view-private")));
+    filterRegex.optimize();
 }
 
 void FirefoxRunner::init() {
     filterRegex.optimize();
-    privateWindowFlagRegex.optimize();
     watcher.addPath(Config::ConfigFile);
     connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
     reloadPluginConfiguration();
@@ -59,50 +57,36 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
 
     privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
     if (privateWindowsAsActions) {
-        matchActions = {addAction("private-window", firefoxPrivateWindowIcon, "Open profile in private window")};
+        addAction("private-window", firefoxPrivateWindowIcon, "Open profile in private window");
     } else {
-        matchActions.clear();
+        clearActions();
     }
 
     QList<Plasma::RunnerSyntax> syntaxes;
     syntaxes.append(Plasma::RunnerSyntax(QSL("firefox :q?"),
                                          QSL("Plugin gets triggered by firef... after that you can search the profiles by name"))
     );
-    syntaxes.append(Plasma::RunnerSyntax(QSL("firefox :q -p"), QSL("Launch profile in private window")));
     setSyntaxes(syntaxes);
 }
 
 void FirefoxRunner::match(Plasma::RunnerContext &context) {
-    QString term = context.query();
-    if (!context.isValid() || !term.startsWith(prefix)) {
+    const auto regexMatch = filterRegex.match(context.query());
+    if (!context.isValid() || !regexMatch.hasMatch()) {
         return;
     }
 
-    QList<Plasma::QueryMatch> matches;
-    bool privateWindow = false;
-    if (!privateWindowsAsActions && term.contains(privateWindowFlagRegex)) {
-        privateWindow = true;
-        term.remove(privateWindowFlagRegex);
-    }
-
-    const QString filter = filterRegex.match(term).captured(1);
-
-    // Create matches and pass in value of private window flag
-    matches.append(createProfileMatches(filter, privateWindow));
+    const QString filter = regexMatch.captured(QStringLiteral("filter"));
+    context.addMatches(createProfileMatches(filter, false));
 
     // If private window flag is not set and private windows should always be shown create matches
-    if (!privateWindow && showAlwaysPrivateWindows) {
-        matches.append(createProfileMatches(filter, true));
+    if (showAlwaysPrivateWindows) {
+        context.addMatches(createProfileMatches(filter, true));
     }
-
-    context.addMatches(matches);
 }
 
 QList<QAction *> FirefoxRunner::actionsForMatch(const Plasma::QueryMatch &match) {
-    Q_UNUSED(match)
-
     if (!match.text().startsWith(proxychainsDisplayPrefix)) {
-        return matchActions;
+        return actions().values();
     }
     return {};
 }

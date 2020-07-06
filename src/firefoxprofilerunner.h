@@ -26,15 +26,12 @@ private:
 
     QFileSystemWatcher watcher;
     QString launchCommand;
-    const QLatin1String prefix;
     const QRegularExpression filterRegex;
-    const QRegularExpression privateWindowFlagRegex;
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;
     QIcon firefoxPrivateWindowIcon;
     bool privateWindowsAsActions;
-    QList<QAction *> matchActions;
     const QString proxychainsDisplayPrefix;
 
 };
