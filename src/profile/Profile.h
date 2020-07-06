@@ -29,7 +29,7 @@ public:
 
     void toString() const;
 
-    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "") const;
+    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = QString()) const;
 };
 
 

@@ -16,7 +16,7 @@ inline QString getResourcesDir() {
         return QDir::currentPath() + "/test";
     }
     qWarning() << "Could not find resources, please go to build/test directory";
-    return "";
+    return QString();
 }
 
 class ProfileManagerTest : public QObject {

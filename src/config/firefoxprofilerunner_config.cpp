@@ -7,10 +7,11 @@
 #include <QtCore/QProcess>
 #include <Config.h>
 
-K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
-                 registerPlugin<FirefoxRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
-
 #define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
+#define QSL(text) QStringLiteral(text)
+
+K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory,
+                 registerPlugin<FirefoxRunnerConfig>(QSL("kcm_krunner_firefoxprofilerunner"));)
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent)
     : QWidget(parent) {
@@ -23,7 +24,7 @@ FirefoxRunnerConfig::FirefoxRunnerConfig(QWidget *parent, const QVariantList &ar
     auto *layout = new QGridLayout(this);
     layout->addWidget(m_ui, 0, 0);
 
-    proxychainsInstalled = !QStandardPaths::findExecutable("proxychains4").isEmpty();
+    proxychainsInstalled = !QStandardPaths::findExecutable(QSL("proxychains4")).isEmpty();
     connectSignals();
     if (proxychainsInstalled) {
         connectOptionalProxySignals();
@@ -49,7 +50,7 @@ void FirefoxRunnerConfig::load() {
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
-    QMap<QListWidgetItem *, Profile> itemProfileMap;
+    QHash<QListWidgetItem *, Profile> itemProfileMap;
     const bool addItemsToSet =
         (Proxychains::ProxychainsSelection) config.readEntry<int>(Config::ProxychainsIntegration, Proxychains::Disabled)
             == Proxychains::Existing;
@@ -164,8 +165,8 @@ void FirefoxRunnerConfig::save() {
         organizedItems.insert(data.path, newData);
     }
     // Sync profiles with entries from map
-    const QString instanceOpt = m_ui->forceNewInstanceCheckBox->isChecked() ? " --new-instance" : "";
-    for (auto &profile:profiles) {
+    const QString instanceOpt = m_ui->forceNewInstanceCheckBox->isChecked() ? QSL(" --new-instance") : QString();
+    for (auto &profile :profiles) {
         // Reset optional values to false/0
         profile.privateWindowPriority = 0;
         profile.launchNormalWindowWithProxychains = false;
@@ -176,8 +177,10 @@ void FirefoxRunnerConfig::save() {
         profile.extraPrivateWindowProxychainsOptionPriority = 0;
 
         auto itemMap = organizedItems.value(profile.path);
-        for (const auto &type:itemMap.keys()) {
-            const auto item = itemMap.value(type);
+        auto itemMapIt = itemMap.constBegin();
+        while (itemMapIt != itemMap.constEnd()) {
+            const auto type = itemMapIt.key();
+            const auto item = itemMapIt.value();
             const auto itemData = widgetData(item);
             if (type == Normal) {
                 profile.name = item->text();
@@ -202,7 +205,7 @@ void FirefoxRunnerConfig::save() {
                                             m_ui->registerPrivateWindows->isChecked(),
                                             showExtraProxychainsOptionsGlobally, firefoxConfig);
     // New runner instance has latest configuration
-    QProcess::startDetached("bash", QStringList() << "-c" << "kquitapp5 krunner;kstart5 krunner > /dev/null");
+    QProcess::startDetached(QSL("bash"), {"-c", "kquitapp5 krunner;kstart5 krunner > /dev/null"});
 }
 
 void FirefoxRunnerConfig::defaults() {
@@ -222,7 +225,7 @@ void FirefoxRunnerConfig::defaults() {
     hideDefaultProfile();
 
 #if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
-    emit markAsChanged();
+    markAsChanged();
 #else
     emit changed();
 #endif
@@ -358,8 +361,8 @@ void FirefoxRunnerConfig::refreshProfiles() {
         load();
     } else {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Discard changes?",
-                                      "Do you want to refresh the current config and discard all unsaved changes",
+        reply = QMessageBox::question(this, QSL("Discard changes?"),
+                                      QSL("Do you want to refresh the current config and discard all unsaved changes"),
                                       QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             forceProfileSync = true;
@@ -533,7 +536,7 @@ void FirefoxRunnerConfig::hideDefaultProfile() {
  * is used to determine the CheckedState of the item.
  * This parameter is only required if the data for the "Use existing profiles" option should be loaded
  */
-void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
+void FirefoxRunnerConfig::loadInitialProxySettings(const QHash<QListWidgetItem *, Profile> &itemProfileMap) {
     if (previousProxychainsSelection == Proxychains::Existing) {
         for (int i = 0; i < m_ui->profiles->count(); ++i) {
             const auto item = m_ui->profiles->item(i);

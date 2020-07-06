@@ -5,6 +5,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QRegularExpression>
 
+#define QSL(text) QStringLiteral(text)
 
 /**
  * Initialize variables
@@ -106,9 +107,11 @@ QList<Profile> ProfileManager::getFirefoxProfiles() {
  */
 QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig) {
     QList<Profile> profiles;
-    if (firefoxDesktopFile == "<error>") { return profiles; }
+    if (firefoxDesktopFile == QLatin1String("<error>")) {
+        return profiles;
+    }
     const QStringList installedProfiles =
-        firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
+        firefoxConfig->groupList().filter(QRegularExpression(QSL("Desktop Action new-window-with-profile-.*")));
     for (const auto &profileGroupName:installedProfiles) {
         auto profileGroup = firefoxConfig->group(profileGroupName);
         if (!profileGroup.exists() || profileGroup.keyList().isEmpty()) { continue; }
@@ -155,8 +158,6 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
         .filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
 
     QStringList deleted;
-    QString newInstalls;
-
     // Update/mark to delete installed profiles
     for (auto &installedProfile:installedProfiles) {
         bool found = false;
@@ -254,7 +255,8 @@ QString ProfileManager::getDefaultProfilePath() const {
     if (!path.isEmpty()) {
         return path;
     }
-    for (const auto &profileName:firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"))) {
+    const auto filteredGroup = firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"));
+    for (const auto &profileName : filteredGroup) {
         const auto profile = firefoxProfilesIni->group(profileName);
         if (profile.readEntry("Default", 0) == 1) { return profile.readEntry("Path"); }
     }

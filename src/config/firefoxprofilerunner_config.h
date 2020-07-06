@@ -55,7 +55,7 @@ public Q_SLOTS:
     void cancelProfileName();
     void editProfileName();
 
-    void loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap);
+    void loadInitialProxySettings(const QHash<QListWidgetItem *, Profile> &itemProfileMap);
 
     // Proxychains config slots
     void learnMoreProxychains();
