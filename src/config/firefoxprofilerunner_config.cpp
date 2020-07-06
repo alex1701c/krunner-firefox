@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QtCore/QProcess>
 #include <Config.h>
+#include <utils.h>
 
 #define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
 #define QSL(text) QStringLiteral(text)
@@ -33,7 +34,6 @@ FirefoxRunnerConfig::FirefoxRunnerConfig(QWidget *parent, const QVariantList &ar
     firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
     config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
     config.config()->reparseConfiguration();
-    firefoxIcon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
 }
 
 void FirefoxRunnerConfig::load() {
@@ -62,7 +62,7 @@ void FirefoxRunnerConfig::load() {
         auto data = QVariant::fromValue(ProfileData{profile.path, profile.isDefault,
                                                     ProfileType::Normal, profile.priority});
         item->setData(Qt::UserRole, data);
-        item->setIcon(firefoxIcon);
+        item->setIcon(getFirefoxIcon());
         items.append(item);
         // Private window
         auto *item2 = new QListWidgetItem();
@@ -71,7 +71,7 @@ void FirefoxRunnerConfig::load() {
                                              {profile.path, profile.isDefault, ProfileType::Private,
                                               profile.privateWindowPriority});
         item2->setData(Qt::UserRole, data2);
-        item2->setIcon(firefoxPrivateWindowIcon);
+        item2->setIcon(getFirefoxPrivateIcon());
         items.append(item2);
         if (addItemsToSet) {
             itemProfileMap.insert(item, profile);
@@ -559,7 +559,7 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QHash<QListWidgetItem *
                 QVariant data = QVariant::fromValue(ProfileData{profile.path, false, ProfileType::ProxychainsNormal,
                                                                 profile.extraNormalWindowProxychainsOptionPriority});
                 item->setData(Qt::UserRole, data);
-                item->setIcon(firefoxIcon);
+                item->setIcon(getFirefoxIcon());
                 additionalItems.append(item);
             }
             if (profile.extraPrivateWindowProxychainsLaunchOption) {
@@ -568,12 +568,12 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QHash<QListWidgetItem *
                 QVariant data = QVariant::fromValue(ProfileData{profile.path, false, ProfileType::ProxychainsPrivate,
                                                                 profile.extraPrivateWindowProxychainsOptionPriority});
                 item->setData(Qt::UserRole, data);
-                item->setIcon(firefoxPrivateWindowIcon);
+                item->setIcon(getFirefoxPrivateIcon());
                 additionalItems.append(item);
             }
-            m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name, QVariant::fromValue(
+            m_ui->proxychainsExtraComboBox->addItem(getFirefoxIcon(), profile.name, QVariant::fromValue(
                 ProxychainsData{profile.path, ProxychainsNormal, profile.extraNormalWindowProxychainsLaunchOption}));
-            m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name, QVariant::fromValue(
+            m_ui->proxychainsExtraComboBox->addItem(getFirefoxPrivateIcon(), profile.name, QVariant::fromValue(
                 ProxychainsData{profile.path, ProxychainsPrivate, profile.extraPrivateWindowProxychainsLaunchOption}));
         }
         for (int i = m_ui->profiles->count() - 1; i > 0; --i) {
@@ -636,11 +636,11 @@ void FirefoxRunnerConfig::proxychainsSelectionChanged() {
         m_ui->proxychainsExtraControlsWidget->setHidden(false);
         m_ui->proxychainsExtraComboBox->clear();
         for (const auto &profile: qAsConst(profiles)) {
-            m_ui->proxychainsExtraComboBox->addItem(firefoxIcon, profile.name,
+            m_ui->proxychainsExtraComboBox->addItem(getFirefoxIcon(), profile.name,
                                                     QVariant::fromValue(ProxychainsData{profile.path,
                                                                                         ProxychainsNormal,
                                                                                         false}));
-            m_ui->proxychainsExtraComboBox->addItem(firefoxPrivateWindowIcon, profile.name,
+            m_ui->proxychainsExtraComboBox->addItem(getFirefoxPrivateIcon(), profile.name,
                                                     QVariant::fromValue(ProxychainsData{profile.path, ProxychainsPrivate,
                                                                                         false}));
         }
@@ -712,7 +712,7 @@ void FirefoxRunnerConfig::addExtraOption() {
                                                     ProfileType::TMP,
                                                     profile.priority});
     item->setData(Qt::UserRole, data);
-    item->setIcon(profileInfo.type == ProxychainsNormal ? firefoxIcon : firefoxPrivateWindowIcon);
+    item->setIcon(profileInfo.type == ProxychainsNormal ? getFirefoxIcon() : getFirefoxPrivateIcon());
     m_ui->profiles->addItem(item);
     profileInfo.isDisplayed = true;
     m_ui->proxychainsExtraComboBox->setItemData(currentIndex, QVariant::fromValue(profileInfo));

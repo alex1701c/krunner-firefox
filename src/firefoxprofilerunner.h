@@ -29,11 +29,8 @@ private:
     const QRegularExpression filterRegex;
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
-    QIcon firefoxIcon;
-    QIcon firefoxPrivateWindowIcon;
     bool privateWindowsAsActions;
     const QString proxychainsDisplayPrefix;
-
 };
 
 #endif

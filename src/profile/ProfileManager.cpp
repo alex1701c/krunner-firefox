@@ -119,7 +119,7 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.name = profileGroup.readEntry("Name");
         profile.launchName = profileGroup.readEntry("LaunchName");
         profile.path = QString(profileGroupName).remove("Desktop Action new-window-with-profile-");
-        if (defaultPath == "<invalid>") { defaultPath = profile.path; }
+        if (defaultPath.isEmpty()) { defaultPath = profile.path; }
         profile.isDefault = profile.path == defaultPath;
         profile.isEdited = profileGroup.readEntry("Edited", false);
         profile.priority = profileGroup.readEntry("Priority", 0);
@@ -213,7 +213,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
  */
 void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra,
                                               KSharedConfigPtr firefoxConfig) {
-    QString registeredActions = "new-window;new-private-window;";
+    QString registeredActions = QStringLiteral("new-window;new-private-window;");
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) { registeredActions.clear(); }
     QStringList desktopActions = firefoxConfig->groupList().filter("Desktop Action");
     for (auto &groupName: desktopActions) {
@@ -260,7 +260,7 @@ QString ProfileManager::getDefaultProfilePath() const {
         const auto profile = firefoxProfilesIni->group(profileName);
         if (profile.readEntry("Default", 0) == 1) { return profile.readEntry("Path"); }
     }
-    return "<invalid>";
+    return QString();
 }
 
 /**

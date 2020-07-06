@@ -21,8 +21,6 @@ Q_OBJECT
 public:
     explicit FirefoxRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
 
-    QIcon firefoxIcon;
-    const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");
     const QIcon upIcon = QIcon::fromTheme("arrow-up");
     const QIcon downIcon = QIcon::fromTheme("arrow-down");
     ProfileManager profileManager;

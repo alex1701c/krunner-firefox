@@ -8,13 +8,13 @@
 
 #include <krunner_version.h>
 #include "Config.h"
+#include "utils.h"
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args),
         filterRegex(QRegularExpression(QStringLiteral("^firef(o(x)?)?( (?<filter>.*))?$"))),
         proxychainsDisplayPrefix(QSL("Proxychains: ")) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
-    firefoxPrivateWindowIcon = QIcon::fromTheme(QSL("private_browsing_firefox"), QIcon::fromTheme(QSL("view-private")));
     filterRegex.optimize();
 }
 
@@ -22,6 +22,8 @@ void FirefoxRunner::init() {
     filterRegex.optimize();
     watcher.addPath(Config::ConfigFile);
     connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
+    addSyntax(Plasma::RunnerSyntax(QSL("firefox :q?"),
+            QSL("Plugin gets triggered by firef... after that you can search the profiles by name")));
     reloadPluginConfiguration();
 }
 
@@ -37,7 +39,6 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
         profiles = profileManager.syncAndGetCustomProfiles(true);
     }
     launchCommand = profileManager.launchCommand;
-    firefoxIcon = QIcon::fromTheme(launchCommand.endsWith(QSL("firefox-esr")) ? QSL("firefox-esr") : QSL("firefox"));
 
     KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
     if (!configFile.isEmpty()) config.config()->reparseConfiguration();
@@ -57,16 +58,10 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
 
     privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
     if (privateWindowsAsActions) {
-        addAction("private-window", firefoxPrivateWindowIcon, "Open profile in private window");
+        addAction("private-window", getFirefoxPrivateIcon(), "Open profile in private window");
     } else {
         clearActions();
     }
-
-    QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax(QSL("firefox :q?"),
-                                         QSL("Plugin gets triggered by firef... after that you can search the profiles by name"))
-    );
-    setSyntaxes(syntaxes);
 }
 
 void FirefoxRunner::match(Plasma::RunnerContext &context) {
@@ -118,7 +113,7 @@ void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::Quer
 Plasma::QueryMatch
 FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
     Plasma::QueryMatch match(this);
-    match.setIcon(data.contains(QSL("private-window")) ? firefoxPrivateWindowIcon : firefoxIcon);
+    match.setIcon(data.contains(QSL("private-window")) ? getFirefoxPrivateIcon() : getFirefoxIcon());
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
