@@ -24,7 +24,7 @@ add_dependencies(krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner)
 install(TARGETS krunner_firefoxprofilerunner DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/kf5/krunner/)
 install(TARGETS kcm_krunner_firefoxprofilerunner DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
 
-install(FILES plasma-runner-firefoxprofilerunner.desktop config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+install(FILES config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
 
 if(KF5Runner_VERSION VERSION_LESS 5.72.0)
     install(FILES plasma-runner-firefoxprofilerunner.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
