@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# NOTE: When making changes, make sure to run the script through ShellCheck!
+# @see https://github.com/koalaman/shellcheck
+
 # Update bash options.
 # @see https://www.gnu.org/software/bash/manual/html_node/Modifying-Shell-Behavior.html
 # @see https://sipb.mit.edu/doc/safe-shell/
@@ -20,11 +23,12 @@ function build_plugin() {
     BUILD_DIR="${SOURCE_DIR}/build"
     mkdir -p "${BUILD_DIR}"
     cd "${BUILD_DIR}"
-    local CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release"
+    local USER_QT_PLUGINS
+    local CMAKE_ARGS=("-DCMAKE_BUILD_TYPE=Release")
     if [[ -z "${RUN_AS_ADMIN}" ]]; then
-        local USER_QT_PLUGINS="${HOME}/.local/lib/qt/plugins"
-        mkdir -p $USER_QT_PLUGINS
-        CMAKE_ARGS="${CMAKE_ARGS} -DKDE_INSTALL_QTPLUGINDIR=${USER_QT_PLUGINS}"
+        USER_QT_PLUGINS="${HOME}/.local/lib/qt/plugins"
+        mkdir -p "${USER_QT_PLUGINS}"
+        CMAKE_ARGS+=("-DKDE_INSTALL_QTPLUGINDIR=${USER_QT_PLUGINS}")
         QT_PLUGIN_PATH="${QT_PLUGIN_PATH:-}"
         if [[ -z "${QT_PLUGIN_PATH}" || "${QT_PLUGIN_PATH}" != *"/.local/lib/qt/plugins/"* ]]; then
             # Add the installation path to the QT_PLUGIN_PATH
@@ -32,14 +36,14 @@ function build_plugin() {
             export QT_PLUGIN_PATH="${USER_QT_PLUGINS}/:${QT_PLUGIN_PATH}"
         fi
         local USER_SERVICES="${HOME}/.local/share/kservices5"
-        mkdir -p $USER_SERVICES
-        CMAKE_ARGS="${CMAKE_ARGS} -DKDE_INSTALL_KSERVICES5DIR=${USER_SERVICES}"
+        mkdir -p "${USER_SERVICES}"
+        CMAKE_ARGS+=("-DKDE_INSTALL_KSERVICES5DIR=${USER_SERVICES}")
 
     else
-        local USER_QT_PLUGINS=$(kf5-config --qt-plugins)
-        CMAKE_ARGS="${CMAKE_ARGS} -DKDE_INSTALL_QTPLUGINDIR=${USER_QT_PLUGINS}"
+        USER_QT_PLUGINS=$(kf5-config --qt-plugins)
+        CMAKE_ARGS+=("-DKDE_INSTALL_QTPLUGINDIR=${USER_QT_PLUGINS}")
     fi
-    cmake $CMAKE_ARGS ..
+    cmake "${CMAKE_ARGS[@]}" ..
 
     echo -e "\nBUILD FINISHED!"
 }

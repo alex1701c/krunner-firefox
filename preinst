@@ -1,4 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# NOTE: When making changes, make sure to run the script through ShellCheck!
+# @see https://github.com/koalaman/shellcheck
+
+# Update bash options.
+# @see https://www.gnu.org/software/bash/manual/html_node/Modifying-Shell-Behavior.html
+# @see https://sipb.mit.edu/doc/safe-shell/
+# Exit script on error.
+set -o errexit
+# Error on unset (non-special) parameter expansion.
+set -o nounset
+# Disable pathname expansion.
+set -o noglob
 
 # Import install functions.
 source "./install.sh"
