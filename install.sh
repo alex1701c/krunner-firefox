@@ -154,6 +154,37 @@ function prepare_project_repo_dir() {
     fi
 }
 
+function verify_requirements() {
+    local CMD_PATH=""
+    set +o errexit
+    CMD_PATH="$(command -v cmake)"
+    if [[ -z "${CMD_PATH}" ]]; then
+        echo "Could not find cmake."
+        exit $EXIT_CODE_GENERIC_ERROR
+    fi
+    CMD_PATH="$(command -v kf5-config)"
+    if [[ -z "${CMD_PATH}" ]]; then
+        echo "Could not find kf5-config."
+        exit $EXIT_CODE_GENERIC_ERROR
+    fi
+    CMD_PATH="$(command -v make)"
+    if [[ -z "${CMD_PATH}" ]]; then
+        echo "Could not find make."
+        exit $EXIT_CODE_GENERIC_ERROR
+    fi
+    CMD_PATH="$(command -v sed)"
+    if [[ -z "${CMD_PATH}" ]]; then
+        echo "Could not find sed."
+        exit $EXIT_CODE_GENERIC_ERROR
+    fi
+    CMD_PATH="$(command -v unzip)"
+    if [[ -z "${CMD_PATH}" ]]; then
+        echo "Could not find unzip."
+        exit $EXIT_CODE_GENERIC_ERROR
+    fi
+    set -o errexit
+}
+
 function prepare_build_and_install() {
     echo "Preparing to build and install the plugin..."
     if [[ "$(whoami)" == "root" ]]; then
@@ -169,6 +200,9 @@ function prepare_build_and_install() {
     if [[ "_${GLOBAL_PLUGIN:-}_" == "_false_" || "_${GLOBAL_PLUGIN:-}_" == "_FALSE_" ]]; then
         RUN_AS_ADMIN=""
     fi
+
+    # Verify script requirements.
+    verify_requirements
 
     # Register a cleanup function to be called on the EXIT signal. Regardless of the exit code.
     trap handle_exit_signal EXIT
