@@ -1,13 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# NOTE: When making changes, make sure to run the script through ShellCheck!
+# @see https://github.com/koalaman/shellcheck
 
-# Extract and move icon
-mkdir -p /tmp/firefoxprofile_installer
-if [[ -e /usr/lib/firefox/browser/omni.ja ]]; then
-    unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-else
-    unzip /usr/lib/firefox-esr/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-fi
+# Update bash options.
+# @see https://www.gnu.org/software/bash/manual/html_node/Modifying-Shell-Behavior.html
+# @see https://sipb.mit.edu/doc/safe-shell/
+# Exit script on error.
+set -o errexit
+# Error on unset (non-special) parameter expansion.
+set -o nounset
+# Disable pathname expansion.
+set -o noglob
 
-sudo mkdir -p /usr/share/pixmaps/
-sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
-rm -rf /tmp/firefoxprofile_installer
+# Import install functions.
+source "./install.sh"
+
+echo "Preparing installation..."
+
+# Register a cleanup function to be called on the EXIT signal. Regardless of the exit code.
+trap handle_exit_signal EXIT
+
+# Extract and install private browsing icon.
+prepare_temp_dir
+determine_firefox_install_path
+install_private_browsing_icon
