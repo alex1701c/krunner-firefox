@@ -9,7 +9,7 @@
 namespace {
     class Config {
     public:
-        // General setings
+        // General settings
         static const QString ConfigDir;
         static const QString ConfigFile;
         constexpr static const auto MainGroup = "Config";

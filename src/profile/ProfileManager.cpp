@@ -46,7 +46,7 @@ void ProfileManager::initializeConfigFiles() {
 }
 
 /**
- * Syncronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
+ * Synchronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
  * @param forceSync
  */
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {

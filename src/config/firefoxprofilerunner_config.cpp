@@ -589,7 +589,7 @@ void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *,
 
 /**
  * Remove old config for proxychains and enable new one
- * For the "Launch existing ..." option the checkboxes next to the profiles are addded/removed
+ * For the "Launch existing ..." option the checkboxes next to the profiles are added/removed
  * For the "Show extra .." option the proxychainsExtraControlsWidget gets shown/hidden and if the option gets
  * unchecked the extra entries are removed from the ListView
  */
