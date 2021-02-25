@@ -46,7 +46,7 @@ void ProfileManager::initializeConfigFiles() {
 }
 
 /**
- * Syncronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
+ * Synchronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
  * @param forceSync
  */
 QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
@@ -60,7 +60,7 @@ QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync) {
     if (file.open(QFile::ReadOnly)) {
         QCryptographicHash hash(QCryptographicHash::Md5);
         if (hash.addData(&file)) {
-            const QString newHash = hash.result();
+            const QString newHash = hash.result().toHex();
             config.writeEntry("lastHash", newHash);
             hasChanged = lastHash != newHash;
         }
