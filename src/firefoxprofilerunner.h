@@ -13,11 +13,20 @@ Q_OBJECT
 public:
     FirefoxRunner(QObject *parent, const QVariantList &args);
 
-    QLatin1String prefix = QLatin1String("fire");
+    // NOTE: Prefixes need to be included in filterRegex.
+    QLatin1String shortPrefix = QLatin1String("ff");
+    QLatin1String mediumPrefix = QLatin1String("fire");
+    QRegularExpression filterRegex = QRegularExpression(
+            R"(^(?:ff|fire\w*)(?: (.+))$)",
+            QRegularExpression::CaseInsensitiveOption
+    );
+    const QRegularExpression privateWindowFlagRegex = QRegularExpression(
+            R"((\s+-p\b))",
+            QRegularExpression::CaseInsensitiveOption
+    );
+
     QFileSystemWatcher watcher;
     QString launchCommand;
-    QRegularExpression filterRegex = QRegularExpression(R"(^fire\w*(?: (.+))$)");
-    const QRegularExpression privateWindowFlagRegex = QRegularExpression(" -p *$");
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
     QIcon firefoxIcon;
