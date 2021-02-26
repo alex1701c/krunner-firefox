@@ -59,16 +59,27 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
     }
 
     QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax("firefox :q?",
-                                         "Plugin gets triggered by firef... after that you can search the profiles by name")
-    );
-    syntaxes.append(Plasma::RunnerSyntax("firefox :q -p", "Launch profile in private window"));
+    syntaxes.append(Plasma::RunnerSyntax(
+            "firefox :q:",
+            "Plugin gets triggered by fire... after that you can search the profiles by name"
+    ));
+    syntaxes.append(Plasma::RunnerSyntax("firefox -p :q:", "Launch profile in private window"));
+    syntaxes.append(Plasma::RunnerSyntax("firefox :q: -p", "Launch profile in private window"));
+    syntaxes.append(Plasma::RunnerSyntax(
+            "ff :q:",
+            "Plugin gets triggered by ff... after that you can search the profiles by name"
+    ));
+    syntaxes.append(Plasma::RunnerSyntax("ff -p :q:", "Launch profile in private window"));
+    syntaxes.append(Plasma::RunnerSyntax("ff :q: -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);
 }
 
 void FirefoxRunner::match(Plasma::RunnerContext &context) {
     QString term = context.query();
-    if (!context.isValid() || !term.startsWith(prefix)) {
+    if (!context.isValid()) {
+        return;
+    }
+    if (!term.startsWith(shortPrefix, Qt::CaseInsensitive) && !term.startsWith(mediumPrefix, Qt::CaseInsensitive)) {
         return;
     }
 
