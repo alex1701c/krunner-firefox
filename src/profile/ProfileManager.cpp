@@ -155,7 +155,6 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
         .filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
 
     QStringList deleted;
-    QString newInstalls;
 
     // Update/mark to delete installed profiles
     for (auto &installedProfile:installedProfiles) {
