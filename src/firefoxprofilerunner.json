@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "alex1701c.dev@gmx.net",
+                "Name": "Alex1701c"
+            }
+        ],
+        "Description": "Krunner plugin to launch Firefox profiles",
+        "EnabledByDefault": true,
+        "Icon": "firefox",
+        "Id": "firefoxprofilerunner",
+        "License": "GPLv3",
+        "Name": "FirefoxProfileRunner",
+        "ServiceTypes": [
+            "Plasma/Runner"
+        ],
+        "Version": "1.2.4",
+        "Website": "https://github.com/alex1701c/krunner-firefox"
+    }
+}

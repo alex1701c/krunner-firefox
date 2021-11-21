@@ -197,7 +197,7 @@ QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &fil
 }
 
 
-K_EXPORT_PLASMA_RUNNER(firefoxprofilerunner, FirefoxRunner)
+K_EXPORT_PLASMA_RUNNER_WITH_JSON(FirefoxRunner, "firefoxprofilerunner.json")
 
 // needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "firefoxprofilerunner.moc"

@@ -3,7 +3,7 @@ add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.firefoxprofilerunne
 set(core_SRCS profile/Profile.cpp profile/ProfileManager.cpp)
 
 set(firefoxprofilerunner_SRCS firefoxprofilerunner.cpp ${core_SRCS})
-add_library(krunner_firefoxprofilerunner MODULE ${firefoxprofilerunner_SRCS})
+kcoreaddons_add_plugin(krunner_firefoxprofilerunner SOURCES ${firefoxprofilerunner_SRCS} INSTALL_NAMESPACE "kf5/krunner")
 target_link_libraries(krunner_firefoxprofilerunner KF5::Runner KF5::I18n)
 
 set(kcm_krunner_firefoxprofilerunner_SRCS ${core_SRCS} config/firefoxprofilerunner_config.cpp)
@@ -21,5 +21,5 @@ target_link_libraries(kcm_krunner_firefoxprofilerunner
 
 add_dependencies(krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner)
 
-install(TARGETS krunner_firefoxprofilerunner kcm_krunner_firefoxprofilerunner DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
-install(FILES plasma-runner-firefoxprofilerunner.desktop config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
+install(TARGETS kcm_krunner_firefoxprofilerunner DESTINATION ${KDE_INSTALL_QTPLUGINDIR})
+install(FILES config/plasma-runner-firefoxprofilerunner_config.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR})
