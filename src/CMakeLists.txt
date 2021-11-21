@@ -4,7 +4,7 @@ set(core_SRCS profile/Profile.cpp profile/ProfileManager.cpp)
 
 set(firefoxprofilerunner_SRCS firefoxprofilerunner.cpp ${core_SRCS})
 kcoreaddons_add_plugin(krunner_firefoxprofilerunner SOURCES ${firefoxprofilerunner_SRCS} INSTALL_NAMESPACE "kf5/krunner")
-target_link_libraries(krunner_firefoxprofilerunner KF5::Runner KF5::I18n)
+target_link_libraries(krunner_firefoxprofilerunner KF5::Runner KF5::I18n Qt5::Widgets)
 
 set(kcm_krunner_firefoxprofilerunner_SRCS ${core_SRCS} config/firefoxprofilerunner_config.cpp)
 ki18n_wrap_ui(kcm_krunner_firefoxprofilerunner_SRCS config/firefoxprofilerunner_config.ui)

@@ -53,7 +53,7 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
 
     privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
     if (privateWindowsAsActions) {
-        matchActions = {addAction("private-window", firefoxPrivateWindowIcon, "Open profile in private window")};
+        matchActions = {new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)};
     } else {
         matchActions.clear();
     }
