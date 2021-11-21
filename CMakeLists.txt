@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.0)
 
 project(firefoxprofilerunner)
 
+set(QT_MIN_VERSION 5.12.0)
 set(KF5_MIN_VERSION 5.72.0)
+
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050f00)
+add_definitions(-DKF_DISABLE_DEPRECATED_BEFORE_AND_AT=0x055700)
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
