@@ -11,7 +11,7 @@
 #include "Config.h"
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
-        : Plasma::AbstractRunner(parent, data, args) {
+        : AbstractRunner(parent, data, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
     filterRegex.optimize();
     privateWindowFlagRegex.optimize();
@@ -43,23 +43,23 @@ void FirefoxRunner::reloadConfiguration() {
         matchActions.clear();
     }
 
-    QList<Plasma::RunnerSyntax> syntaxes;
-    syntaxes.append(Plasma::RunnerSyntax(
+    QList<RunnerSyntax> syntaxes;
+    syntaxes.append(RunnerSyntax(
             "firefox :q:",
             "Plugin gets triggered by fire... after that you can search the profiles by name"
     ));
-    syntaxes.append(Plasma::RunnerSyntax("firefox -p :q:", "Launch profile in private window"));
-    syntaxes.append(Plasma::RunnerSyntax("firefox :q: -p", "Launch profile in private window"));
-    syntaxes.append(Plasma::RunnerSyntax(
+    syntaxes.append(RunnerSyntax("firefox -p :q:", "Launch profile in private window"));
+    syntaxes.append(RunnerSyntax("firefox :q: -p", "Launch profile in private window"));
+    syntaxes.append(RunnerSyntax(
             "ff :q:",
             "Plugin gets triggered by ff... after that you can search the profiles by name"
     ));
-    syntaxes.append(Plasma::RunnerSyntax("ff -p :q:", "Launch profile in private window"));
-    syntaxes.append(Plasma::RunnerSyntax("ff :q: -p", "Launch profile in private window"));
+    syntaxes.append(RunnerSyntax("ff -p :q:", "Launch profile in private window"));
+    syntaxes.append(RunnerSyntax("ff :q: -p", "Launch profile in private window"));
     setSyntaxes(syntaxes);
 }
 
-void FirefoxRunner::match(Plasma::RunnerContext &context) {
+void FirefoxRunner::match(RunnerContext &context) {
     KSycoca::disableAutoRebuild();
     QString term = context.query();
     if (!context.isValid()) {
@@ -69,7 +69,7 @@ void FirefoxRunner::match(Plasma::RunnerContext &context) {
         return;
     }
 
-    QList<Plasma::QueryMatch> matches;
+    QList<QueryMatch> matches;
     bool privateWindow = false;
     if (!privateWindowsAsActions && term.contains(privateWindowFlagRegex)) {
         privateWindow = true;
@@ -89,7 +89,7 @@ void FirefoxRunner::match(Plasma::RunnerContext &context) {
     context.addMatches(matches);
 }
 
-QList<QAction *> FirefoxRunner::actionsForMatch(const Plasma::QueryMatch &match) {
+QList<QAction *> FirefoxRunner::actionsForMatch(const QueryMatch &match) {
     Q_UNUSED(match)
 
     if (!match.text().startsWith(proxychainsDisplayPrefix)) {
@@ -98,7 +98,7 @@ QList<QAction *> FirefoxRunner::actionsForMatch(const Plasma::QueryMatch &match)
     return {};
 }
 
-void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) {
+void FirefoxRunner::run(const RunnerContext &context, const QueryMatch &match) {
     Q_UNUSED(context)
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
@@ -122,9 +122,8 @@ void FirefoxRunner::run(const Plasma::RunnerContext &context, const Plasma::Quer
     QProcess::startDetached(localLaunchCommand, args);
 }
 
-Plasma::QueryMatch
-FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
-    Plasma::QueryMatch match(this);
+QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance) {
+    QueryMatch match(this);
     match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
     match.setText(text);
     match.setData(data);
@@ -132,8 +131,8 @@ FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &d
     return match;
 }
 
-QList<Plasma::QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
-    QList<Plasma::QueryMatch> matches;
+QList<QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, const bool privateWindow) {
+    QList<::QueryMatch> matches;
     for (const auto &profile: qAsConst(profiles)) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;

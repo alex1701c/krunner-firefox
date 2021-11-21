@@ -7,7 +7,9 @@
 #include <QRegularExpression>
 #include "profile/Profile.h"
 
-class FirefoxRunner : public Plasma::AbstractRunner {
+using namespace Plasma;
+
+class FirefoxRunner : public AbstractRunner {
 Q_OBJECT
 
 public:
@@ -34,14 +36,14 @@ public:
     QList<QAction *> matchActions;
     const QString proxychainsDisplayPrefix = "Proxychains: ";
 
-    QList<Plasma::QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
-    Plasma::QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
+    QList<QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
+    QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
 
-public: // Plasma::AbstractRunner API
+public: // AbstractRunner API
     void reloadConfiguration() override;
-    void match(Plasma::RunnerContext &context) override;
-    QList<QAction *> actionsForMatch(const Plasma::QueryMatch &match) override;
-    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
+    void match(RunnerContext &context) override;
+    QList<QAction *> actionsForMatch(const QueryMatch &match) override;
+    void run(const RunnerContext &context, const QueryMatch &match) override;
 };
 
 #endif
