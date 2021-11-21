@@ -221,19 +221,11 @@ void FirefoxRunnerConfig::defaults() {
     }
     hideDefaultProfile();
 
-#if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
-    emit markAsChanged();
-#else
-    emit changed();
-#endif
+    markAsChanged();
 }
 
 void FirefoxRunnerConfig::connectSignals() {
-#if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
     const auto changedSlotPointer = &FirefoxRunnerConfig::markAsChanged;
-#else
-    const auto changedSlotPointer = static_cast<void (FirefoxRunnerConfig::*)()>(&FirefoxRunnerConfig::changed);
-#endif
     const auto toggleConfigPointer =
         static_cast<void (FirefoxRunnerConfig::*)()>(&FirefoxRunnerConfig::toggleGeneralConfigVisibility);
 
@@ -278,11 +270,7 @@ void FirefoxRunnerConfig::connectSignals() {
 }
 
 void FirefoxRunnerConfig::connectOptionalProxySignals() {
-#if KCMUTILS_VERSION >= QT_VERSION_CHECK(5, 64, 0)
     const auto changedSlotPointer = &FirefoxRunnerConfig::markAsChanged;
-#else
-    const auto changedSlotPointer = static_cast<void (FirefoxRunnerConfig::*)()>(&FirefoxRunnerConfig::changed);
-#endif
 
     // Proxychains options changed
     connect(m_ui->disableProxychainsRadioButton, &QRadioButton::clicked, this, changedSlotPointer);

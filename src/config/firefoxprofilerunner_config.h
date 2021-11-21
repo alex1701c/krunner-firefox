@@ -5,7 +5,6 @@
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
 #include "profile/ProfileManager.h"
-#include "kcmutils_version.h"
 #include "config_types.h"
 
 class FirefoxProfileRunnerConfigForm: public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
