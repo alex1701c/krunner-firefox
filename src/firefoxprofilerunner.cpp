@@ -10,8 +10,8 @@
 
 #include "Config.h"
 
-FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
-        : Plasma::AbstractRunner(parent, args) {
+FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
+        : Plasma::AbstractRunner(parent, data, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
     filterRegex.optimize();
     privateWindowFlagRegex.optimize();

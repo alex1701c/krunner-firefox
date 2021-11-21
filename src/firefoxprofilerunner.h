@@ -11,7 +11,7 @@ class FirefoxRunner : public Plasma::AbstractRunner {
 Q_OBJECT
 
 public:
-    FirefoxRunner(QObject *parent, const QVariantList &args);
+    FirefoxRunner(QObject *parent,  const KPluginMetaData &data, const QVariantList &args);
 
     // NOTE: Prefixes need to be included in filterRegex.
     QLatin1String shortPrefix = QLatin1String("ff");
