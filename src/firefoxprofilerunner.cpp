@@ -1,7 +1,9 @@
 #include "firefoxprofilerunner.h"
 #include "profile/Profile.h"
 #include <KLocalizedString>
+#include <KSycoca>
 #include <QDebug>
+#include <QAction>
 #include <QtCore/QProcess>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
@@ -11,20 +13,11 @@
 FirefoxRunner::FirefoxRunner(QObject *parent, const QVariantList &args)
         : Plasma::AbstractRunner(parent, args) {
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
-}
-
-void FirefoxRunner::init() {
     filterRegex.optimize();
     privateWindowFlagRegex.optimize();
-    watcher.addPath(Config::ConfigFile);
-    connect(&watcher, &QFileSystemWatcher::fileChanged, this, &FirefoxRunner::reloadPluginConfiguration);
-    reloadPluginConfiguration();
 }
 
-void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
-#ifdef status_dev
-    qInfo() << "Firefox reload config";
-#endif
+void FirefoxRunner::reloadConfiguration() {
     ProfileManager profileManager;
     profiles = profileManager.syncAndGetCustomProfiles();
     if (profiles.isEmpty()) {
@@ -36,15 +29,7 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
     firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
 
     KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
-    if (!configFile.isEmpty()) config.config()->reparseConfiguration();
-
-    // If the file gets edited with a text editor, it often gets replaced by the edited version
-    // https://stackoverflow.com/a/30076119/9342842
-    if (!configFile.isEmpty()) {
-        if (QFile::exists(configFile)) {
-            watcher.addPath(configFile);
-        }
-    }
+    config.config()->reparseConfiguration();
 
     hideDefaultProfile = config.readEntry(Config::HideDefaultProfile, false);
     showAlwaysPrivateWindows = config.readEntry(Config::ShowAlwaysPrivateWindows, true);
@@ -75,6 +60,7 @@ void FirefoxRunner::reloadPluginConfiguration(const QString &configFile) {
 }
 
 void FirefoxRunner::match(Plasma::RunnerContext &context) {
+    KSycoca::disableAutoRebuild();
     QString term = context.query();
     if (!context.isValid()) {
         return;

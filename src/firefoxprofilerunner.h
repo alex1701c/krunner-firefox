@@ -25,7 +25,6 @@ public:
             QRegularExpression::CaseInsensitiveOption
     );
 
-    QFileSystemWatcher watcher;
     QString launchCommand;
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
@@ -39,8 +38,7 @@ public:
     Plasma::QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
 
 public: // Plasma::AbstractRunner API
-    void init() override;
-    void reloadPluginConfiguration(const QString &configFile = "");
+    void reloadConfiguration() override;
     void match(Plasma::RunnerContext &context) override;
     QList<QAction *> actionsForMatch(const Plasma::QueryMatch &match) override;
     void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
