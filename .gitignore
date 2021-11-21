@@ -5,3 +5,5 @@
 src/config/*.autosave
 src/config/ui_firefoxprofilerunner_config.h 
 *.swap
+compile_commands.json
+.cache
