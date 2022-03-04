@@ -9,7 +9,7 @@ This mean you can search for the profiles in your normal launcher.
 
 # Installation
 
-## Dependencies
+## 1 Dependencies
 
 <details>
 <summary><b>Debian/Ubuntu:</b></summary>
@@ -42,12 +42,12 @@ sudo dnf install cmake extra-cmake-modules kf5-ki18n-devel kf5-kservice-devel kf
 <summary><b>Arch (Manjaro):</b></summary>
   
 ```shell
-sudo dnf install cmake extra-cmake-modules kcmutils
+sudo pacman -S install cmake extra-cmake-modules kcmutils
 ```
   
 </details>
 
-## Install
+## 2 Plugin
 
 <details>
 <summary><b>A: Oneliner install</b></summary>
