@@ -115,15 +115,16 @@ configuration, just the displayed name for the runner.
 
 #### Config Dialog Proxychains
 If proxychains4 is installed you can add extra launch options. This way Firefox is started over a proxy
-but no system wide proxy has to be configured.  
-The force new instance button adds the "--new-instance" flag to the launch arguments of Firefox. This way
+but no system wide proxy has to be configured. The force new instance button adds the `--new-instance` flag to the launch arguments of Firefox. This way
 you can be sure that Firefox is started over a proxy, but you can only have one instance of Firefox with 
 the selected profile running.  
 
 ![Config Dialog Proxychains](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_extra.png)
+
 This configuration would look like this in Krunner:
 
 ![Proxychains Config Example](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_search_proxychains.png)
+
 The existing launch options can also be modified to use proxychains.
 
 ![Config Dialog Proxychains Change Existing](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/config_proxychains_existing.png)
