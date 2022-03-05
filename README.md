@@ -49,26 +49,19 @@ sudo pacman -S install cmake extra-cmake-modules kcmutils
 
 ## 2 Plugin
 
-<details>
-<summary><b>A: Oneliner install</b></summary>
+### A: Oneliner install
 
 ```shell
 curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install.sh | bash
 ```
 
-</details>
-
-<details>
-<summary><b>B: Oneliner install (Without admin privileges)</b></summary>
+### B: Oneliner install (Without admin privileges)
 
 ```shell
 curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install-user.sh | bash
 ```
 
-</details>
-
-<details>
-<summary><b>C: Manual install</b></summary>
+### C: Manual install
 
 ```shell
 git clone https://github.com/alex1701c/krunner-firefox
@@ -76,8 +69,6 @@ cd krunner-firefox
 sudo bash install.sh
 kquitapp5 krunner 2> /dev/null; kstart5 --windowclass krunner krunner > /dev/null 2>&1 &
 ```
-
-</details>
 
 To get the icon for the private window you have to extract it:
 ```shell
