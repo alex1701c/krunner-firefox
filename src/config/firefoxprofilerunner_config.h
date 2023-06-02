@@ -1,6 +1,8 @@
 #ifndef FirefoxProfileRunnerCONFIG_H
 #define FirefoxProfileRunnerCONFIG_H
 
+#include <QHash>
+
 #include "ui_firefoxprofilerunner_config.h"
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
@@ -54,7 +56,7 @@ public Q_SLOTS:
     void cancelProfileName();
     void editProfileName();
 
-    void loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap);
+    void loadInitialProxySettings(const QHash<QListWidgetItem *, Profile> &itemProfileMap);
 
     // Proxychains config slots
     void learnMoreProxychains();

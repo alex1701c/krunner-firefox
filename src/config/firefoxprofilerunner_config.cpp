@@ -49,7 +49,7 @@ void FirefoxRunnerConfig::load() {
     m_ui->profiles->clear();
 
     QList<QListWidgetItem *> items;
-    QMap<QListWidgetItem *, Profile> itemProfileMap;
+    QHash<QListWidgetItem *, Profile> itemProfileMap;
     const bool addItemsToSet =
         (Proxychains::ProxychainsSelection) config.readEntry<int>(Config::ProxychainsIntegration, Proxychains::Disabled)
             == Proxychains::Existing;
@@ -521,7 +521,7 @@ void FirefoxRunnerConfig::hideDefaultProfile() {
  * is used to determine the CheckedState of the item.
  * This parameter is only required if the data for the "Use existing profiles" option should be loaded
  */
-void FirefoxRunnerConfig::loadInitialProxySettings(const QMap<QListWidgetItem *, Profile> &itemProfileMap) {
+void FirefoxRunnerConfig::loadInitialProxySettings(const QHash<QListWidgetItem *, Profile> &itemProfileMap) {
     if (previousProxychainsSelection == Proxychains::Existing) {
         for (int i = 0; i < m_ui->profiles->count(); ++i) {
             const auto item = m_ui->profiles->item(i);
