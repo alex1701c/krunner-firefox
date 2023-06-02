@@ -1,12 +1,13 @@
 #ifndef FIREFOXPROFILERUNNER_PROFILE_H
 #define FIREFOXPROFILERUNNER_PROFILE_H
 
-#include <QtCore/QString>
-#include <QList>
 #include <KSharedConfig>
+#include <QList>
+#include <QtCore/QString>
 #include <ostream>
 
-class Profile {
+class Profile
+{
 public:
     QString name;
     QString launchCommand;
@@ -24,7 +25,6 @@ public:
     bool extraPrivateWindowProxychainsLaunchOption = false;
     int extraPrivateWindowProxychainsOptionPriority = 0;
 
-
     void writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority = 0) const;
 
     void toString() const;
@@ -32,5 +32,4 @@ public:
     void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "") const;
 };
 
-
-#endif //FIREFOXPROFILERUNNER_PROFILE_H
+#endif // FIREFOXPROFILERUNNER_PROFILE_H

@@ -3,21 +3,23 @@
 
 #include <QHash>
 
+#include "config_types.h"
+#include "profile/ProfileManager.h"
 #include "ui_firefoxprofilerunner_config.h"
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
-#include "profile/ProfileManager.h"
-#include "config_types.h"
 
-class FirefoxProfileRunnerConfigForm: public QWidget, public Ui::FirefoxProfileRunnerConfigUi {
-Q_OBJECT
+class FirefoxProfileRunnerConfigForm : public QWidget, public Ui::FirefoxProfileRunnerConfigUi
+{
+    Q_OBJECT
 
 public:
     explicit FirefoxProfileRunnerConfigForm(QWidget *parent);
 };
 
-class FirefoxRunnerConfig: public KCModule {
-Q_OBJECT
+class FirefoxRunnerConfig : public KCModule
+{
+    Q_OBJECT
 
 public:
     explicit FirefoxRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
@@ -68,7 +70,6 @@ public Q_SLOTS:
     void validateExtraOptionButtons();
     void addExtraOption();
     void removeExtraOption();
-
 
 private:
     FirefoxProfileRunnerConfigForm *m_ui;

@@ -16,6 +16,7 @@ find_package(Qt5 ${QT_MIN_VERSION} REQUIRED CONFIG COMPONENTS Widgets Core Quick
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Service Runner TextWidgets ConfigWidgets PlasmaQuick)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
+include(KDEClangFormat)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 #add_compile_definitions(status_dev)
 include(FeatureSummary)
@@ -35,3 +36,8 @@ SET(CPACK_GENERATOR "DEB;RPM")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/preinst")
 SET(CPACK_RPM_PRE_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/preinst")
 INCLUDE(CPack)
+
+# add clang-format target for all our real source files
+file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES *.cpp *.h)
+kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
+

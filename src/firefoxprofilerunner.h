@@ -1,31 +1,26 @@
 #ifndef FIREFOXPROFILERUNNER_H
 #define FIREFOXPROFILERUNNER_H
 
-#include <KRunner/AbstractRunner>
-#include "profile/ProfileManager.h"
-#include <QtCore/QFileSystemWatcher>
-#include <QRegularExpression>
 #include "profile/Profile.h"
+#include "profile/ProfileManager.h"
+#include <KRunner/AbstractRunner>
+#include <QRegularExpression>
+#include <QtCore/QFileSystemWatcher>
 
 using namespace Plasma;
 
-class FirefoxRunner : public AbstractRunner {
-Q_OBJECT
+class FirefoxRunner : public AbstractRunner
+{
+    Q_OBJECT
 
 public:
-    FirefoxRunner(QObject *parent,  const KPluginMetaData &data, const QVariantList &args);
+    FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args);
 
     // NOTE: Prefixes need to be included in filterRegex.
     QLatin1String shortPrefix = QLatin1String("ff");
     QLatin1String mediumPrefix = QLatin1String("fire");
-    QRegularExpression filterRegex = QRegularExpression(
-            R"(^(?:ff|fire\w*)(?: (.+))$)",
-            QRegularExpression::CaseInsensitiveOption
-    );
-    const QRegularExpression privateWindowFlagRegex = QRegularExpression(
-            R"((\s+-p\b))",
-            QRegularExpression::CaseInsensitiveOption
-    );
+    QRegularExpression filterRegex = QRegularExpression(R"(^(?:ff|fire\w*)(?: (.+))$)", QRegularExpression::CaseInsensitiveOption);
+    const QRegularExpression privateWindowFlagRegex = QRegularExpression(R"((\s+-p\b))", QRegularExpression::CaseInsensitiveOption);
 
     QString launchCommand;
     QList<Profile> profiles;

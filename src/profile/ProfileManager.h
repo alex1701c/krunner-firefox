@@ -1,13 +1,14 @@
 #ifndef FIREFOXPROFILERUNNER_PROFILEMANAGER_H
 #define FIREFOXPROFILERUNNER_PROFILEMANAGER_H
 
-#include <QtCore/QString>
-#include <QList>
-#include <KSharedConfig>
 #include "Profile.h"
 #include <Config.h>
+#include <KSharedConfig>
+#include <QList>
+#include <QtCore/QString>
 
-class ProfileManager {
+class ProfileManager
+{
 public:
     QString firefoxDesktopFile, launchCommand, defaultPath, firefoxProfilesIniPath;
 
@@ -26,5 +27,4 @@ public:
     static QString getDesktopFilePath(bool quiet = false);
 };
 
-
-#endif //FIREFOXPROFILERUNNER_PROFILEMANAGER_H
+#endif // FIREFOXPROFILERUNNER_PROFILEMANAGER_H
