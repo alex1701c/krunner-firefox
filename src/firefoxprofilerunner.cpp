@@ -89,15 +89,6 @@ void FirefoxRunner::match(RunnerContext &context) {
     context.addMatches(matches);
 }
 
-QList<QAction *> FirefoxRunner::actionsForMatch(const QueryMatch &match) {
-    Q_UNUSED(match)
-
-    if (!match.text().startsWith(proxychainsDisplayPrefix)) {
-        return matchActions;
-    }
-    return {};
-}
-
 void FirefoxRunner::run(const RunnerContext &context, const QueryMatch &match) {
     Q_UNUSED(context)
     const QMap<QString, QVariant> data = match.data().toMap();
@@ -128,6 +119,9 @@ QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, Q
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
+    if (!match.text().startsWith(proxychainsDisplayPrefix)) {
+        match.setActions(matchActions);
+    }
     return match;
 }
 

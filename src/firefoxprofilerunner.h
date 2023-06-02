@@ -42,7 +42,6 @@ public:
 public: // AbstractRunner API
     void reloadConfiguration() override;
     void match(RunnerContext &context) override;
-    QList<QAction *> actionsForMatch(const QueryMatch &match) override;
     void run(const RunnerContext &context, const QueryMatch &match) override;
 };
 
