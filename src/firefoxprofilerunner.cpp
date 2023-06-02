@@ -11,7 +11,8 @@
 #include "Config.h"
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
-        : AbstractRunner(parent, data, args) {
+        : AbstractRunner(parent, data, args)
+        , matchActions({new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)}){
     setObjectName(QStringLiteral("FirefoxProfileRunner"));
     filterRegex.optimize();
     privateWindowFlagRegex.optimize();
@@ -37,11 +38,6 @@ void FirefoxRunner::reloadConfiguration() {
     proxychainsIntegrated = config.readEntry(Config::ProxychainsIntegration, "disabled") != "disabled";
 
     privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
-    if (privateWindowsAsActions) {
-        matchActions = {new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)};
-    } else {
-        matchActions.clear();
-    }
 
     QList<RunnerSyntax> syntaxes;
     syntaxes.append(RunnerSyntax(
@@ -119,7 +115,7 @@ QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, Q
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
-    if (!match.text().startsWith(proxychainsDisplayPrefix)) {
+    if (privateWindowsAsActions && !match.text().startsWith(proxychainsDisplayPrefix)) {
         match.setActions(matchActions);
     }
     return match;
