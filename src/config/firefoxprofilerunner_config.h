@@ -3,11 +3,12 @@
 
 #include <QHash>
 
-#include "config_types.h"
 #include "profile/ProfileManager.h"
 #include "ui_firefoxprofilerunner_config.h"
 #include <KCModule>
 #include <KConfigCore/KConfigGroup>
+
+#include "config_types.h"
 
 class FirefoxProfileRunnerConfigForm : public QWidget, public Ui::FirefoxProfileRunnerConfigUi
 {

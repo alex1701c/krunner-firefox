@@ -7,7 +7,7 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMessageBox>
 
-K_PLUGIN_FACTORY(FirefoxProfileRunnerConfigFactory, registerPlugin<FirefoxRunnerConfig>("kcm_krunner_firefoxprofilerunner");)
+K_PLUGIN_CLASS(FirefoxRunnerConfig)
 
 #define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
 
