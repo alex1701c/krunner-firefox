@@ -1,15 +1,17 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.firefoxprofilerunner\")
 
-set(core_SRCS profile/Profile.cpp profile/ProfileManager.cpp)
+add_library(core_STATIC STATIC profile/Profile.cpp profile/ProfileManager.cpp)
+target_link_libraries(core_STATIC PUBLIC KF${QT_MAJOR_VERSION}::ConfigCore)
+set_target_properties(core_STATIC PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-set(firefoxprofilerunner_SRCS firefoxprofilerunner.cpp ${core_SRCS})
-kcoreaddons_add_plugin(firefoxprofilerunner SOURCES ${firefoxprofilerunner_SRCS} INSTALL_NAMESPACE "kf${QT_MAJOR_VERSION}/krunner")
+kcoreaddons_add_plugin(firefoxprofilerunner SOURCES firefoxprofilerunner.cpp INSTALL_NAMESPACE "kf${QT_MAJOR_VERSION}/krunner")
 target_link_libraries(firefoxprofilerunner
+    Qt::Core
     Qt::Widgets
     KF${QT_MAJOR_VERSION}::Runner
     KF${QT_MAJOR_VERSION}::I18n
-    KF${QT_MAJOR_VERSION}::ConfigCore
     KF${QT_MAJOR_VERSION}::Service
+    core_STATIC
 )
 
 set(kcm_firefoxprofilerunner_SRCS ${core_SRCS} config/firefoxprofilerunner_config.cpp)
@@ -23,4 +25,5 @@ target_link_libraries(kcm_firefoxprofilerunner
     KF${QT_MAJOR_VERSION}::I18n
     KF${QT_MAJOR_VERSION}::KCMUtils
     KF${QT_MAJOR_VERSION}::Runner
+    core_STATIC
 )
