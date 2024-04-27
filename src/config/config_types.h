@@ -1,5 +1,7 @@
-#ifndef CONFIG_TYPES_H
-#define CONFIG_TYPES_H
+#pragma once
+
+#include <QMetaType>
+#include <QString>
 
 enum ProfileType {
     Normal,
@@ -34,5 +36,3 @@ struct ProxychainsData {
     bool isDisplayed;
 };
 Q_DECLARE_METATYPE(ProxychainsData)
-
-#endif // CONFIG_TYPES_H

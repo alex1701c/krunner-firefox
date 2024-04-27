@@ -1,6 +1,6 @@
 #include "Profile.h"
-#include <KConfigCore/KConfigGroup>
-#include <KConfigCore/KSharedConfig>
+#include <KConfigGroup>
+#include <KSharedConfig>
 #include <QDebug>
 #include <QDir>
 

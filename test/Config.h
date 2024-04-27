@@ -1,7 +1,3 @@
-/**
- *  This file is only for the Tests !
- */
-
 #ifndef FIREFOXPROFILERUNNER_CONFIG_H
 #define FIREFOXPROFILERUNNER_CONFIG_H
 

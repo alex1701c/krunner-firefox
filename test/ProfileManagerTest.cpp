@@ -3,11 +3,10 @@
 #include <KSharedConfig>
 #include <QRegularExpression>
 #include <QTest>
-#include <iostream>
 
 inline int getSplitCount(const QString str)
 {
-    return str.split(";", QString::SplitBehavior::SkipEmptyParts).count();
+    return str.split(";", Qt::SkipEmptyParts).count();
 }
 
 inline QString getResourcesDir()
@@ -25,7 +24,7 @@ class ProfileManagerTest : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
 
     /**
      * Test if the profiles are read correctly
@@ -168,3 +167,5 @@ private slots:
 };
 
 QTEST_MAIN(ProfileManagerTest)
+
+#include "ProfileManagerTest.moc"

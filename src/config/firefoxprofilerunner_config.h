@@ -6,7 +6,8 @@
 #include "profile/ProfileManager.h"
 #include "ui_firefoxprofilerunner_config.h"
 #include <KCModule>
-#include <KConfigCore/KConfigGroup>
+#include <KConfigGroup>
+#include <QIcon>
 
 #include "config_types.h"
 
@@ -23,7 +24,7 @@ class FirefoxRunnerConfig : public KCModule
     Q_OBJECT
 
 public:
-    explicit FirefoxRunnerConfig(QWidget *parent = nullptr, const QVariantList &args = QVariantList());
+    explicit FirefoxRunnerConfig(QObject *parent, const QVariantList &args);
 
     QIcon firefoxIcon;
     const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox");

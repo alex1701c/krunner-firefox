@@ -2,10 +2,10 @@
 #include <Config.h>
 #include <KPluginFactory>
 #include <KSharedConfig>
+#include <QCheckBox>
 #include <QDebug>
+#include <QMessageBox>
 #include <QtCore/QProcess>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QMessageBox>
 
 K_PLUGIN_CLASS(FirefoxRunnerConfig)
 
@@ -17,11 +17,11 @@ FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent)
     setupUi(this);
 }
 
-FirefoxRunnerConfig::FirefoxRunnerConfig(QWidget *parent, const QVariantList &args)
-    : KCModule(parent, args)
+FirefoxRunnerConfig::FirefoxRunnerConfig(QObject *parent, const QVariantList &)
+    : KCModule(parent)
 {
-    m_ui = new FirefoxProfileRunnerConfigForm(this);
-    auto *layout = new QGridLayout(this);
+    m_ui = new FirefoxProfileRunnerConfigForm(widget());
+    auto *layout = new QGridLayout(widget());
     layout->addWidget(m_ui, 0, 0);
 
     proxychainsInstalled = !QStandardPaths::findExecutable("proxychains4").isEmpty();
@@ -337,11 +337,11 @@ void FirefoxRunnerConfig::refreshProfiles()
         forceProfileSync = true;
         load();
     } else {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this,
-                                      "Discard changes?",
-                                      "Do you want to refresh the current config and discard all unsaved changes",
-                                      QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton reply = //
+            QMessageBox::question(widget(),
+                                  "Discard changes?",
+                                  "Do you want to refresh the current config and discard all unsaved changes",
+                                  QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             forceProfileSync = true;
             load();
@@ -753,3 +753,4 @@ void FirefoxRunnerConfig::hideMessage()
 }
 
 #include "firefoxprofilerunner_config.moc"
+#include "moc_firefoxprofilerunner_config.cpp"

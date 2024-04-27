@@ -5,7 +5,7 @@
 #include <Config.h>
 #include <KSharedConfig>
 #include <QList>
-#include <QtCore/QString>
+#include <QString>
 
 class ProfileManager
 {

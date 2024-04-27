@@ -1,20 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Extract and move icon
-mkdir -p /tmp/firefoxprofile_installer
-if [[ -e /usr/lib/firefox/browser/omni.ja ]]; then
-    unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-else
-    unzip /usr/lib/firefox-esr/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-    sed -i "s/Icon=.*/Icon=firefox-esr/" src/plasma-runner-firefoxprofilerunner.desktop
-fi
-
-# Exit immediately if something goes wrong
+# Exit immediately if something fails
 set -e
 
-sudo mkdir -p /usr/share/pixmaps/
-sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
-rm -rf /tmp/firefoxprofile_installer
+#// sudo mkdir -p /usr/share/pixmaps/
+#sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
+#rm -rf /tmp/firefoxprofile_installer
 
 # Clone project if it is downloaded using curl
 if [[ $(basename "$PWD") != "krunner-firefox"* ]]; then
@@ -24,13 +15,23 @@ fi
 
 mkdir -p build
 cd build
+krunner_version=$(krunner --version | grep -oP "(?<=krunner )\d+")
+if [[ "$krunner_version" == "6" ]]; then
+    echo "Building for Plasma6"
+    BUILD_QT6_OPTION="-DBUILD_WITH_QT6=ON"
+else
+    echo "Building for Plasma5"
+    BUILD_QT6_OPTION=""
+fi
 
-cmake -DCMAKE_BUILD_TYPE=Release -DKDE_INSTALL_QTPLUGINDIR=$(kf5-config --qt-plugins) ..
+cmake .. -DCMAKE_BUILD_TYPE=Release -DKDE_INSTALL_USE_QT_SYS_PATHS=ON $BUILD_QT6_OPTION
 make -j$(nproc)
-sudo make install
+sudo make install/fast
 
-# Restart Krunner
-kquitapp5 krunner 2>/dev/null
-kstart5 --windowclass krunner krunner >/dev/null 2>&1 &
+# KRunner needs to be restarted for the changes to be applied
+if pgrep -x krunner > /dev/null
+then
+    kill krunner
+fi
 
-echo "Installation finished !"
+echo "Installation finished!";

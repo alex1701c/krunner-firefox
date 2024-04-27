@@ -1,9 +1,9 @@
 #include "ProfileManager.h"
-#include <KConfigCore/KConfigGroup>
+#include <KConfigGroup>
+#include <QCryptographicHash>
 #include <QDebug>
+#include <QDir>
 #include <QRegularExpression>
-#include <QtCore/QCryptographicHash>
-#include <QtCore/QDir>
 
 /**
  * Initialize variables

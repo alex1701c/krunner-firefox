@@ -3,8 +3,7 @@
 
 #include <KSharedConfig>
 #include <QList>
-#include <QtCore/QString>
-#include <ostream>
+#include <QString>
 
 class Profile
 {

@@ -1,20 +1,27 @@
 #include "firefoxprofilerunner.h"
+#include "Config.h"
 #include "profile/Profile.h"
+#include "profile/ProfileManager.h"
+
+#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KSycoca>
 #include <QAction>
 #include <QDebug>
-#include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtCore/QProcess>
-
-#include "Config.h"
+#include <QDir>
+#include <QFile>
+#include <QProcess>
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
+#if KRUNNER_VERSION_MAJOR == 5
     : AbstractRunner(parent, data, args)
     , matchActions({new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)})
+#else
+    : AbstractRunner(parent, data)
+    , matchActions({KRunner::Action("private-window", firefoxPrivateWindowIcon.name(), "Open profile in private window")})
+#endif
 {
-    setObjectName(QStringLiteral("FirefoxProfileRunner"));
+    Q_UNUSED(args)
     filterRegex.optimize();
     privateWindowFlagRegex.optimize();
 }
@@ -114,6 +121,11 @@ QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, Q
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);
+#if KRUNNER_VERSION_MAJOR == 5
+    match.setType(QueryMatch::ExactMatch);
+#else
+    match.setCategoryRelevance(QueryMatch::CategoryRelevance::Highest);
+#endif
     if (privateWindowsAsActions && !match.text().startsWith(proxychainsDisplayPrefix)) {
         match.setActions(matchActions);
     }
@@ -175,5 +187,5 @@ QList<QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, con
 
 K_PLUGIN_CLASS_WITH_JSON(FirefoxRunner, "firefoxprofilerunner.json")
 
-// needed for the QObject subclass declared as part of K_EXPORT_PLASMA_RUNNER
 #include "firefoxprofilerunner.moc"
+#include "moc_firefoxprofilerunner.cpp"

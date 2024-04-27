@@ -2,12 +2,19 @@
 #define FIREFOXPROFILERUNNER_H
 
 #include "profile/Profile.h"
-#include "profile/ProfileManager.h"
 #include <KRunner/AbstractRunner>
+#include <QFileSystemWatcher>
+#include <QIcon>
 #include <QRegularExpression>
-#include <QtCore/QFileSystemWatcher>
+#include <krunner_version.h>
 
+#if KRUNNER_VERSION_MAJOR == 5
 using namespace Plasma;
+#include <QAction>
+#else
+using namespace KRunner;
+#include <KRunner/Action>
+#endif
 
 class FirefoxRunner : public AbstractRunner
 {
@@ -28,8 +35,12 @@ public:
     QIcon firefoxIcon;
     const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox", QIcon::fromTheme("view-private"));
     bool privateWindowsAsActions;
-    QList<QAction *> matchActions;
     const QString proxychainsDisplayPrefix = "Proxychains: ";
+#if KRUNNER_VERSION_MAJOR == 5
+    QList<QAction *> matchActions;
+#else
+    KRunner::Actions matchActions;
+#endif
 
     QList<QueryMatch> createProfileMatches(const QString &filter, bool privateWindow);
     QueryMatch createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance);
