@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QRegularExpression>
 
+// clazy:excludeall=use-static-qregularexpression
+
 ProfileManager::ProfileManager()
 {
     firefoxProfilesIniPath = QDir::homePath() + "/.mozilla/firefox/profiles.ini";
@@ -113,8 +115,6 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     }
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
     const QStringList installedProfiles = firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
-
-    QStringList deleted;
 
     // Update/mark to delete installed profiles
     for (auto &installedProfile : installedProfiles) {
