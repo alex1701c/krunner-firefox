@@ -9,8 +9,6 @@
 #include <KConfigGroup>
 #include <QIcon>
 
-#include "config_types.h"
-
 class FirefoxProfileRunnerConfigForm : public QWidget, public Ui::FirefoxProfileRunnerConfigUi
 {
     Q_OBJECT
@@ -35,15 +33,13 @@ public:
     KSharedConfigPtr firefoxConfig;
     KConfigGroup config;
 
-    Proxychains::ProxychainsSelection previousProxychainsSelection = Proxychains::None;
-    bool edited, forceProfileSync, proxychainsInstalled = false;
+    bool edited, forceProfileSync = false;
 
 public Q_SLOTS:
     void save() override;
     void load() override;
     void defaults() override;
     void connectSignals();
-    void connectOptionalProxySignals();
 
     // General config slots
     void showAlwaysPrivateWindows();
@@ -59,19 +55,7 @@ public Q_SLOTS:
     void applyProfileName();
     void cancelProfileName();
     void editProfileName();
-
-    void loadInitialProxySettings(const QHash<QListWidgetItem *, Profile> &itemProfileMap);
-
-    // Proxychains config slots
-    void learnMoreProxychains();
-    void hideMessage();
-    void proxychainsSelectionChanged();
-    void validateProxychainsOptions();
     void toggleGeneralConfigVisibility();
-    void toggleProxychainsConfigVisibility();
-    void validateExtraOptionButtons();
-    void addExtraOption();
-    void removeExtraOption();
 
 private:
     FirefoxProfileRunnerConfigForm *m_ui;

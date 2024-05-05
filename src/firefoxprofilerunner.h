@@ -1,5 +1,4 @@
-#ifndef FIREFOXPROFILERUNNER_H
-#define FIREFOXPROFILERUNNER_H
+#pragma once
 
 #include "profile/Profile.h"
 #include <KRunner/AbstractRunner>
@@ -31,11 +30,10 @@ public:
 
     QString launchCommand;
     QList<Profile> profiles;
-    bool hideDefaultProfile, showAlwaysPrivateWindows, proxychainsIntegrated, proxychainsForceNewInstance;
+    bool hideDefaultProfile, showAlwaysPrivateWindows;
     QIcon firefoxIcon;
     const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox", QIcon::fromTheme("view-private"));
     bool privateWindowsAsActions;
-    const QString proxychainsDisplayPrefix = "Proxychains: ";
 #if KRUNNER_VERSION_MAJOR == 5
     QList<QAction *> matchActions;
 #else
@@ -50,5 +48,3 @@ public: // AbstractRunner API
     void match(RunnerContext &context) override;
     void run(const RunnerContext &context, const QueryMatch &match) override;
 };
-
-#endif

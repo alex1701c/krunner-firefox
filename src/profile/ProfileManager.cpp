@@ -131,13 +131,6 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
         profile.priority = profileGroup.readEntry("Priority", 0);
         profile.launchCommand = launchCommand;
         profile.privateWindowPriority = profileGroup.readEntry("PrivateWindowPriority", 0);
-        profile.launchNormalWindowWithProxychains = profileGroup.readEntry("LaunchNormalWindowWithProxychains", false);
-        profile.launchPrivateWindowWithProxychains = profileGroup.readEntry("LaunchPrivateWindowWithProxychains", false);
-        // Proxychains extra options
-        profile.extraNormalWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsNormalWindowOption", false);
-        profile.extraNormalWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsNormalWindowPriority", 0);
-        profile.extraPrivateWindowProxychainsLaunchOption = profileGroup.readEntry("ProxychainsPrivateWindowOption", false);
-        profile.extraPrivateWindowProxychainsOptionPriority = profileGroup.readEntry("ProxychainsPrivateWindowPriority", 0);
         profiles.append(profile);
     }
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
@@ -190,8 +183,6 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
             firefoxConfig->deleteGroup(installedProfile);
             firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" + profileName);
             firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-" + profileName);
-            firefoxConfig->deleteGroup("Desktop Action new-proxychains-normal-window-with-profile-" + profileName);
-            firefoxConfig->deleteGroup("Desktop Action new-proxychains-private-window-with-profile-" + profileName);
         }
     }
     // Add group and register action
@@ -210,8 +201,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
 
     bool enableNormal = config.readEntry(Config::RegisterNormalWindows, true);
     bool enablePrivate = config.readEntry(Config::RegisterPrivateWindows, true);
-    bool enableProxychainsExtra = config.readEntry(Config::ShowProxychainsOptionsGlobally, false);
-    changeProfileRegistering(enableNormal, enablePrivate, enableProxychainsExtra, firefoxConfig);
+    changeProfileRegistering(enableNormal, enablePrivate, firefoxConfig);
 }
 
 /**
@@ -220,7 +210,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
  * @param enablePrivate
  * @param firefoxConfig
  */
-void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra, KSharedConfigPtr firefoxConfig)
+void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig)
 {
     QString registeredActions = "new-window;new-private-window;";
     if (firefoxDesktopFile.endsWith("firefox-esr.desktop")) {
@@ -234,8 +224,6 @@ void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePriv
         if (enableNormal && groupName.startsWith("Desktop Action new-window-with-profile")) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         } else if (enablePrivate && groupName.startsWith("Desktop Action new-private-window-with-profile-")) {
-            registeredActions.append(groupName.remove("Desktop Action ") + ";");
-        } else if (enableProxychainsExtra && groupName.startsWith("Desktop Action new-proxychains-") && !firefoxConfig->group(groupName).keyList().isEmpty()) {
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         }
     }

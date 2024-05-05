@@ -1,5 +1,4 @@
-#ifndef FIREFOXPROFILERUNNER_PROFILEMANAGER_H
-#define FIREFOXPROFILERUNNER_PROFILEMANAGER_H
+#pragma once
 
 #include "Profile.h"
 #include <Config.h>
@@ -20,11 +19,9 @@ public:
     QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 
     void syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config);
-    void changeProfileRegistering(bool enableNormal, bool enablePrivate, bool enableProxychainsExtra, KSharedConfigPtr firefoxConfig);
+    void changeProfileRegistering(bool enableNormal, bool enablePrivate, KSharedConfigPtr firefoxConfig);
 
     QString getLaunchCommand() const;
     QString getDefaultProfilePath() const;
     static QString getDesktopFilePath(bool quiet = false);
 };
-
-#endif // FIREFOXPROFILERUNNER_PROFILEMANAGER_H

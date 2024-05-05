@@ -82,23 +82,23 @@ private Q_SLOTS:
         QCOMPARE(rawProfiles.size(), 2);
         manager.syncDesktopFile(rawProfiles, firefoxConfig, config);
         QCOMPARE(firefoxConfig->groupList().filter(QRegularExpression(R"(^Desktop Action new-(?:private-)?window-with-profile)")).size(), 4);
-        manager.changeProfileRegistering(true, true, false, firefoxConfig);
+        manager.changeProfileRegistering(true, true, firefoxConfig);
         firefoxConfig->sync();
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 6);
 
         // Unregister private windows
-        manager.changeProfileRegistering(true, false, false, firefoxConfig);
+        manager.changeProfileRegistering(true, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 4);
         QCOMPARE(
             firefoxConfig->group("Desktop Entry").readEntry("Actions").split(";").filter(QRegularExpression(R"(^new-private-window-with-profile)")).count(),
             0);
 
         // Unregister all windows
-        manager.changeProfileRegistering(false, false, false, firefoxConfig);
+        manager.changeProfileRegistering(false, false, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 2);
 
         // Register all options
-        manager.changeProfileRegistering(true, true, false, firefoxConfig);
+        manager.changeProfileRegistering(true, true, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 6);
 
         // Check if profiles are read correctly
@@ -137,12 +137,12 @@ private Q_SLOTS:
         manager.syncDesktopFile(rawProfiles, firefoxConfig, _config);
         firefoxConfig->sync();
         QCOMPARE(firefoxConfig->groupList().filter(QRegularExpression(R"(^Desktop Action new-(?:private-)?window-with-profile)")).size(), 4);
-        manager.changeProfileRegistering(true, true, false, firefoxConfig);
+        manager.changeProfileRegistering(true, true, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 6);
 
         // Delete group and check if it and its registered actions has been removed
         firefoxConfig->deleteGroup("Desktop Action new-private-window-with-profile-snytc8pd.default-release-1");
-        manager.changeProfileRegistering(false, true, false, firefoxConfig);
+        manager.changeProfileRegistering(false, true, firefoxConfig);
         QCOMPARE(getSplitCount(firefoxConfig->group("Desktop Entry").readEntry("Actions")), 3);
         QCOMPARE(firefoxConfig->group("Desktop Entry").readEntry("Actions").split(";").filter(QRegularExpression(R"(^new-private-window)")).count(), 2);
 
@@ -159,7 +159,7 @@ private Q_SLOTS:
         manager.syncDesktopFile(firefoxProfiles, firefoxConfig, _config);
         auto newCustomProfiles = manager.getCustomProfiles(firefoxConfig);
         QCOMPARE(newCustomProfiles.size(), 3);
-        manager.changeProfileRegistering(true, true, false, firefoxConfig);
+        manager.changeProfileRegistering(true, true, firefoxConfig);
         QCOMPARE(firefoxConfig->groupList().filter(QRegularExpression(R"(^Desktop Action new-)")).size(), 8);
         QCOMPARE(firefoxConfig->group("Desktop Entry").readEntry("Actions").split(";").count(), 8);
         QFile::remove(getResourcesDir() + "/resources/_profiles_install.ini");

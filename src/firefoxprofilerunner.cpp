@@ -43,8 +43,6 @@ void FirefoxRunner::reloadConfiguration()
 
     hideDefaultProfile = config.readEntry(Config::HideDefaultProfile, false);
     showAlwaysPrivateWindows = config.readEntry(Config::ShowAlwaysPrivateWindows, true);
-    proxychainsForceNewInstance = config.readEntry(Config::ProxychainsForceNewInstance, false);
-    proxychainsIntegrated = config.readEntry(Config::ProxychainsIntegration, "disabled") != "disabled";
 
     privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
 
@@ -95,17 +93,6 @@ void FirefoxRunner::run(const RunnerContext &context, const QueryMatch &match)
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
     QString localLaunchCommand = launchCommand;
-#ifdef status_dev
-    qInfo() << data;
-#endif
-    if (data.contains("proxychains")) {
-        args.prepend(localLaunchCommand);
-        args.prepend("-q");
-        localLaunchCommand = "proxychains4";
-        if (proxychainsForceNewInstance) {
-            args.append("--new-instance");
-        }
-    }
     // Private window if data has private window key or the action exists
     if (data.contains("private-window") || match.selectedAction()) {
         args.append("-private-window");
@@ -126,7 +113,7 @@ QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, Q
 #else
     match.setCategoryRelevance(QueryMatch::CategoryRelevance::Highest);
 #endif
-    if (privateWindowsAsActions && !match.text().startsWith(proxychainsDisplayPrefix)) {
+    if (privateWindowsAsActions) {
         match.setActions(matchActions);
     }
     return match;
@@ -138,16 +125,12 @@ QList<QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, con
     for (const auto &profile : qAsConst(profiles)) {
         if (profile.name.startsWith(filter, Qt::CaseInsensitive)) {
             QMap<QString, QVariant> data;
-            bool skipMatch = false;
-
             data.insert("name", profile.launchName);
             if (privateWindow)
                 data.insert("private-window", "true");
             // Hide default profile
             if (profile.isDefault && hideDefaultProfile && !privateWindow) {
-                if (!profile.extraNormalWindowProxychainsLaunchOption)
-                    continue;
-                skipMatch = true;
+                continue;
             }
             QString text = profile.name;
             if (privateWindow)
@@ -162,24 +145,7 @@ QList<QueryMatch> FirefoxRunner::createProfileMatches(const QString &filter, con
                 priority = (float)profile.priority / 101;
             }
 
-            if (proxychainsIntegrated) {
-                if (!privateWindow && profile.launchNormalWindowWithProxychains) {
-                    data.insert("proxychains", true);
-                } else if (privateWindow && profile.launchPrivateWindowWithProxychains) {
-                    data.insert("proxychains", true);
-                } else if (!privateWindow && profile.extraNormalWindowProxychainsLaunchOption) {
-                    QMap<QString, QVariant> extraData(data);
-                    extraData.insert("proxychains", true);
-                    matches.append(createMatch(proxychainsDisplayPrefix + text, extraData, (float)profile.extraNormalWindowProxychainsOptionPriority / 100));
-                } else if ((privateWindowsAsActions || privateWindow) && profile.extraPrivateWindowProxychainsLaunchOption) {
-                    QMap<QString, QVariant> extraData(data);
-                    extraData.insert("proxychains", true);
-                    extraData.insert("private-window", true);
-                    matches.append(createMatch(proxychainsDisplayPrefix + text, extraData, (float)profile.extraPrivateWindowProxychainsOptionPriority / 100));
-                }
-            }
-            if (!skipMatch)
-                matches.append(createMatch(text, data, priority));
+            matches.append(createMatch(text, data, priority));
         }
     }
     return matches;
