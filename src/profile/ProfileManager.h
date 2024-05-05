@@ -12,9 +12,8 @@ public:
     QString firefoxDesktopFile, launchCommand, defaultPath, firefoxProfilesIniPath;
 
     ProfileManager();
-    void initializeConfigFiles();
 
-    QList<Profile> syncAndGetCustomProfiles(bool forceSync = false);
+    QList<Profile> syncAndGetCustomProfiles(KConfigGroup &grp, bool forceSync = false);
     QList<Profile> getFirefoxProfiles();
     QList<Profile> getCustomProfiles(KSharedConfigPtr firefoxConfig);
 

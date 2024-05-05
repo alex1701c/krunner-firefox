@@ -25,7 +25,7 @@ public:
     // NOTE: Prefixes need to be included in filterRegex.
     QLatin1String shortPrefix = QLatin1String("ff");
     QLatin1String mediumPrefix = QLatin1String("fire");
-    QRegularExpression filterRegex = QRegularExpression(R"(^(?:ff|fire\w*)(?: (.+))$)", QRegularExpression::CaseInsensitiveOption);
+    const QRegularExpression filterRegex = QRegularExpression(R"(^(?:ff|fire\w*)(?: (.+))$)", QRegularExpression::CaseInsensitiveOption);
     const QRegularExpression privateWindowFlagRegex = QRegularExpression(R"((\s+-p\b))", QRegularExpression::CaseInsensitiveOption);
 
     QString launchCommand;

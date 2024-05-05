@@ -104,6 +104,6 @@ configuration, just the displayed name for the runner.
 ![Config Dialog](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/general_config_dialog.png)
 
 #### Overview With All Global Options
-After the trigger word you can search the profiles. 
+After the trigger word, you can search the profiles. 
 
 ![Overview With All Global Options](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/global_overview_proxychains.png)

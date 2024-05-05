@@ -5,80 +5,38 @@
 #include <QDir>
 #include <QRegularExpression>
 
-/**
- * Initialize variables
- */
 ProfileManager::ProfileManager()
 {
     firefoxProfilesIniPath = QDir::homePath() + "/.mozilla/firefox/profiles.ini";
-    initializeConfigFiles();
     firefoxDesktopFile = getDesktopFilePath();
     launchCommand = getLaunchCommand();
     defaultPath = getDefaultProfilePath();
 }
 
 /**
- * Creates necessary config files
- */
-void ProfileManager::initializeConfigFiles()
-{
-    const QDir configDir(Config::ConfigDir);
-    if (!configDir.exists()) {
-        configDir.mkpath(Config::ConfigDir);
-    }
-    // Create file
-    QFile configFile(Config::ConfigFile);
-    if (!configFile.exists()) {
-        configFile.open(QIODevice::WriteOnly);
-        configFile.close();
-    }
-    if (ProfileManager::getDesktopFilePath(true) == QLatin1String("<error>")) {
-        QDir localAppDir(QDir::homePath() + "/.local/share/applications/");
-        localAppDir.mkpath(".");
-        const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
-        if (QFile::exists(normalFirefox)) {
-            QFile::copy(normalFirefox, QDir::homePath() + "/.local/share/applications/firefox.desktop");
-        }
-        const QString esrFirefox = QStringLiteral("/usr/share/applications/firefox-esr.desktop");
-        if (QFile::exists(esrFirefox)) {
-            QFile::copy(esrFirefox, QDir::homePath() + "/.local/share/applications/firefox-esr.desktop");
-        }
-    }
-}
-
-/**
  * Synchronizes  profiles with firefox.desktop file based on forceSync and settings, returns custom profiles
  * @param forceSync
  */
-QList<Profile> ProfileManager::syncAndGetCustomProfiles(bool forceSync)
+QList<Profile> ProfileManager::syncAndGetCustomProfiles(KConfigGroup &grp, bool forceSync)
 {
     KSharedConfigPtr firefoxConfig = KSharedConfig::openConfig(firefoxDesktopFile);
     firefoxConfig->reparseConfiguration();
-    KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
-    config.config()->reparseConfiguration();
-    const QString lastHash = config.readEntry("lastHash");
+    grp.config()->reparseConfiguration();
+    const QString lastHash = grp.readEntry("lastHash");
     bool hasChanged = false;
     QFile file(firefoxProfilesIniPath);
     if (file.open(QFile::ReadOnly)) {
         QCryptographicHash hash(QCryptographicHash::Md5);
         if (hash.addData(&file)) {
             const QString newHash = hash.result().toHex();
-            config.writeEntry("lastHash", newHash);
+            grp.writeEntry("lastHash", newHash);
             hasChanged = lastHash != newHash;
         }
     }
     if (forceSync || hasChanged) {
         QList<Profile> firefoxProfiles = getFirefoxProfiles();
-        syncDesktopFile(firefoxProfiles, firefoxConfig, config);
-#ifdef status_dev
-        qInfo() << "Synced profiles";
-#endif
+        syncDesktopFile(firefoxProfiles, firefoxConfig, grp);
     }
-#ifdef status_dev
-    else {
-        qInfo() << "No need to sync";
-    }
-#endif
     return getCustomProfiles(firefoxConfig);
 }
 

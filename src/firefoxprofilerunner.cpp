@@ -12,39 +12,34 @@
 #include <QFile>
 #include <QProcess>
 
-FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &args)
+FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &)
 #if KRUNNER_VERSION_MAJOR == 5
-    : AbstractRunner(parent, data, args)
+    : AbstractRunner(parent, data, QVariantList{})
     , matchActions({new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)})
 #else
     : AbstractRunner(parent, data)
     , matchActions({KRunner::Action("private-window", firefoxPrivateWindowIcon.name(), "Open profile in private window")})
 #endif
 {
-    Q_UNUSED(args)
-    filterRegex.optimize();
-    privateWindowFlagRegex.optimize();
 }
 
 void FirefoxRunner::reloadConfiguration()
 {
+    KConfigGroup grp = config();
     ProfileManager profileManager;
-    profiles = profileManager.syncAndGetCustomProfiles();
+    profiles = profileManager.syncAndGetCustomProfiles(grp);
     if (profiles.isEmpty()) {
         // If the profiles.ini file has not changes and there are no profiles
         // For instance if you rerun the install script
-        profiles = profileManager.syncAndGetCustomProfiles(true);
+        profiles = profileManager.syncAndGetCustomProfiles(grp, true);
     }
     launchCommand = profileManager.launchCommand;
     firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
 
-    KConfigGroup config = KSharedConfig::openConfig(Config::ConfigFile)->group(Config::MainGroup);
-    config.config()->reparseConfiguration();
+    hideDefaultProfile = grp.readEntry(Config::HideDefaultProfile, false);
+    showAlwaysPrivateWindows = grp.readEntry(Config::ShowAlwaysPrivateWindows, true);
 
-    hideDefaultProfile = config.readEntry(Config::HideDefaultProfile, false);
-    showAlwaysPrivateWindows = config.readEntry(Config::ShowAlwaysPrivateWindows, true);
-
-    privateWindowsAsActions = config.readEntry(Config::PrivateWindowAction, false);
+    privateWindowsAsActions = grp.readEntry(Config::PrivateWindowAction, false);
 
     QList<RunnerSyntax> syntaxes;
     syntaxes.append(RunnerSyntax("firefox :q:", "Plugin gets triggered by fire... after that you can search the profiles by name"));
@@ -87,9 +82,8 @@ void FirefoxRunner::match(RunnerContext &context)
     context.addMatches(matches);
 }
 
-void FirefoxRunner::run(const RunnerContext &context, const QueryMatch &match)
+void FirefoxRunner::run(const RunnerContext & /*context*/, const QueryMatch &match)
 {
-    Q_UNUSED(context)
     const QMap<QString, QVariant> data = match.data().toMap();
     QStringList args = {"-P", data.value("name").toString()};
     QString localLaunchCommand = launchCommand;
