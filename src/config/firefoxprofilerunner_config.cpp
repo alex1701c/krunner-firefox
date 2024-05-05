@@ -29,7 +29,7 @@ FirefoxRunnerConfig::FirefoxRunnerConfig(QObject *parent, const QVariantList &)
     connectSignals();
 
     firefoxConfig = KSharedConfig::openConfig(profileManager.firefoxDesktopFile);
-    config = KSharedConfig::openConfig("krunnerrc")->group("Plugins").group("firefoxprofilerunner");
+    config = KSharedConfig::openConfig("krunnerrc")->group("Runners").group("firefoxprofilerunner");
     config.config()->reparseConfiguration();
     firefoxIcon = QIcon::fromTheme(profileManager.launchCommand.endsWith("firefox") ? "firefox" : "firefox-esr");
 }
