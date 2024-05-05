@@ -1,4 +1,6 @@
 #include "ProfileManager.h"
+
+#include "firefox_debug.h"
 #include <KConfigGroup>
 #include <QCryptographicHash>
 #include <QDebug>
@@ -94,12 +96,8 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
     std::sort(profiles.begin(), profiles.end(), [](const Profile &profile1, const Profile &profile2) -> bool {
         return profile1.priority > profile2.priority;
     });
-#ifdef status_dev
-    qInfo() << "Found profiles: " << profiles.count();
-    qInfo() << "Listing data of profiles:";
-    for (const auto &profile : profiles)
-        profile.toString();
-#endif
+    qCDebug(FIREFOX) << "Found profiles: " << profiles.count();
+    qCDebug(FIREFOX) << "Listing data of profiles:" << profiles;
     return profiles;
 }
 
@@ -125,17 +123,13 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
             if (installedProfile == "Desktop Action new-window-with-profile-" + profile.path) {
                 found = true;
                 if (profile.launchName != firefoxConfig->group(installedProfile).readEntry("LaunchName")) {
-#ifdef status_dev
-                    qInfo() << "Update " << profile.launchName;
-#endif
+                    qCDebug(FIREFOX) << "Update " << profile.launchName;
                     profile.writeSettings(firefoxConfig);
                 }
             }
         }
         if (!found) {
-#ifdef status_dev
-            qInfo() << "Delete " << installedProfile;
-#endif
+            qCDebug(FIREFOX) << "Delete " << installedProfile;
             // Delete normal and private window Desktop Action
             const QString profileName = QString(installedProfile).remove("Desktop Action new-window-with-profile-");
             firefoxConfig->deleteGroup(installedProfile);
@@ -147,9 +141,7 @@ void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConf
     int idx = 1;
     for (const auto &profile : profiles) {
         if (!firefoxConfig->hasGroup("Desktop Action new-window-with-profile-" + profile.path)) {
-#ifdef status_dev
-            qInfo() << "Install  " << profile.launchName;
-#endif
+            qCDebug(FIREFOX) << "Install " << profile.launchName;
             // Write settings for normal and private window
             profile.writeSettings(firefoxConfig, idx);
             ++idx;
@@ -185,9 +177,7 @@ void ProfileManager::changeProfileRegistering(bool enableNormal, bool enablePriv
             registeredActions.append(groupName.remove("Desktop Action ") + ";");
         }
     }
-#ifdef status_dev
-    qInfo() << "Registered Desktop Actions:\n" << registeredActions;
-#endif
+    qCDebug(FIREFOX) << "Registered Desktop Actions:\n" << registeredActions;
     firefoxConfig->group("Desktop Entry").writeEntry("Actions", registeredActions);
     firefoxConfig->group("Desktop Entry").sync();
 }

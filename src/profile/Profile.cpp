@@ -36,7 +36,7 @@ void Profile::writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority)
  * Write changes from the config dialog to the firefox.desktop file
  * @param firefoxConfig
  */
-void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance) const
+void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) const
 {
     // General config/normal launch option
     KConfigGroup profileConfig = firefoxConfig->group("Desktop Action new-window-with-profile-" + this->path);
@@ -52,9 +52,10 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &
     privateDesktopAction.writeEntry("Exec", this->launchCommand + " -P \"" + this->launchName + "\" -private-window");
 }
 
-void Profile::toString() const
+QDebug operator<<(QDebug debug, const Profile &profile)
 {
-    qInfo() << "name: " << this->name << " launchCommand: " << this->launchCommand << " launchName: " << this->launchName << " path: " << this->path
-            << " priority: " << this->priority << " isDefault: " << this->isDefault << " isEdited: " << this->isEdited
-            << " privateWindowPriority: " << this->privateWindowPriority;
+    debug << "name: " << profile.name << " launchCommand: " << profile.launchCommand << " launchName: " << profile.launchName << " path: " << profile.path
+          << " priority: " << profile.priority << " isDefault: " << profile.isDefault << " isEdited: " << profile.isEdited
+          << " privateWindowPriority: " << profile.privateWindowPriority;
+    return debug;
 }

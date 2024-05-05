@@ -18,7 +18,6 @@ public:
 
     void writeSettings(KSharedConfigPtr firefoxConfig, int initialPriority = 0) const;
 
-    void toString() const;
-
-    void writeConfigChanges(KSharedConfigPtr firefoxConfig, const QString &forceNewInstance = "") const;
+    void writeConfigChanges(KSharedConfigPtr firefoxConfig) const;
 };
+QDebug operator<<(QDebug debug, const Profile &profile);

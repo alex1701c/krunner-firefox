@@ -3,6 +3,19 @@ add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.firefoxprofilerunne
 add_library(core_STATIC STATIC profile/Profile.cpp profile/ProfileManager.cpp)
 target_link_libraries(core_STATIC PUBLIC KF${QT_MAJOR_VERSION}::ConfigCore)
 set_target_properties(core_STATIC PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ecm_qt_declare_logging_category(core_STATIC
+    HEADER firefox_debug.h
+    IDENTIFIER FIREFOX
+    CATEGORY_NAME ${PROJECT_NAME}
+    DESCRIPTION "Logging for ${PROJECT_NAME}"
+    EXPORT FIREFOX
+)
+ecm_qt_install_logging_categories(
+    EXPORT FIREFOX
+    FILE krunner_firefox.categories
+    DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR}
+)
+
 
 kcoreaddons_add_plugin(firefoxprofilerunner SOURCES firefoxprofilerunner.cpp INSTALL_NAMESPACE "kf${QT_MAJOR_VERSION}/krunner")
 target_link_libraries(firefoxprofilerunner
