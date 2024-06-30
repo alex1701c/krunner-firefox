@@ -1,7 +1,7 @@
 # Firefox Profile Runner
 This plugin allows you to launch Firefox profiles from Krunner and your normal launcher.
 It saves the Desktop Actions for the profiles in a local copy of the firefox.desktop file.
-This mean you can search for the profiles in your normal launcher.
+This means you can search for the profiles in your normal launcher.
 
 - Saves the Desktop Actions for the profiles in a local copy of the `firefox.desktop` file. This means you can search for the profiles in your normal launcher.
 - Compatible with Firefox-ESR.
@@ -67,24 +67,6 @@ curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install.
 curl https://raw.githubusercontent.com/alex1701c/krunner-firefox/master/install-user.sh | bash
 ```
 
-### C: Manual install
-
-```shell
-git clone https://github.com/alex1701c/krunner-firefox
-cd krunner-firefox
-sudo bash install.sh
-kquitapp5 krunner 2> /dev/null; kstart5 --windowclass krunner krunner > /dev/null 2>&1 &
-```
-
-To get the icon for the private window you have to extract it:
-```shell
-mkdir -p /tmp/firefoxprofile_installer
-unzip /usr/lib/firefox/browser/omni.ja -c "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer > /dev/null 2>&1
-sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
-rm -rf /tmp/firefoxprofile_installer
-```
-If you install it manually for Firefox-ESR you should adjust the icon in `src/plasma-runner-firefoxprofilerunner.desktop` and change the path for the unzip command
-
 # Screenshots
 
 #### Overview
@@ -93,7 +75,7 @@ The plugin gets triggered by `firef`.
 ![Overview](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_overview.png)
 
 #### Search
-After the trigger word you can search the profiles. 
+After the trigger word, you can search the profiles. 
 
 ![Search](https://raw.githubusercontent.com/alex1701c/Screenshots/master/FirefoxProfileRunner/runner_profiles_search.png)
 
