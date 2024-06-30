@@ -24,9 +24,8 @@ public:
 
     QString iconForExecutable() const;
 
-    QString firefoxDesktopFile, launchCommand;
+    QString firefoxDesktopFile, launchCommand, defaultPath, firefoxProfilesIniPath;
 
 private:
     void initializeDesktopFileCopy();
-    QString defaultPath, firefoxProfilesIniPath;
 };

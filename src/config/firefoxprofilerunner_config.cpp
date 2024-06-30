@@ -48,6 +48,7 @@ void FirefoxRunnerConfig::load()
     forceProfileSync = false;
     m_ui->profiles->clear();
 
+    const QIcon privateWindowIcon = QIcon::fromTheme(Config::getPrivateWindowIcon());
     QList<QListWidgetItem *> items;
     for (int i = 0; i < profiles.count(); ++i) {
         auto &profile = profiles.at(i);
@@ -63,7 +64,7 @@ void FirefoxRunnerConfig::load()
         item2->setText(profile.name);
         auto data2 = QVariant::fromValue(ProfileData{profile.path, profile.isDefault, ProfileType::Private, profile.privateWindowPriority});
         item2->setData(Qt::UserRole, data2);
-        item2->setIcon(firefoxPrivateWindowIcon);
+        item2->setIcon(privateWindowIcon);
         items.append(item2);
     }
     std::sort(items.begin(), items.end(), [](const QListWidgetItem *item1, const QListWidgetItem *item2) -> bool {

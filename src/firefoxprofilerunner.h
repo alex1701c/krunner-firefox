@@ -3,7 +3,6 @@
 #include "profile/Profile.h"
 #include <KRunner/AbstractRunner>
 #include <QFileSystemWatcher>
-#include <QIcon>
 #include <QRegularExpression>
 #include <krunner_version.h>
 
@@ -31,8 +30,8 @@ public:
     QString launchCommand;
     QList<Profile> profiles;
     bool hideDefaultProfile, showAlwaysPrivateWindows;
-    QIcon firefoxIcon;
-    const QIcon firefoxPrivateWindowIcon = QIcon::fromTheme("private_browsing_firefox", QIcon::fromTheme("view-private"));
+    QString firefoxIcon;
+    const QString firefoxPrivateWindowIcon;
     bool privateWindowsAsActions;
 #if KRUNNER_VERSION_MAJOR == 5
     QList<QAction *> matchActions;

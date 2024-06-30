@@ -10,15 +10,18 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QIcon>
 #include <QProcess>
 
 FirefoxRunner::FirefoxRunner(QObject *parent, const KPluginMetaData &data, const QVariantList &)
 #if KRUNNER_VERSION_MAJOR == 5
     : AbstractRunner(parent, data, QVariantList{})
-    , matchActions({new QAction(firefoxPrivateWindowIcon, "Open profile in private window", this)})
+    , firefoxPrivateWindowIcon(Config::getPrivateWindowIcon())
+    , matchActions({new QAction(QIcon::fromTheme(firefoxPrivateWindowIcon), "Open profile in private window", this)})
 #else
     : AbstractRunner(parent, data)
-    , matchActions({KRunner::Action("private-window", firefoxPrivateWindowIcon.name(), "Open profile in private window")})
+    , firefoxPrivateWindowIcon(Config::getPrivateWindowIcon())
+    , matchActions({KRunner::Action("private-window", firefoxPrivateWindowIcon, "Open profile in private window")})
 #endif
 {
 }
@@ -34,7 +37,7 @@ void FirefoxRunner::reloadConfiguration()
         profiles = profileManager.syncAndGetCustomProfiles(grp, true);
     }
     launchCommand = profileManager.launchCommand;
-    firefoxIcon = QIcon::fromTheme(profileManager.iconForExecutable());
+    firefoxIcon = profileManager.iconForExecutable();
 
     hideDefaultProfile = grp.readEntry(Config::HideDefaultProfile, false);
     showAlwaysPrivateWindows = grp.readEntry(Config::ShowAlwaysPrivateWindows, true);
@@ -98,7 +101,7 @@ void FirefoxRunner::run(const RunnerContext & /*context*/, const QueryMatch &mat
 QueryMatch FirefoxRunner::createMatch(const QString &text, const QMap<QString, QVariant> &data, float relevance)
 {
     QueryMatch match(this);
-    match.setIcon(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
+    match.setIconName(data.contains("private-window") ? firefoxPrivateWindowIcon : firefoxIcon);
     match.setText(text);
     match.setData(data);
     match.setRelevance(relevance);

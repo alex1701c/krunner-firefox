@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(firefoxprofilerunner)
 
+set(CMAKE_CXX_STANDARD 17)
 set(QT_MIN_VERSION 5.15.0)
 set(KF_MIN_VERSION 5.105.0)
 set(KDE_COMPILERSETTINGS_LEVEL "5.82.0")

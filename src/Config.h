@@ -2,6 +2,8 @@
 #define FIREFOXPROFILERUNNER_CONFIG_H
 
 #include <QDir>
+#include <QFile>
+
 namespace
 {
 class Config
@@ -18,6 +20,14 @@ public:
     constexpr static const auto PrivateWindowAction = "privateWindowActions";
     // UI settings
     constexpr static const auto GeneralMinimized = "generalMinimized";
+
+    static QString getPrivateWindowIcon()
+    {
+        if (const QString path = "/usr/share/pixmaps/private_browsing_firefox.svg"; QFileInfo::exists(path)) {
+            return path;
+        }
+        return "view-private";
+    }
 };
 }
 
