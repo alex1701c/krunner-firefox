@@ -9,8 +9,6 @@
 class ProfileManager
 {
 public:
-    QString firefoxDesktopFile, launchCommand, defaultPath, firefoxProfilesIniPath;
-
     ProfileManager();
 
     QList<Profile> syncAndGetCustomProfiles(KConfigGroup &grp, bool forceSync = false);
@@ -23,4 +21,12 @@ public:
     QString getLaunchCommand() const;
     QString getDefaultProfilePath() const;
     static QString getDesktopFilePath(bool quiet = false);
+
+    QString iconForExecutable() const;
+
+    QString firefoxDesktopFile, launchCommand;
+
+private:
+    void initializeDesktopFileCopy();
+    QString defaultPath, firefoxProfilesIniPath;
 };

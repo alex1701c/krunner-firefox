@@ -34,7 +34,7 @@ void FirefoxRunner::reloadConfiguration()
         profiles = profileManager.syncAndGetCustomProfiles(grp, true);
     }
     launchCommand = profileManager.launchCommand;
-    firefoxIcon = QIcon::fromTheme(launchCommand.endsWith("firefox-esr") ? "firefox-esr" : "firefox");
+    firefoxIcon = QIcon::fromTheme(profileManager.iconForExecutable());
 
     hideDefaultProfile = grp.readEntry(Config::HideDefaultProfile, false);
     showAlwaysPrivateWindows = grp.readEntry(Config::ShowAlwaysPrivateWindows, true);
