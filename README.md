@@ -3,47 +3,54 @@ This plugin allows you to launch Firefox profiles from Krunner and your normal l
 It saves the Desktop Actions for the profiles in a local copy of the firefox.desktop file.
 This mean you can search for the profiles in your normal launcher.
 
-- Saves the Desktop Actions for the profiles in a local copy of the `firefox.desktop` file. This mean you can search for the profiles in your normal launcher.
+- Saves the Desktop Actions for the profiles in a local copy of the `firefox.desktop` file. This means you can search for the profiles in your normal launcher.
 - Compatible with Firefox-ESR.
 
 # Installation
 
 ## 1 Dependencies
 
-<details>
-<summary><b>Debian/Ubuntu:</b></summary>
-  
-```shell
-sudo apt install cmake extra-cmake-modules build-essential libkf5runner-dev libkf5textwidgets-dev qtdeclarative5-dev gettext libkf5kcmutils-dev
-```
-  
-</details>
 
 <details>
-<summary><b>OpenSUSE:</b></summary>
-  
-```shell
-sudo zypper install cmake extra-cmake-modules libQt5Widgets5 libQt5Core5 libqt5-qtlocation-devel ki18n-devel ktextwidgets-devel kservice-devel krunner-devel gettext-tools kconfigwidgets-devel kcmutils-devel
+<summary><b>Debian/Ubuntu</b></summary>
+
+Plasma5:  
+```bash
+sudo apt install git cmake extra-cmake-modules build-essential libkf5runner-dev libkf5i18n-dev libkf5service-dev libkf5kcmutils-dev qtdeclarative5-dev libkf5dbusaddons-bin
+```
+Plasma6:  
+```bash
+sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev libkf6i18n-dev libkf6service-dev libkf6kcmutils-dev kf6-kdbusaddons
 ```
 
 </details>
 
 <details>
-<summary><b>Fedora:</b></summary>
-  
-```shell
-sudo dnf install cmake extra-cmake-modules kf5-ki18n-devel kf5-kservice-devel kf5-krunner-devel kf5-ktextwidgets-devel gettext kf5-kcmutils-devel
+<summary><b>OpenSUSE</b></summary>
+
+Plasma5:  
+```bash
+sudo zypper install git cmake extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel kio-devel kservice-devel kdbusaddons-tools
 ```
-  
+Plasma6:  
+```bash
+sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kservice-devel kf6-kdbusaddons-tools
+```
+
 </details>
 
 <details>
-<summary><b>Arch (Manjaro):</b></summary>
-  
-```shell
-sudo pacman -S install cmake extra-cmake-modules kcmutils
+<summary><b>Fedora</b></summary>
+
+Plasma5:  
+```bash
+sudo dnf install git cmake extra-cmake-modules kf5-ki18n-devel kf5-krunner-devel kf5-kcmutils-devel kf5-kservice-devel
 ```
-  
+Plasma6:  
+```bash
+sudo dnf install git cmake extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel kf6-kservice-devel 
+```
+
 </details>
 
 ## 2 Plugin
