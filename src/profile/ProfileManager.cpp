@@ -106,8 +106,6 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
 
 /**
  * Install/Update/Delete profiles from firefox.desktop files and update the registered Desktop Actions
- * @param profiles
- * @param firefoxConfig
  */
 void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config)
 {
@@ -246,6 +244,10 @@ void ProfileManager::initializeDesktopFileCopy()
         const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
         if (QFile::exists(normalFirefox)) {
             QFile::copy(normalFirefox, QDir::homePath() + "/.local/share/applications/firefox.desktop");
+        }
+        const QString rdnFirefox = QStringLiteral("/usr/share/applications/org.mozilla.firefox.desktop");
+        if (QFile::exists(rdnFirefox)) {
+            QFile::copy(rdnFirefox, QDir::homePath() + "/.local/share/applications/org.mozilla.firefox.desktop");
         }
         const QString esrFirefox = QStringLiteral("/usr/share/applications/firefox-esr.desktop");
         if (QFile::exists(esrFirefox)) {
