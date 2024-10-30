@@ -54,8 +54,14 @@ void Profile::writeConfigChanges(KSharedConfigPtr firefoxConfig) const
 
 QDebug operator<<(QDebug debug, const Profile &profile)
 {
-    debug << "name: " << profile.name << " launchCommand: " << profile.launchCommand << " launchName: " << profile.launchName << " path: " << profile.path
-          << " priority: " << profile.priority << " isDefault: " << profile.isDefault << " isEdited: " << profile.isEdited
-          << " privateWindowPriority: " << profile.privateWindowPriority;
+    debug << "Profile(name: " << profile.name //
+          << " launchCommand: " << profile.launchCommand //
+          << " launchName: " << profile.launchName //
+          << " path: " << profile.path //
+          << " priority: " << profile.priority //
+          << " isDefault: " << profile.isDefault //
+          << " isEdited: " << profile.isEdited //
+          << " privateWindowPriority: " << profile.privateWindowPriority //
+          << ")";
     return debug;
 }
