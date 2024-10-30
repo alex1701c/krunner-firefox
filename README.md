@@ -16,7 +16,7 @@ This means you can search for the profiles in your normal launcher.
 
 Plasma5:  
 ```bash install-ubuntu-plasma5
-sudo apt install git cmake extra-cmake-modules build-essential libkf5runner-dev libkf5i18n-dev libkf5service-dev libkf5kcmutils-dev qtdeclarative5-dev libkf5dbusaddons-bin
+sudo apt install git cmake extra-cmake-modules build-essential libkf5runner-dev libkf5i18n-dev libkf5service-dev libkf5kcmutils-dev libkf5dbusaddons-bin
 ```
 Plasma6:  
 ```bash install-ubuntu-plasma6
@@ -30,11 +30,11 @@ sudo apt install git cmake extra-cmake-modules build-essential libkf6runner-dev 
 
 Plasma5:  
 ```bash install-opensuse-plasma5
-sudo zypper install git cmake extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel kio-devel kservice-devel kdbusaddons-tools
+sudo zypper install git cmake extra-cmake-modules ki18n-devel krunner-devel kcmutils-devel kservice-devel kdbusaddons-tools libQt5Test-devel
 ```
 Plasma6:  
 ```bash install-opensuse-plasma6
-sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kservice-devel kf6-kdbusaddons-tools
+sudo zypper install git cmake kf6-extra-cmake-modules kf6-ki18n-devel kf6-krunner-devel kf6-kcmutils-devel kf6-kservice-devel kf6-kdbusaddons-tools qt6-test-devel
 ```
 
 </details>
