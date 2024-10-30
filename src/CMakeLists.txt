@@ -1,7 +1,7 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"plasma_runner_org.kde.firefoxprofilerunner\")
 
 add_library(core_STATIC STATIC profile/Profile.cpp profile/ProfileManager.cpp)
-target_link_libraries(core_STATIC PUBLIC KF${QT_MAJOR_VERSION}::ConfigCore)
+target_link_libraries(core_STATIC PUBLIC KF${QT_MAJOR_VERSION}::ConfigCore KF${QT_MAJOR_VERSION}::Service)
 set_target_properties(core_STATIC PROPERTIES POSITION_INDEPENDENT_CODE ON)
 ecm_qt_declare_logging_category(core_STATIC
     HEADER firefox_debug.h

@@ -2,6 +2,7 @@
 
 #include "firefox_debug.h"
 #include <KConfigGroup>
+#include <KService>
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QDir>
@@ -218,17 +219,16 @@ QString ProfileManager::getDefaultProfilePath() const
  */
 QString ProfileManager::getDesktopFilePath(bool quiet)
 {
-    QString file(QDir::homePath() + "/.local/share/applications/firefox.desktop");
-    if (!QFile::exists(file)) {
-        file = QDir::homePath() + "/.local/share/applications/firefox-esr.desktop";
-        if (!QFile::exists(file)) {
-            if (!quiet) {
-                qWarning() << "Can not find a firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
-            }
-            return QString();
+    for (const QString &name : firefoxDesktopNames) {
+        QString file(QDir::homePath() + "/.local/share/applications/" + name + ".desktop");
+        if (QFile::exists(file)) {
+            return file;
         }
     }
-    return file;
+    if (!quiet) {
+        qWarning() << "Can not find a firefox.desktop, org.mozilla.firefox.desktop or firefox-esr.desktop file in ~/.local/share/applications/";
+    }
+    return QString();
 }
 
 QString ProfileManager::iconForExecutable() const
@@ -241,17 +241,10 @@ void ProfileManager::initializeDesktopFileCopy()
     if (ProfileManager::getDesktopFilePath(true).isEmpty()) {
         QDir localAppDir(QDir::homePath() + "/.local/share/applications/");
         localAppDir.mkpath(".");
-        const QString normalFirefox = QStringLiteral("/usr/share/applications/firefox.desktop");
-        if (QFile::exists(normalFirefox)) {
-            QFile::copy(normalFirefox, QDir::homePath() + "/.local/share/applications/firefox.desktop");
-        }
-        const QString rdnFirefox = QStringLiteral("/usr/share/applications/org.mozilla.firefox.desktop");
-        if (QFile::exists(rdnFirefox)) {
-            QFile::copy(rdnFirefox, QDir::homePath() + "/.local/share/applications/org.mozilla.firefox.desktop");
-        }
-        const QString esrFirefox = QStringLiteral("/usr/share/applications/firefox-esr.desktop");
-        if (QFile::exists(esrFirefox)) {
-            QFile::copy(esrFirefox, QDir::homePath() + "/.local/share/applications/firefox-esr.desktop");
+        for (const QString &name : firefoxDesktopNames) {
+            if (const auto &service = KService::serviceByDesktopName(name)) {
+                QFile::copy(service->entryPath(), QDir::homePath() + "/.local/share/applications/" + name + ".desktop");
+            }
         }
     }
 }

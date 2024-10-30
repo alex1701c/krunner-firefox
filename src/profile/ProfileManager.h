@@ -20,7 +20,7 @@ public:
 
     QString getLaunchCommand() const;
     QString getDefaultProfilePath() const;
-    static QString getDesktopFilePath(bool quiet = false);
+    QString getDesktopFilePath(bool quiet = false);
 
     QString iconForExecutable() const;
 
@@ -28,4 +28,9 @@ public:
 
 private:
     void initializeDesktopFileCopy();
+    QStringList firefoxDesktopNames{
+        QStringLiteral("firefox"),
+        QStringLiteral("org.mozilla.firefox"),
+        QStringLiteral("firefox-esr"),
+    };
 };
