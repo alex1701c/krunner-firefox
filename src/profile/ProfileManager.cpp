@@ -52,7 +52,7 @@ QList<Profile> ProfileManager::syncAndGetCustomProfiles(KConfigGroup &grp, bool 
 QList<Profile> ProfileManager::getFirefoxProfiles()
 {
     QList<Profile> profiles;
-    const KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath);
+    const KSharedConfigPtr firefoxProfilesIni = KSharedConfig::openConfig(firefoxProfilesIniPath, KConfig::NoGlobals);
     firefoxProfilesIni->reparseConfiguration();
     const QStringList configs = firefoxProfilesIni->groupList().filter(QRegularExpression(R"(Profile.*)"));
 
