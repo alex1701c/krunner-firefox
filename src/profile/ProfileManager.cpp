@@ -73,10 +73,8 @@ QList<Profile> ProfileManager::getFirefoxProfiles()
  */
 QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
 {
+    Q_ASSERT(firefoxConfig);
     QList<Profile> profiles;
-    if (firefoxDesktopFile.isEmpty()) {
-        return profiles;
-    }
     const QStringList installedProfiles = firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
     for (const auto &profileGroupName : installedProfiles) {
         auto profileGroup = firefoxConfig->group(profileGroupName);
@@ -110,9 +108,8 @@ QList<Profile> ProfileManager::getCustomProfiles(KSharedConfigPtr firefoxConfig)
  */
 void ProfileManager::syncDesktopFile(const QList<Profile> &profiles, KSharedConfigPtr firefoxConfig, const KConfigGroup &config)
 {
-    if (firefoxDesktopFile.isEmpty()) {
-        return;
-    }
+    Q_ASSERT(firefoxConfig);
+    Q_ASSERT(config.isValid());
     KConfigGroup generalConfig = firefoxConfig->group("Desktop Entry");
     const QStringList installedProfiles = firefoxConfig->groupList().filter(QRegularExpression("Desktop Action new-window-with-profile-.*"));
 
