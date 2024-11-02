@@ -40,3 +40,5 @@ target_link_libraries(kcm_firefoxprofilerunner
     KF${QT_MAJOR_VERSION}::Runner
     core_STATIC
 )
+
+install(FILES private_browsing_firefox.svg DESTINATION ${KDE_INSTALL_DATADIR}/pixmaps/)

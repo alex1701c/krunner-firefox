@@ -3,23 +3,6 @@
 # Exit immediately if something fails
 set -e
 
-mkdir -p /tmp/firefoxprofile_installer
-sudo mkdir -p /usr/share/pixmaps/
-
-
-if [[ -e /usr/lib/firefox/browser/omni.ja ]]; then
-    unzip -o /usr/lib/firefox/browser/omni.ja "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer
-elif [[ -e /usr/lib/firefox-esr/browser/omni.ja ]]; then
-    unzip -o /usr/lib/firefox-esr/browser/omni.ja "chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg" -d /tmp/firefoxprofile_installer
-else
-    echo "Warning: Neither /usr/lib/firefox/browser/omni.ja nor /usr/lib/firefox-esr/browser/omni.ja exists. Continuing installation without extracting favicon.svg."
-fi
-
-if [[ -e /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg ]]; then
-    sudo mv /tmp/firefoxprofile_installer/chrome/browser/skin/classic/browser/privatebrowsing/favicon.svg /usr/share/pixmaps/private_browsing_firefox.svg
-    rm -rf /tmp/firefoxprofile_installer
-fi
-
 # Clone project if it is downloaded using curl
 if [[ $(basename "$PWD") != "krunner-firefox"* ]]; then
   git clone https://github.com/alex1701c/krunner-firefox
