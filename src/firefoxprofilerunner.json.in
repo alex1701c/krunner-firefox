@@ -11,7 +11,7 @@
         "Icon": "firefox",
         "License": "GPLv3",
         "Name": "FirefoxProfileRunner",
-        "Version": "2.0.0",
+        "Version": "@CMAKE_PROJECT_VERSION@",
         "Website": "https://github.com/alex1701c/krunner-firefox"
     },
     "X-KDE-ConfigModule": "krunner/kcms/kcm_firefoxprofilerunner"

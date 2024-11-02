@@ -17,6 +17,7 @@ ecm_qt_install_logging_categories(
 )
 
 
+configure_file(firefoxprofilerunner.json.in firefoxprofilerunner.json)
 kcoreaddons_add_plugin(firefoxprofilerunner SOURCES firefoxprofilerunner.cpp INSTALL_NAMESPACE "kf${QT_MAJOR_VERSION}/krunner")
 target_link_libraries(firefoxprofilerunner
     Qt::Core
