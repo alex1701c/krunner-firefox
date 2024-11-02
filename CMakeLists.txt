@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(firefoxprofilerunner)
 
-set(CMAKE_PROJECT_VERSION "2.2.0")
+set(CMAKE_PROJECT_VERSION "2.1.0")
 set(CMAKE_CXX_STANDARD 17)
 set(QT_MIN_VERSION 5.15.0)
 set(KF_MIN_VERSION 5.105.0)
