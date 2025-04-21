@@ -11,7 +11,11 @@
 
 K_PLUGIN_CLASS(FirefoxRunnerConfig)
 
-#define widgetData(item) (item)->data(Qt::UserRole).value<ProfileData>()
+inline ProfileData widgetData(const QListWidgetItem *item)
+{
+    const QVariant &var = item->data(Qt::UserRole);
+    return var.value<ProfileData>();
+}
 
 FirefoxProfileRunnerConfigForm::FirefoxProfileRunnerConfigForm(QWidget *parent)
     : QWidget(parent)
